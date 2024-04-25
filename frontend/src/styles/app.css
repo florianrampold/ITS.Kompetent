@@ -1,0 +1,24 @@
+/* ./src/styles/app.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-button py-2 px-8 rounded-full;
+  }
+  .btn-primary-inverted {
+    @apply bg-white border-primary border-2 text-primary font-button py-2 px-8 rounded-full;
+  }
+  .standard-container {
+    @apply container px-5 mx-auto;
+  }
+  .main-heading {
+    @apply text-3xl font-semibold text-primary sm:text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  .page-background {
+    @apply bg-gray-100 pt-10 lg:pt-20 lg:pb-20;
+  }
+}
+

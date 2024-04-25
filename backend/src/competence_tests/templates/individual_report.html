@@ -1,0 +1,215 @@
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Include Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="{% static 'competence_tests/css/individual_report.css' %}"
+      type="text/css"
+    />
+    <title>Report</title>
+    <meta name="description" content="Report example" />
+  </head>
+
+  <body>
+    <article id="cover">
+      <h1 class="cover-heading">ITS.kompetent Ergebnis</h1>
+      <address>ITS.kompetent 2024</address>
+    </article>
+    
+    <article id="contents">
+      <h2>Inhaltsverzeichnis</h2>
+      <h3>Über ITS.kompetent</h3>
+      <ul>
+        <li><a href="#explanation-title"></a></li>
+        <li><a href="#explanation2-title"></a></li>
+        <li><a href="#threat-title"></a></li>
+        <li><a href="#offers-title"></a></li>
+
+        <h3>{{ selected_job_profile.job_name }}</h3>
+        <ul>
+          <li><a href="#summary-title"></a></li>
+  
+          <li><a href="#threats-title"></a></li>
+          <li>
+            <a href="#competence-dimension-title"></a>
+          </li>
+          <li>
+            <a href="#competence-dimension-per-threat-title-{{ forloop.counter }}"></a>
+          </li>
+        </ul>
+     
+    </article>
+    <article class="standard-page">
+      <h2 class="standard-page-title" id="explanation-title">
+        Was ist ITS.kompetent?
+      </h2>
+
+      <h3> Das Projekt ITS.Kompetent unterstützt KMUs dabei, die Kompetenzen der Mitarbeiter:innen im Bereich der Informationstechnischen Sicherheit (ITS-Kompetenzen) realitätsnah zu messen und mit den berufsbezogenen Anforderungen abzugleichen.
+        Derzeit werden zwischen 5 ITS-Anforderungsprofilen unterschieden, zu denen sich Ihre Mitarbeiter*innen basierend auf Ihren Tätigkeiten im KMU zuordnen konnten. Am Beispiel des Modell-KMUs (der Arneo GmbH) wurden Sie in realitätsnahe Situationen versetzt, die Herausforderungen für die Informationssicherheit eines KMU darstellen können.
+       Sie haben sich basierend auf den Tätigkeiten exemplarischer Personen aus der Arneo GmbH dem ITS-Anforderungsprodil <strong>{{selected_job_profile.job_name}}</strong> zugeordnet. Nachfolgend erhalten Sie eine Beschreibung der ITS-Anforderungsprofile, die zur Auswahl standen:
+      </h3>
+        {% for profile in job_profiles %}
+       
+        <section id="profile-content">
+          <div class="image-container">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+            
+          </div>
+          <div class="text-content">
+              <h4>{{profile.job_name}}</h4>
+              <p class="pre-line">{{profile.job_description}} </br>
+               Tätigkeiten in der Arneo GmbH: </br> {{profile.job_tasks}}</p>
+          </div>
+      </section>
+      {% endfor %}
+      <article class="standard-page">
+        <h2 class="standard-page-title" id="explanation2-title">
+          Wie funktioniert ITS.kompetent?
+        </h2>
+  
+        <h3> ITS.kompetent ist in 4 Schritte untergliedert. Im ersten Schritt wählen Mitarbeiter*innen von KMUs Ihr ITS-Anforderungsprofil aus. Danach werden Ihre ITS-Kompetenzen basierend auf dem ausgewählten ITS-Anforderungsprofil bestimmt. Jeder ITS-Kompetenztest beinhaltet pro ITS-Anforderungsprofil verschiedene IT-sicherheitskritische Situationen, die diesen im Arbeitsalltag begegnen können. 
+          In diesen Situationen werden Mitarbeiter*innen mit bis zu 5 ITS-Bedrohungen konfrontiert. Das Verhalten im Umgang mit diesen ITS-Bedrohungen wird über 7 ITS-Kompetenzdimensionen gemessen. 
+          Im dritten Schritt werden umfassende Statistiken zu den Ergebnissen aus der ITS-Kompetenzmessung generiert. Zuletzt werden ITS-Trainingsempfehlungen vorgeschlagen, die die Lücke zwischen IST-Zustand und SOLL-Zustand potentiell schließen können. Die Abbildung zeigt die beispielhafte Testung der ITS-Kompetenz für die ITS-Bedrohung Phishing/E-Mail-System.
+        </h3>
+        <img class="responsive-image" src="{% static 'campagne/css/images/example-itskompetent.png' %}"></img>
+
+
+    </article>
+    <article class="standard-page">
+      <h2 class="standard-page-title" id="threat-title">
+        Was sind ITS-Bedrohungen?
+      </h2>
+
+      <h3>
+        ITS-Bedrohungen setzen sich aus ITS-Bedrohungsbereichen und ITS-Bedrohungsereignissen zusammen. <br/>
+
+        Als ITS-Bedrohungsbereich definieren wir jene möglichen Unternehmenswerte (z. B. E-Mail-Programm), auf welche die unterschiedlichen ITS-Bedrohungsereignisse (z. B. Phishing-Attacke) abzielen können. <br/>
+
+Die zweite Dimension ITS-Bedrohungsereignis beinhaltet wiederum Bedrohungsquellen, die potenziell einen Schaden an den zuvor erläuterten ITS-Bedrohungsbereichen verursachen können. 
+      </h3>
+      <img class="responsive-image" src="{% static 'campagne/css/images/bedrohungen.png' %}"></img>
+    </article>
+    <article class="standard-page" id="offers">
+      <h2 class="standard-page-title" id="offers-title">Was sind ITS-Kompetenzdimensionen?</h2>
+      <h3>Unter ITS-Kompetenz verstehen wir die bei Individuen verfügbaren (oder erlernbaren) kognitiven Fähigkeiten und Fertigkeiten, um im Berufsalltag IT-sicher zu handeln, sowie die damit verbundenen motivationalen und sozialen Bereitschaften und Fähigkeiten, um in variablen Situationen erfolgreich und verantwortungsvoll eine Gefahr abwenden bzw. bewältigen zu können (Weinert 2001). Hierbei konnten 7 Dimensionen identifiziert werden, die unten abgebildet sind.</h3>
+
+      {% for competence_dimension in competence_dimensions %}
+      <section>
+        <p id="heading">{{competence_dimension.dimension_name}}</p>
+        <p id="test">{{competence_dimension.dimension_description}}</p>
+
+      </section>
+      {% endfor %}
+    </article>
+
+   
+    <article id="chapter">
+      <h2 id="chapter-title">{{ selected_job_profile.job_name }}</h2>
+    </article>
+    <article class="standard-page" id="offers">
+      <h2 class="standard-page-title" id="summary-title">
+        Key Facts & Zusammenfassung
+      </h2>
+
+      <h3>
+        Sie wurden auf {{ number_of_threats }} ITS-Bedrohungen getestet. Im Folgenden erhalten Sie eine Beschreibung jeder vertesteten ITS-Bedrohung inklusive der erzielten prozentualen Punktzahl.
+        Durchschnittliche Ergebnisse unter 66% der erreichbaren Punkte deuten auf ein Föderungspotential hin. Unter 33% raten wir dringend zu ITS-Trainings-Schulungen.
+
+
+      </h3>
+      <table>
+        <thead>
+            <tr>
+                <th>ITS-Bedrohung</th>
+                <th>Beschreibung</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for profile_item in threats %}
+
+            <tr>
+                <td>{{ profile_item.threat_vector_name}}</td>
+                <td>{{ profile_item.threat_vector_description}}</td>
+                <td> {{ profile_item.score}}%</td>
+            </tr>
+            <!-- Add more rows here if needed -->
+            {% endfor %}
+
+        </tbody>
+    </table>
+    </article>
+    <article class="standard-page">
+      <h2 class="standard-page-title" id="threats-title">
+        ITS-Bedrohungen
+      </h2>
+
+      <h3>
+        Die Graphik weiter unten auf dieser Seite verdeutlicht, wie Sie im Allgemeinen abgeschlosssen haben.
+        Das Ergebnis stellt den Durchschnitt über alle vertesteten ITS-Bedrohungen dar. Ein Wert unter 50% verdeutlicht ein hohes Förderungspotential.
+      </h3>
+      <div class="chart-container">
+        <div class="centered-image">{{ threat_chart|safe }}</div>
+      </div>
+    </article>
+    <article class="standard-page">
+      <h2
+        class="standard-page-title"
+        id="competence-dimension-title"
+      >
+        ITS-Kompetenzdimensionen
+      </h2>
+
+      <h3>
+        Nachfolgend sind die Ergebnisse aus den ITS-Kompetenztests pro ITS-Kompetenzdimension für das ITS-Anforderungsprofil {{profile.name}} dargestellt. Hierbei handelt es sich um den Durchschnitt über alle getesteten ITS-Bedrohungen. Ergebnisse unter 50% zeigen auf, 
+        dass in diesen ITS-Kompetenzdimensionen die meisten Fehler gemacht wurden. Dies deutet auf ein besonderes
+        Förderungspotential hin. Hingegen zeigen Ergebnisse über 66% der erreichbaren Punkte ein gutes Verständnis in der Aupärgung der ITS-Kompetenzdimension an.
+      </h3>
+      <div class="chart-container">
+        <div class="centered-image">
+          {{ competence_bar_chart|safe }}
+        </div>
+      </div>
+    </article>
+    <h2
+    class="standard-page-title"
+    id="competence-dimension-per-threat-title-{{ forloop.counter }}"
+  >
+    Ergebnisse für die ITS-Bedrohungen für das ITS-Anforderungsprofil {{ selected_job_profile.job_name }}
+  </h2>
+
+  <h3>
+    Auf den folgenden Seiten erhalten Sie detaillierte Informationen zu den Ergebnissen für das ITS-Anforderungsprofil {{selected_job_profile.job_name }}.
+
+  </h3>
+ 
+    {% for profile_item in competence_bar_charts_per_threat %}
+    <article class="standard-page">
+    
+    
+    <article class="standard-page">
+      <h2
+        class="standard-page-title"
+      >
+        ITS-Bedrohung: {{ profile_item.threat_vector_name}}
+      </h2>
+
+      <h3>
+        Punkte gesamt: <strong>{{ profile_item.score}}%</strong> <br> <br>
+        
+        {{ profile_item.threat_vector_description}}
+
+      </h3>
+      <div class="chart-container">
+        <div class="centered-image">{{ profile_item.chart|safe }}</div>
+      </div>
+    </article>
+    {% endfor %}
+  </body>
+</html>

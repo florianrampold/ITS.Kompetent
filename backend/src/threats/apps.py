@@ -1,0 +1,8 @@
+from django.apps import AppConfig
+
+
+class ThreatsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'threats'
+    verbose_name = "Bedrohung"
+    verbose_name_plural = "Bedrohungen"

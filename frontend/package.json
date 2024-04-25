@@ -1,0 +1,78 @@
+{
+  "name": "its.kompetent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^3.6.2",
+    "@headlessui/vue": "^1.7.12",
+    "@heroicons/vue": "^2.1.1",
+    "@vee-validate/i18n": "^4.8.3",
+    "@vee-validate/rules": "^4.5.11",
+    "@vueuse/core": "^9.0.2",
+    "axios": "^0.26.1",
+    "chart.js": "^3.8.0",
+    "chartjs-to-image": "^1.1.0",
+    "core-js": "^3.6.5",
+    "dompurify": "^3.0.2",
+    "file-saver": "^2.0.5",
+    "html2pdf.js": "^0.9.1",
+    "js-file-download": "^0.4.12",
+    "mitt": "^3.0.1",
+    "pinia": "^2.0.16",
+    "swiper": "^9.1.1",
+    "vee-validate": "^4.8.4",
+    "vue": "^3.0.0",
+    "vue-chartjs": "^4.1.1",
+    "vue-cookie-comply": "^0.0.3",
+    "vue-router": "^4.0.0-0",
+    "vue3-html2pdf": "^1.1.2",
+    "vuedraggable": "^4.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss7-compat": "^2.2.17",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.15",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.2.47",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "autoprefixer": "^9.8.8",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.0.0",
+    "postcss": "^7.0.39",
+    "prettier": "^2.2.1",
+    "sass": "^1.54.4",
+    "sass-loader": "^10.1.1",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "plugin:vue/vue3-strongly-recommended",
+      "plugin:vue/vue3-recommended",
+      "eslint:recommended",
+      "@vue/prettier"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
