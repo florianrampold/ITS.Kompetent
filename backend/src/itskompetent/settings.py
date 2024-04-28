@@ -19,9 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-#SECRET_KEY = 'django-insecure-h9k^vqp$njywd!fyfv5&#!5683e%_$lz+=-3eji!ob*k9!$3_z'
+SECRET_KEY = 'django-insecure-h9k^vqp$njywd!fyfv5&#!5683e%_$lz+=-3eji!ob*k9!$3_z'
 
-SECRET_KEY=os.environ.get('ITSKOMPETENT_SECRET_KEY')
+#SECRET_KEY=os.environ.get('ITSKOMPETENT_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -55,22 +55,22 @@ INSTALLED_APPS = [
     'campagne'
 ]
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:8080",
+"http://localhost:8081",
 "https://*.127.0.0.1"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', "http://localhost:8080"]
+CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', "http://localhost:8081"]
 
 from datetime import timedelta
 
 # Fetching keys from environment variables and replacing escaped newlines
-SIGNING_KEY = os.environ.get('ITSKOMPETENT_RSA_PRIVATE_KEY', '').replace('\\n', '\n')
-VERIFYING_KEY = os.environ.get('ITSKOMPETENT_RSA_PUBLIC_KEY', '').replace('\\n', '\n')
+#SIGNING_KEY = os.environ.get('ITSKOMPETENT_RSA_PRIVATE_KEY', '').replace('\\n', '\n')
+#VERIFYING_KEY = os.environ.get('ITSKOMPETENT_RSA_PUBLIC_KEY', '').replace('\\n', '\n')
 
-if not SIGNING_KEY or not VERIFYING_KEY:
-    raise Exception("RSA keys are not loaded from environment variables.")
+#if not SIGNING_KEY or not VERIFYING_KEY:
+    #raise Exception("RSA keys are not loaded from environment variables.")
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=300),  # Set to your desired lifetime
@@ -78,9 +78,9 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,  # enable refresh token rotation
     'BLACKLIST_AFTER_ROTATION': True,  # enable blacklisting for older refresh tokens
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'ALGORITHM': 'RS256',
-    'SIGNING_KEY': SIGNING_KEY,
-    'VERIFYING_KEY': VERIFYING_KEY ,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None ,
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -153,22 +153,17 @@ WSGI_APPLICATION = 'itskompetent.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('ITSKOMPETENT_DB_NAME', 'default_db_name'),
-        'USER': os.environ.get('ITSKOMPETENT_DB_USER', 'default_user'),
-        'PASSWORD': os.environ.get('ITSKOMPETENT_DB_PASSWORD', ''),
-        'HOST': os.environ.get('ITSKOMPETENT_DB_HOST', 'localhost'),  # Default to localhost if not set
-        'PORT': os.environ.get('ITSKOMPETENT_DB_PORT', '5432'),  # Default port if not set
+        'NAME': 'itskompetent',
+        'USER': 'root_itskompetent',
+        'PASSWORD': 'itskompetent_password',
+        'HOST': 'db',  # Use the service name defined in docker-compose
+        'PORT': '3306',  # The port inside the container remains 3306
     }
 }
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800# Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = os.environ.get('ITSKOMPETENT_EMAIL_HOST', 'host')
-EMAIL_PORT = int(os.environ.get('ITSKOMPETENT_EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.environ.get('ITSKOMPETENT_EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('ITSKOMPETENT_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('ITSKOMPETENT_EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('ITSKOMPETENT_DEFAULT_FROM_EMAIL')
+
 
 
 
@@ -208,7 +203,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-#sSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 

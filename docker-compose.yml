@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./backend/db/dump_file.sql:/docker-entrypoint-initdb.d/dump_file.sql
+    ports:
+      - "3307:3306" # Map port 3307 on the host to 3306 in the container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: itskompetent
+      MYSQL_USER: root_itskompetent
+      MYSQL_PASSWORD: itskompetent_password
+    restart: always
+    container_name: itskompetent_db
+
+  backend:
+    build: ./backend
+    command:
+      /usr/wait-for-it.sh db:3306 --timeout=30 -- sh -c "python manage.py migrate --noinput &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend/src:/code/src
+    ports:
+      - "8100:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql://root_itskompetent:itskompetent_password@db/itskompetent
+    container_name: backend
+
+  frontend:
+    build: ./frontend
+    command: sh -c "npm run serve"
+    ports:
+      - "8081:8080"
+    depends_on:
+      - backend
+    container_name: frontend
