@@ -29,6 +29,7 @@ const APIService = {
    * @param {string} baseURL - The base URL to set for all Axios requests.
    */
   init(baseURL) {
+    console.log(baseURL, "baseit")
     axios.defaults.baseURL = baseURL;
     axios.defaults.withCredentials = true;
   },

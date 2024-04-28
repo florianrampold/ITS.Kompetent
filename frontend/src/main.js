@@ -42,16 +42,11 @@ import {
 const pinia = createPinia();
 
 const app = createApp(App);
-if (process.env.NODE_ENV === "development") {
-  APIService.init("http://localhost:8000/api");
-  APIService.setHeader();
-  app.provide("frontendURL", "http://localhost:8000");
+APIService.init("http://localhost:8100/api");
+APIService.setHeader();
+app.provide("frontendURL", "http://localhost:8100");
 
-  console.log("development");
-} else {
-  APIService.init("https://api.itskompetent.uni-goettingen.de/api/");
-  app.provide("frontendURL", "https://itskompetent.uni-goettingen");
-}
+  console.log("developmentt");
 app.use(pinia);
 app.use(router);
 app.use(VueCookieComply);
