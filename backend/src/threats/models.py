@@ -94,4 +94,4 @@ class ThreatSituation(models.Model):
         verbose_name_plural = "Bedrohungssituationen"
 
     def __str__(self):
-        return self.threat_vector.threat_event.event_name + "/" + self.threat_vector.threat_area.area_name + "/" + self.job_profile.job_name
+        return str(self.threat_situation_identificator) + "/"+ self.threat_vector.threat_event.event_name + "/" + self.threat_vector.threat_area.area_name + "/" + self.job_profile.job_name

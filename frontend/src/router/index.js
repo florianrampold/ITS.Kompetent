@@ -3,7 +3,6 @@ import { useAuthStore } from "@/store/AuthStore";
 import { useCampagneStore } from "@/store/CampagneStore";
 import Home from "../views/general/Home.vue";
 import GetStarted from "../views/tests/GetStarted.vue";
-import Contact from "../views/general/Contact.vue";
 import About from "../views/general/About.vue";
 import Impressum from "../views/general/Impressum.vue";
 import Datenschutz from "../views/general/Datenschutz.vue";
@@ -78,11 +77,6 @@ const routes = [
     name: "Dashboard",
     component: Dashboard,
     // meta: { invitationToken: true }, // This meta field will be used to check for authentication
-  },
-  {
-    path: "/contact",
-    name: "Contact",
-    component: Contact,
   },
   {
     path: "/about",

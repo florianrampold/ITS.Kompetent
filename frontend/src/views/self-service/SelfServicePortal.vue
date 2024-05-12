@@ -157,7 +157,8 @@ export default {
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
    * Sets the active tab to FAQ if campagne was not started else set to Einladungs-Management.
    */
-  mounted() {
+  async mounted() {
+    await this.setCampagne();
     if (this.campagneStore.campagneStarted) {
       this.activeTab = "Einladungs-Management";
     } else {
@@ -166,6 +167,14 @@ export default {
     this.refreshData();
   },
   methods: {
+    async setCampagne() {
+      try {
+        await this.campagneStore.getCampagne();
+        this.campagneStore.setCampagneStarted(true);
+      } catch (error) {
+        this.campagneStore.setCampagneStarted(false);
+      }
+    },
     /**
      * Navigates to the dashboard component inside the self-service portal. Prevents navigating if a campagne was not started, yet.
      *

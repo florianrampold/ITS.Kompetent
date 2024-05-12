@@ -34,22 +34,6 @@
             am meisten ähnelt.
           </p>
         </template>
-
-        <template #image>
-          <transition appear name="fade">
-            <div
-              v-if="activeStep == 1"
-              class="flex items-center justify-center grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0"
-            >
-              <img
-                :src="require('@/assets/profile.jpg')"
-                class="w-2/3 lg:w-full"
-                alt="Sample image"
-              />
-            </div>
-          </transition>
-        </template>
-
         ></Hero
       >
       <div v-show="activeStep == 1">
@@ -166,7 +150,6 @@ export default {
             params: { invitationToken: this.$route.params.invitationToken },
           });
         } else {
-          console.log("here");
           this.$router.push({
             name: "Test",
             params: { invitationToken: this.$route.params.invitationToken },

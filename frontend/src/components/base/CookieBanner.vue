@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!cookieStore.getCookieDecision" class="bg-primary">
+  <div v-if="!getCookie" class="bg-primary">
     <div class="mx-auto py-3 px-3 sm:px-6 lg:px-8">
       <div class="flex flex-wrap items-center justify-between">
         <div class="flex sm:w-0 sm:flex-1 items-center">
@@ -17,8 +17,10 @@
               >
             </span>
             <span class="hidden md:inline"
-              >Wir verwenden technisch essentielle Cookies!.</span
-            >
+              >Wir verwenden technisch essentielle Cookies. Ein weiterer Cookie
+              speichert, dass dieses Banner bereits gesehen wurde; er wird für
+              einen Monat gespeichert.
+            </span>
           </p>
         </div>
         <div
@@ -49,7 +51,7 @@
     v-if="showModal"
     :show="showModal"
     :title="'Ihre Cookie Einstellungen'"
-    :content="'Cookies zur Gewährleistung der Betriebsbereitschaft können nicht deaktiviert werden, soweit wir sie verwenden, um unsere Dienste bereitzustellen. Um den Betrieb von ITS.kompetent zu gewährleisten speichern wir die Ergebnisse Ihres ITS-Kompetenztests temporär im Local Storage Ihres Browsers. Dies ist zwingend notwendig, um Ihnen die Ergebnisse der Messung zu präsentieren. Dabei werden keine persönlichen Daten verarbeitet, die Rückschluss auf Ihre Person geben. Wenn Sie dies nicht wünschen, können Sie nicht an ITS.kompetent teilnehmen. In diesem Fall schließen Sie bitte die Webseite. Wir bitten um Ihr Verständnis.'"
+    :content="'Wenn Sie eine Website besuchen, kann diese Informationen über Ihren Browser abrufen oder speichern. Dies geschieht meist in Form von Cookies. Hierbei kann es sich um Informationen über Sie, Ihre Einstellungen oder Ihr Gerät handeln. Grundfunktionen wie der Login sind ohne sie nicht möglich. Ein weiterer Cookie speichert, dass dieses Banner bereits gesehen wurde; er wird für einen Monat gespeichert. Cookies zur Gewährleistung der Betriebsbereitschaft können nicht deaktiviert werden, soweit wir sie verwenden, um unsere Dienste bereitzustellen. Dabei werden keine persönlichen Daten verarbeitet, die Rückschluss auf Ihre Person geben. Erfahren Sie mehr zu der technisch notwendigen Speicherung von Daten in unserer Datenschutzerklärung '"
     @close="showModal = false"
     @saveCookies="saveCookies()"
   ></cookie-modal>
@@ -57,8 +59,7 @@
 
 <script>
 import CookieModal from "@/components/base/CookieModal";
-import { useCookieStore } from "@/store/CookieStore";
-
+import Cookies from "js-cookie";
 export default {
   name: "CookieBanner",
   components: { CookieModal },
@@ -74,17 +75,18 @@ export default {
       default: "",
     },
   },
-  setup() {
-    const cookieStore = useCookieStore();
-
-    return { cookieStore };
-  },
-
+ 
   data() {
     return {
       showModal: false,
       showBanner: true,
+      updateTrigger: false, // This is used to force updates
     };
+  },
+  computed: {
+    getCookie() {
+      return !!Cookies.get("dataPolicySet") || this.updateTrigger;
+    },
   },
 
   methods: {
@@ -100,7 +102,9 @@ export default {
      *
      */
     saveCookies() {
-      this.cookieStore.setCookieDecision(true);
+      const expires = 30; // days until the cookie expires
+      Cookies.set("dataPolicySet", true, { expires });
+      this.updateTrigger = !this.updateTrigger; // Toggle to force reactivity
     },
   },
 };

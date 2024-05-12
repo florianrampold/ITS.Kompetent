@@ -32,15 +32,6 @@
         beendet. Vielen Dank für Ihre Teilnahme!
       </p></template
     >
-    <template #image>
-      <transition appear name="fade">
-        <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-          <img
-            :src="require('@/assets/trainings.jpg')"
-            class="w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
     <template #buttons>
       <div
         class="flex justify-center items-center lg:items-start lg:justify-start flex-row"

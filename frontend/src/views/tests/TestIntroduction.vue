@@ -36,17 +36,7 @@
       ></div
     ></template>
 
-    <template #image>
-      <transition appear name="fade">
-        <div
-          class="grow-0 shrink-1 md:shrink-0 basis-auto flex justify-center items-center mb-12 md:mb-0"
-        >
-          <img
-            :src="require('@/assets/test_environment.jpg')"
-            class="w-2/3 lg:w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
+    
     <template #progress> </template>
   </Hero>
   <div class="page-background">
@@ -130,7 +120,6 @@ export default {
    * after the component has been rendered to the DOM.
    */
   mounted() {
-    this.competenceTestStore.startTest();
     this.invitationToken = this.$route.params.invitationToken;
   },
   methods: {

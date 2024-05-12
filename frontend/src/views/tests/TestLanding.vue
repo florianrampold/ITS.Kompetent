@@ -45,20 +45,7 @@
         </p>
       </template>
       <template #buttons> </template>
-      <template #image>
-        <transition appear name="fade">
-          <div
-            v-if="activeStep == 2"
-            class="grow-0 shrink-1 md:shrink-0 basis-auto md:mb-0"
-          >
-            <img
-              :src="require('@/assets/competence_test.jpg')"
-              class="w-full"
-              alt="Sample image"
-            />
-          </div>
-        </transition>
-      </template>
+      
 
       ></Hero
     >
@@ -201,8 +188,6 @@ export default {
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
    */
   mounted() {
-    // competence test start officially
-    this.competenceTestStore.startTest();
     this.profile = this.getProfile();
     this.profileID = this.getProfileID();
   },

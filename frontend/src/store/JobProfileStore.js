@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
-import { useStorage } from "@vueuse/core";
 import jobProfileService from "../services/job_profile.service";
 export const useJobProfileStore = defineStore("JobProfileStore", {
   state: () => {
     return {
-      profile: useStorage("profile", ""),
-      profileID: useStorage("profileID", 0),
+      profile: "",
+      profileID: undefined,
     };
   },
 

@@ -118,7 +118,6 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         threat_situation_score_data = validated_data.pop('threat_situation_score')
-        print(threat_situation_score_data, " scored data")
         competence_dimension_score_data = validated_data.pop('competence_dimension_score')
 
         competence_test_result = CompetenceTestResult.objects.create(**validated_data)
@@ -126,19 +125,16 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
         for threat_data in threat_situation_score_data:
             # Pop 'competence_dimension_score' data to handle separately
             cds_data = threat_data.pop('related_competence_dimension_scores', [])
-            print(cds_data, "CDSSSS")
             # Convert model instances to their PKs for serialization
             threat_data['threat_situation'] = threat_data['threat_situation'].pk
             threat_data['threat_vector'] = threat_data['threat_vector'].pk
             
             # Create ThreatSituationScore instance
             threat_score_serializer = ThreatSituationScoreSerializer(data=threat_data)
-           # print("before looop")
             if not threat_score_serializer.is_valid():
                 print(threat_score_serializer.errors)
             else:
                 threat_score = threat_score_serializer.save()
-                print(threat_score, "score")
 
                
 
@@ -150,7 +146,6 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
                         print(cds_serializer.errors)
                     else:
                         cds_instance = cds_serializer.save()
-                        print(cds_instance, " ins")
                         threat_score.related_competence_dimension_scores.add(cds_instance)
            
 
@@ -161,7 +156,6 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
             competence_score = CompetenceDimensionScore.objects.create(**competence_data)
             competence_test_result.competence_dimension_score.add(competence_score)
         
-      #  print(competence_test_result)
 
         return competence_test_result
 

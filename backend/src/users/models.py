@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator
 class UserProfile(models.Model):
     """
     Represents a model to store the user profile whic extends the native user model. This model is used to assign campagne manager state to users.
@@ -15,6 +16,9 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', verbose_name="Benutzername")
     is_campagne_manager = models.BooleanField(default=False, verbose_name="Kampagnen Manager Status")
+    security_display_threshold = models.IntegerField(default= 5, validators=[
+        MinValueValidator(5)
+    ], verbose_name="Minimum Teilnehmende für die Datenaggregation")
 
     class Meta:
         verbose_name = _('Kampagnen-Berechtigung')  # Singular form

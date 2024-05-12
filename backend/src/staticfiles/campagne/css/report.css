@@ -1,0 +1,490 @@
+@page {
+  @top-left {
+    background: #303e7a;
+    content: counter(page);
+    height: 1cm;
+    color: white;
+    text-align: center;
+    width: 1cm;
+  }
+  @top-center {
+    background: #303e7a;
+    content: "";
+    display: block;
+    height: 0.05cm;
+    opacity: 0.5;
+    width: 100%;
+  }
+  @top-right {
+    content: string(heading);
+    font-size: 9pt;
+    height: 1cm;
+    vertical-align: middle;
+    width: 100%;
+  }
+}
+
+@page :first {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("images/report-cover.jpg") no-repeat center;
+  background-size: cover;
+  margin: 0;
+}
+@page chapter {
+  background: #303e7a;
+  margin: 0;
+  @top-left {
+    content: none;
+  }
+  @top-center {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+}
+
+html {
+  color: #393939;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 11pt;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+h1 {
+  color: #303e7a;
+  font-size: 32pt;
+  margin: 5cm 2cm 0 2cm;
+  page: no-chapter;
+  width: 100%;
+}
+.cover-heading {
+  color: white;
+}
+h2,
+h3,
+h4 {
+  color: black;
+  font-weight: 400;
+}
+h2 {
+  break-before: always;
+  font-size: 20pt;
+  string-set: heading content();
+}
+h3 {
+  font-weight: 300;
+  font-size: 11pt;
+}
+h4 {
+  font-size: 13pt;
+  font-weight: 300;
+  margin-bottom: 2;
+
+}
+#cards {
+  align-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  height: 297mm;
+}
+
+#cover {
+  align-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  height: 297mm;
+}
+#cover address {
+  background: #303e7a;
+  flex: 1 50%;
+  text-align: center;
+  margin: 0 -2cm;
+  padding: 1cm 0;
+  color: white;
+  white-space: pre-wrap;
+}
+
+#contents h2 {
+  font-size: 20pt;
+  font-weight: 400;
+  margin-bottom: 1cm;
+}
+#contents h3 {
+  font-weight: 500;
+  margin: 3em 0 1em;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
+.standard-page h2::after {
+  background: #eb5757;
+  content: "";
+  display: block;
+  height: 0.08cm;
+  margin-bottom: 0.25cm;
+  margin-top: 1cm;
+  width: 2cm;
+}
+#contents ul {
+  list-style: none;
+  padding-left: 0;
+}
+#contents ul li {
+  border-top: 0.25pt solid #c1c1c1;
+  margin: 0.25cm 0;
+  padding-top: 0.25cm;
+}
+#contents ul li::before {
+  color: #eb5757;
+  content: "• ";
+  font-size: 40pt;
+  line-height: 16pt;
+  vertical-align: bottom;
+}
+#contents ul li a {
+  color: inherit;
+  text-decoration-line: inherit;
+}
+#contents ul li a::before {
+  content: target-text(attr(href));
+}
+#contents ul li a::after {
+  color: #eb5757;
+  content: target-counter(attr(href), page);
+  float: right;
+}
+#columns h2::after {
+  background: #eb5757;
+  content: "";
+  display: block;
+  height: 0.08cm;
+  margin-bottom: 0.25cm;
+  margin-top: 1cm;
+  width: 2cm;
+}
+#columns section {
+  columns: 2;
+  column-gap: 1cm;
+  padding-top: 1cm;
+}
+#columns section p {
+  text-align: justify;
+}
+#columns section p:first-of-type {
+  font-weight: 700;
+}
+strong {
+  font-weight: 600;
+}
+.standard-page .chart-container {
+  text-align: center; /* Center horizontally */
+  position: relative; /* Establish a positioning context */
+  width: 100%;
+  margin: 0 auto; /* Keep existing horizontal centering */
+  margin-top: 50cm; /* Add space above the chart container */
+}
+.standard-page .centered-image {
+  display: block; /* Display block to allow margins to be auto */
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%; /* Ensure it takes the full width of its parent */
+  position: absolute; /* Position absolutely within the container */
+  top: 87%; /* Offset from the top by 50% of the container's height */
+  transform: translateY(
+    -50%
+  ); /* Pull the image back up by half its own height */
+  max-width: 100%;
+  height: auto;
+}
+.responsive-image {
+  margin-top: 2cm;
+  width: 100%;
+  height: auto;
+}
+.standard-page h3 {
+  background: #f3f4f6;
+  margin: 0 -3cm 0cm;
+  padding: 1cm 3cm 1cm 3cm;
+  width: 23cm;
+  color: #6b7280;
+  overflow: auto; /* Add overflow handling */
+  box-sizing: border-box; /* Include padding and border in the element's width */
+}
+.standard-page section {
+  padding: 0.5cm 0;
+}
+.standard-page section#profile-content {
+  display: flex; /* Establishes a flex container */
+  align-items: center; /* Vertically centers the flex items */
+}
+
+.standard-page section#profile-content .image-container {
+  flex: 0 0 auto; /* Do not grow or shrink, but maintain auto basis */
+  width: 2cm; /* Or your desired width */
+  margin-right: 0.5cm; /* Space between the image and the text */
+  background: #eb5757;
+}
+
+.standard-page section#profile-content .image-container img {
+  display: block; /* Removes any default inline spacing */
+  width: 100%; /* Makes the image responsive within its container */
+  height: auto; /* Maintains aspect ratio */
+}
+
+.standard-page section#profile-content .text-content {
+  flex: 1; /* Allows this div to grow and fill the remaining space */
+}
+.standard-page section#threats::before {
+  background: url(images/bedrohungen.png) no-repeat center #eb5757;
+  background-size: 50%;
+
+}
+.standard-page section#table-content::before {
+  background: url(images/table-content.svg) no-repeat center #eb5757;
+  background-size: 50%;
+  content: "";
+  display: inline-block;
+  float: left;
+  height: 2cm;
+  margin-right: 0.5cm;
+  vertical-align: middle;
+  width: 2cm;
+}
+.standard-page section#heading::before {
+  background: url(images/heading.svg) no-repeat center #eb5757;
+  background-size: 50%;
+  content: "";
+  display: inline-block;
+  float: left;
+  height: 2cm;
+  margin-right: 0.5cm;
+  vertical-align: middle;
+  width: 2cm;
+}
+.standard-page section#multi-columns::before {
+  background: url(images/multi-columns.svg) no-repeat center #eb5757;
+  background-size: 50%;
+  content: "";
+  display: inline-block;
+  float: left;
+  height: 2cm;
+  margin-right: 0.5cm;
+  vertical-align: middle;
+  width: 2cm;
+}
+.standard-page section#internal-links::before {
+  background: url(images/internal-links.svg) no-repeat center #eb5757;
+  background-size: 50%;
+  content: "";
+  display: inline-block;
+  float: left;
+  height: 2cm;
+  margin-right: 0.5cm;
+  vertical-align: middle;
+  width: 2cm;
+}
+.standard-page section#style::before {
+  background: url(style.svg) no-repeat center #fbc847;
+  background-size: 50%;
+  content: "";
+  display: inline-block;
+  float: left;
+  height: 2cm;
+  margin-right: 0.5cm;
+  vertical-align: middle;
+  width: 2cm;
+}
+.standard-page section h4 {
+  margin: 0;
+}
+.standard-page section p {
+  margin-top: 0;
+}
+
+#offers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+#offers h2,
+#offers h3 {
+  width: 100%;
+}
+#offers section {
+  width: 45%;
+}
+#offers section h4 {
+  margin-bottom: 0;
+}
+#offers section ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+#offers section ul li:not(:last-of-type) {
+  margin: 0.5cm 0;
+}
+#offers h3 {
+  background: #f3f4f6;
+  margin: 0 -3cm 0cm;
+  padding: 1cm 3cm 1cm 3cm;
+  width: 23cm;
+  color: #6b7280;
+  overflow: auto; /* Add overflow handling */
+  box-sizing: border-box; /* Include padding and border in the element's width */
+}
+#offers section p#heading {
+  background: #eb5757;
+  color:white;
+  display: block;
+  font-size: 11pt;
+  font-weight: 700;
+  margin-bottom: 5;
+  padding: 0.25cm 0;
+  text-align: center;
+}
+
+#chapter {
+  align-items: center;
+  display: flex;
+  height: 297mm;
+  justify-content: center;
+  color: white;
+  page: chapter;
+}
+
+#chapter-title {
+  color: white;
+}
+
+#typography section {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1cm 0;
+}
+#typography section h4 {
+  border-top: 1pt solid;
+  flex: 1 25%;
+  margin: 0;
+}
+#typography section h4 + * {
+  flex: 1 75%;
+  margin: 0;
+  padding-left: 0.5cm;
+}
+#typography section p {
+  text-align: justify;
+}
+#typography section ul {
+  line-height: 2;
+  list-style: none;
+}
+#typography section#small-caps p {
+  font-variant: small-caps;
+}
+#typography section#ligatures dl {
+  display: flex;
+  flex-wrap: wrap;
+}
+#typography section#ligatures dl dt {
+  font-weight: 400;
+  width: 30%;
+}
+#typography section#ligatures dl dd {
+  flex: 1 70%;
+  margin: 0;
+  padding: 0;
+}
+#typography section#ligatures .none {
+  font-variant-ligatures: none;
+}
+#typography section#ligatures .common {
+  font-variant-ligatures: common-ligatures;
+}
+#typography section#ligatures .discretionary {
+  font-variant-ligatures: discretionary-ligatures;
+}
+#typography section#ligatures .contextual {
+  font-variant-ligatures: contextual;
+}
+#typography section#numbers dl {
+  display: flex;
+  flex-wrap: wrap;
+}
+#typography section#numbers dl dt {
+  font-weight: 400;
+  width: 30%;
+}
+#typography section#numbers dl dd {
+  flex: 1 70%;
+  margin: 0;
+  padding: 0;
+}
+#typography section#numbers #fractions {
+  font-variant-numeric: diagonal-fractions;
+}
+#typography section#numbers #ordinals {
+  font-variant-numeric: ordinal;
+}
+#typography section#numbers #slashed {
+  font-variant-numeric: slashed-zero;
+}
+#typography section#numbers #super {
+  font-variant-position: super;
+}
+#typography section#numbers #sub {
+  font-variant-position: sub;
+}
+#typography section#figures dl {
+  columns: 4;
+}
+#typography section#figures dl dt {
+  font-weight: 400;
+}
+#typography section#figures dl dd {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+#typography section#figures dl dd ul {
+  padding: 0 1em 0 0;
+}
+#typography section#figures #oldstyle {
+  font-variant-numeric: oldstyle-nums;
+}
+#typography section#figures #tabular {
+  font-variant-numeric: tabular-nums;
+}
+#typography section#figures #old-tabular {
+  font-variant-numeric: oldstyle-nums tabular-nums;
+}
+
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3cm 0cm 0cm;
+
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+thead {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #ddd;
+}

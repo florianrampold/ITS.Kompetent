@@ -24,6 +24,9 @@ export const useAuthStore = defineStore({
     setLastInteraction(lastInteraction) {
       this.lastInteraction = lastInteraction;
     },
+    setIsLoggedIn(loggedIn) {
+      this.isLoggedIn = loggedIn;
+    },
     /**
      * Initializes the authentication state. Is called whenever the app mounts and also when the access token expires.
      * @param {Boolean} expired True when the token expired, false else
@@ -54,6 +57,7 @@ export const useAuthStore = defineStore({
           });
       });
     },
+
     /**
      * Logs the user in. Uses a username and a password to authenticate
      * @param {string} username The username
@@ -92,13 +96,14 @@ export const useAuthStore = defineStore({
         // Redirect to the login page.
         if (currentRoute.matched.some((record) => record.meta.requiresAuth)) {
           if (expired) {
-            console.log(expired);
             router.push("/login/expired");
           } else {
             router.push("/login");
           }
         }
       } catch (error) {
+        router.push("/login");
+
         console.error("Error during logout:", error);
       }
     },
@@ -114,6 +119,7 @@ export const useAuthStore = defineStore({
         this.refreshToken();
       }, 250000); // Refresh every 250 seconds
     },
+   
     /**
      * Stops the interval to make an API call to refresk tokens.
      */
@@ -140,6 +146,21 @@ export const useAuthStore = defineStore({
         ) {
           await this.logout(true);
           this.stopTokenExpiryTimer();
+        }
+      }
+    },
+    /**
+     * Asynchronously retrieves user profile details.
+     * @returns {Promise<Object>} A promise that resolves to the campaign details.
+     */
+     async getUserProfile() {
+      const auth = useAuthStore();
+
+      try {
+        return await authService.getUserProfile();
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          auth.logout();
         }
       }
     },

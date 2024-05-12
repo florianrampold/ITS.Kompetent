@@ -52,21 +52,7 @@
           </p>
         </div>
       </template>
-      <template #image>
-        <transition appear name="fade">
-          <div class="flex justify-center items-center lg:justify-start">
-            <div
-              class="flex justify-center items-center grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0"
-            >
-              <img
-                :src="require('@/assets/test_page_front.jpg')"
-                class="w-2/3 lg:w-full"
-                alt="Sample image"
-              />
-            </div>
-          </div>
-        </transition>
-      </template>
+     
     </Hero>
 
     <div ref="scrollTarget" class="mb-10"></div>
@@ -96,8 +82,10 @@
       </div>
       <div class="standard-container">
         <div v-if="showImpulse">
-          <image-impulse-skeleton v-if="loading" />
-          <transition appear name="fade">
+          <div v-if="loading" class="h-96 bg-white p-4 rounded-lg">
+            <image-impulse-skeleton></image-impulse-skeleton>
+          </div>
+          <transition v-else appear name="fade">
             <div>
               <email-simulation
                 v-if="activeImpulseItems.resourcetype == 'EmailImpulse'"
@@ -367,10 +355,10 @@ export default {
    * after the component has been rendered to the DOM.
    */
   async mounted() {
-    // get alle ThreatVectors für den Kompetenztest des Anforderungsprofils
     this.loading = true;
 
     this.profileID = this.getProfileID();
+    this.catchError(this.profileID)
 
     await this.getCompetenceTest();
 
@@ -456,17 +444,16 @@ export default {
      *
      */
     async getCompetenceTest() {
-      const profileID = this.getProfileID();
-      this.catchError(profileID);
+      
 
       this.testSituations = await this.competenceTestStore.getCompetenceTest(
-        profileID
+        this.profileID
       );
       this.competenceTestResult.test_situations = JSON.parse(
         JSON.stringify(this.testSituations[0].threat_situations)
       );
       this.testSituations = this.testSituations[0].threat_situations;
-      this.competenceTestResult.job_profile_id = profileID;
+      this.competenceTestResult.job_profile_id = this.profileID;
     },
     /**
      * Gets the threat situation related to the threat vector being tested an populates the competence test result initially with the threat situation.

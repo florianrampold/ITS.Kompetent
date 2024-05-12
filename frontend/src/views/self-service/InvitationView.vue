@@ -165,15 +165,7 @@
         </div>
       </template>
 
-      <template #image>
-        <transition appear name="fade">
-          <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-            <img
-              src="@/assets/contact.jpg"
-              class="w-full"
-              alt="Sample image"
-            /></div></transition
-      ></template>
+      
     </Hero>
     <div v-if="oneInvitationCode == null && !campagneStore.campagneStarted">
       <div class="page-background">
@@ -549,6 +541,7 @@ import CampagneService from "../../services/campagne.service.js";
 import { useCampagneStore } from "@/store/CampagneStore";
 import FilterDropDown from "@/components/self-service/FilterDropDown.vue";
 import * as XLSX from "xlsx";
+import { frontendUrl } from '@/config.js'; // Make sure the path is correct based on your file structure
 
 export default {
   components: {
@@ -725,11 +718,7 @@ export default {
      *
      */
     setDomain() {
-      if (process.env.NODE_ENV === "development") {
-        this.domainURL = "http://localhost:8080";
-      } else {
-        this.domainURL = "https://itskompetent.uni-goettingen.de";
-      }
+      this.domainURL = frontendUrl;
     },
     /**
      * Sets a campagne. If a campagne has already been created the method initializes oneInvitation code boolean and checks whether the user uses a securityKey for encrypting e-mails in the database

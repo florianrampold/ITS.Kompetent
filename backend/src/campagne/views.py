@@ -24,8 +24,15 @@ from django.http import HttpResponse
 from weasyprint import HTML
 from django.db import transaction
 from trainings.models import Training
+from users.models import UserProfile
 from competence_tests.models import CompetenceDimension
 from .charts import  *
+# Correct import path for CSRF decorators
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views import decorators
+from django.db.models import Count
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 def is_valid_fernet_key(key):
     """Check if the key provided is a valid fernet key. A valid Fernet key is 44 URL-safe base64-encoded characters.
@@ -108,6 +115,7 @@ def decrypt_emails_view(request):
 
 
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_campagne(request):
@@ -132,7 +140,6 @@ def get_campagne(request):
         return Response(serializer.data, status=200)
     except Campagne.DoesNotExist:
         return Response({'error': 'Campagne not found'}, status=status.HTTP_404_NOT_FOUND)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -306,6 +313,11 @@ def validate_invitation_token(request, invitation_token):
     except Invitation.DoesNotExist:
         return Response({'valid': False}, status=400)
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def delete_campagne(request):
@@ -340,6 +352,7 @@ def delete_campagne(request):
         return Response({'status': 'success'}, status=200)
 
     return Response({'status': 'error'}, status=405)
+
 
 @api_view(['POST'])
 def create_competence_test_result(request):
@@ -410,11 +423,23 @@ def get_competence_test_results(request, profile_id):
 
     # profile_id is 0 --> aggregates competence_test results over all job profiles
     else:
+        user_profile = UserProfile.objects.get(user=user)
         queryset = CompetenceTestResult.objects.filter(created_by=user)
-        serializer = CompetenceTestResultSerializer(queryset, many=True)
+        # Annotating each entry with the count of participants for the same job profile
+        queryset = queryset.values('job_profile').annotate(participant_count=Count('id'))
+
+        # Filtering to keep only those job profiles with at least 5 participants
+        queryset = queryset.filter(participant_count__gte=user_profile.security_display_threshold)
+
+        # Now, get the actual test results matching the job profiles with enough participants
+        filtered_job_profiles = queryset.values_list('job_profile', flat=True)
+        final_queryset = CompetenceTestResult.objects.filter(job_profile__in=filtered_job_profiles, created_by=user)
+
+        # Serializing the data
+        serializer = CompetenceTestResultSerializer(final_queryset, many=True)
         serialized_data = serializer.data
-        profile_id = 0
-    
+            
+            
 
     competence_scores = defaultdict(lambda: {'total_scoredPoints': 0, 'competence_dimension_name': ''})
     threat_competence_scores = defaultdict(lambda: {'competence_dimension_id': 0, 'competence_dimension_name': '', 'total_scoredPoints':0})
@@ -430,6 +455,7 @@ def get_competence_test_results(request, profile_id):
             key = competence_score['competence_dimension']
             competence_dimension = CompetenceDimension.objects.get(pk=key)
             aggregate = job_profile_aggregate['total_competence_dimension_scores'][key]
+          
             aggregate['total_scoredPoints'] += competence_score['scoredPoints']
             competence_scores[key]['total_scoredPoints'] += competence_score['scoredPoints']
             competence_scores[key]['competence_dimension_name'] = competence_dimension.dimension_name
@@ -554,20 +580,16 @@ def get_participants_per_profile(request):
     
     user = request.user
 
+    user_profile = UserProfile.objects.get(user=user)
+
+
 
     job_profile_dict = {}  # Dictionary to store data keyed by profile ID
-    index = 0
-    id =0
     
-    queryset = CompetenceTestResult.objects.filter(created_by=user)
-    competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
 
-    job_profile_dict[index] = {
-        "job_profile_id": id,
-        "job_profile_name": "Alle",
-        "number_of_participants": len(competence_serializer.data)
-    }
-    index+=1
+    participant_count_secure = 0
+    num_job_profiles_secure = 0
+    index = 1
 
 
     for profile in serialized_data:
@@ -575,6 +597,7 @@ def get_participants_per_profile(request):
                 
         queryset = CompetenceTestResult.objects.filter(created_by=user, job_profile=profile["id"])
         competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
+        num_participants = len(competence_serializer.data)
 
         id = profile['id']
         job_profile_dict[index] = {
@@ -582,13 +605,38 @@ def get_participants_per_profile(request):
             "job_profile_name": profile['job_name'],
             "job_profile_description": profile['job_description'],
              "job_profile_tasks": profile['job_tasks'],
-            "number_of_participants": len(competence_serializer.data),
+            "number_of_participants": num_participants,
             'number_of_threat_situations': profile['threat_count']
         }
+        # Add the participant count to the list if it's greater than 4
+        if num_participants >= user_profile.security_display_threshold:
+            participant_count_secure += num_participants
+            num_job_profiles_secure+=1
         index+=1
+
+    index = 0
+    id =0
+    if num_job_profiles_secure > 1:
+        queryset = CompetenceTestResult.objects.filter(created_by=user)
+        competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
+
+        job_profile_dict[index] = {
+            "job_profile_id": id,
+            "job_profile_name": "Alle",
+            "number_of_participants": participant_count_secure
+        }
 
     return Response(job_profile_dict)
 
+
+
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = f"Set the {var_name} environment variable"
+        raise ImproperlyConfigured(error_msg)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -623,6 +671,10 @@ def generate_management_report(request):
     df_filtered = df[(df['number_of_participants'] > 0)]
     total_number_of_partcipants = df_filtered.iloc[0]['number_of_participants']
     job_profile_with_data = len(df[(df['number_of_participants'] > 0)])
+    df_filtered['sort_helper'] = (df_filtered['job_profile_id'] == 0).astype(int)
+    df_filtered = df_filtered.sort_values(by='sort_helper', ascending=False)
+    df_filtered.drop(columns='sort_helper', inplace=True)
+
 
     threat_charts = []
     competence_bar_charts = []
@@ -671,6 +723,10 @@ def generate_management_report(request):
         competence_bar_charts_per_threat.append(threat_chart_per_profile)                    
     profile_distribution = generate_job_profile_distribution(job_profiles.data)
 
+    filtered_profiles = [profile for profile in job_profile_names if profile['name'] != 'Alle']
+
+
+
 
     context = {
         'total_number_of_partcipants': total_number_of_partcipants,
@@ -680,7 +736,7 @@ def generate_management_report(request):
         'profile_distribution': profile_distribution, 
         'threat_charts':threat_charts,
         'competence_bar_charts':competence_bar_charts,
-        'job_profiles':job_profile_names[1:],
+        'job_profiles':filtered_profiles,
         'competence_dimensions':competence_dimensions,
         'zipped_data': list(zip(job_profile_names, threat_charts, competence_bar_charts, competence_bar_charts_per_threat))[1:]
 
@@ -688,5 +744,7 @@ def generate_management_report(request):
     html_string = render_to_string('management_report.html', context)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="management_report.pdf"'
-    HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(response)
+
+    # Anpassen an IP-Adresse der VM oder des virtuellen Webservers
+    HTML(string=html_string, base_url=get_env_variable('API_URL')).write_pdf(response)
     return response

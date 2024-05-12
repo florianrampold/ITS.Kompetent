@@ -5,17 +5,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.renderers import JSONRenderer
 from users.backends import CookieJWTAuthentication
 from datetime import *
+from .models import UserProfile
+from .serializers import UserProfileSerializer
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import TokenRefreshView
 import datetime
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
-
+from django.middleware.csrf import get_token
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 class CustomTokenRefreshView(TokenRefreshView):
     """
     Chekcs the validity of jwt access and refresh tokens stores as HTTP only cookies.
@@ -35,6 +37,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 
         try:
             old_refresh = RefreshToken(refresh_token)
+
             # Extract user ID and retrieve user
             user_id = old_refresh['user_id']  # Ensure 'user_id' is part of the token payload when issued
             user = get_user_model().objects.get(id=user_id)
@@ -42,17 +45,20 @@ class CustomTokenRefreshView(TokenRefreshView):
             current_time = datetime.datetime.now(datetime.timezone.utc)
             time_difference = (current_time - last_interaction_datetime).total_seconds()
 
-            expiration_timestamp = old_refresh['exp']
-            expiration_datetime = datetime.datetime.fromtimestamp(expiration_timestamp, tz=datetime.timezone.utc)
-            expires_in = (expiration_datetime - current_time).total_seconds()
+            refresh_expiration_timestamp = old_refresh['exp']
+            refresh_expiration_datetime = datetime.datetime.fromtimestamp(refresh_expiration_timestamp, tz=datetime.timezone.utc)
+            refresh_expires_in = (refresh_expiration_datetime - current_time).total_seconds()
+
+
+            
+
 
 
             # If user was  active for the last 2 minutes and the refresh token expires in the next 5 minutes generate a new refresh token
-            if time_difference < 120 and expires_in < 300:  
-                print("RENEW REFRESH")
+            if time_difference < 120 and refresh_expires_in < 300:  
                 old_refresh.blacklist()
                 # Create a new refresh token for the user
-                new_refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
+               # new_refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
 
                 new_refresh = RefreshToken.for_user(user)
                 new_refresh_token = str(new_refresh)
@@ -60,26 +66,62 @@ class CustomTokenRefreshView(TokenRefreshView):
 
                 response =  Response({'message': 'RefreshToken refreshed'}, status=200)
 
-                response.set_cookie('refreshToken', new_refresh_token, httponly=True, samesite='Lax', secure=True, max_age=int(new_refresh_lifetime.total_seconds()))
-                response.set_cookie('accessToken', new_access_token, httponly=True, samesite='Lax', secure=False, max_age=int(new_refresh.access_token.lifetime.total_seconds()))
+                if settings.HTTP_MODE:
+                    response.set_cookie('refreshToken', new_refresh_token,
+                    httponly=True, samesite=None, secure=False)
+                    response.set_cookie('accessToken', new_access_token, httponly=True, samesite=None, secure=False)
+
+                else:
+
+                    response.set_cookie('refreshToken', new_refresh_token, domain=settings.DOMAIN_URL,
+                    path="/", httponly=True, samesite=None, secure=True)
+                    response.set_cookie('accessToken', new_access_token, domain=settings.DOMAIN_URL,
+                    path="/", httponly=True, samesite=None, secure=True)
+
                 return response
             # If user was  NOT active for the last 2 minutes and the refresh token expires in the next 5 minutes log the user out.
-            elif time_difference >=120  and expires_in < 300:
-                print("INVALIDATE REFRESH")
+            elif time_difference >=120  and refresh_expires_in< 300:
                 return Response({'error': 'Session expired. Please log in again.'}, status=401)
 
             # If the refresh token is not about to expire generate a new access token.
             else:
-                print("GENERATE NEW ACCESS TOKEN WITH OLD REFRESH")
+
                 access_token = str(old_refresh.access_token)
                 response =  Response({'message': 'AccessToken refreshed'}, status=200)
-                response.set_cookie('accessToken', access_token, httponly=True, samesite='Lax', secure=False, max_age=int(old_refresh.access_token.lifetime.total_seconds()))
+                if settings.HTTP_MODE:
+                    response.set_cookie('accessToken', access_token, httponly=True, samesite=None, secure=False)
+                else:
+                    response.set_cookie('accessToken', access_token, domain=settings.DOMAIN_URL,
+                    path="/", httponly=True, samesite=None, secure=True)
 
                 return response
         except Exception as e:
-            print("exception")
-            return Response({'error': str(e)}, status=401)
+            return Response({'error': 'Session expired. Please log in again.'}, status=401)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_profile(request):
+    """Tries to get an existing campagne object.
+
+    Args:
+        request (HttpRequest): A Django HttpRequest object containing the HTTP request information.
+
+    Returns:
+        Response: A Django REST Response object including the user profile. 
+        Returns a success object when the user profile can be returned. Returns an error when the user profile cannot be found.
+        200: If succesful
+        404: If campagne object was not found
+
+    Raises:
+        Campagne.DoesNotExist: If campagne object was not found
+    """
+    user = request.user
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=200)
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @authentication_classes([CookieJWTAuthentication])
@@ -100,8 +142,8 @@ def status(request):
     response.renderer_context = {}
     return response
 
-@api_view(['POST'])
 @permission_classes([AllowAny])
+@api_view(['POST'])
 def obtain_jwt_token_with_cookie(request):
     """
     View to obtain JWT token with cookie authentication.
@@ -127,7 +169,7 @@ def obtain_jwt_token_with_cookie(request):
     refresh = RefreshToken.for_user(user)
     access_token = str(refresh.access_token)
     refresh_token = str(refresh)
-    refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
+   # refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
 
 
 
@@ -135,38 +177,96 @@ def obtain_jwt_token_with_cookie(request):
         "message": "Authenticated successfully",
         "user": user.username,
     }
+    csrf_token = get_token(request)
+    
 
     response = Response(response_data)
-    response.set_cookie('accessToken', access_token, httponly=True, samesite='Lax', secure=True, max_age=int(refresh.access_token.lifetime.total_seconds()))
-    response.set_cookie('refreshToken', refresh_token, httponly=True, samesite='Lax', secure=True, max_age=refresh_lifetime.total_seconds())
+    if settings.HTTP_MODE:
+       
+        response.set_cookie('accessToken', access_token,
+             httponly=True, samesite=None, secure=False)
+        response.set_cookie('refreshToken', refresh_token,
+            httponly=True, samesite=None, secure=False)
+
+    else:
+        response.set_cookie(
+            'csrfauthtoken',
+            csrf_token,
+            domain=settings.DOMAIN_URL,
+            path="/",
+            httponly=False,  # Allow access via JavaScript
+            samesite=None,  # Adjust as needed for your application
+            secure=True,     # Use `False` in development if not on HTTPS
+        )
+        response.set_cookie('accessToken', access_token, domain=settings.DOMAIN_URL,
+            path="/", httponly=True, samesite=None, secure=True)
+        response.set_cookie('refreshToken', refresh_token, domain=settings.DOMAIN_URL,
+            path="/", httponly=True, samesite=None, secure=True)
 
 
     return response
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
+@api_view(['GET'])
 def logout_view(request):
-    """
-    View to log out the user and invalidate the JWT cookie.
-
-    Args:
-        request: The HTTP request object.
-
-    Returns:
-        Response object with a message indicating successful logout.
-    """
     response = Response({"message": "Logged out successfully"})
+
     refresh_token = request.COOKIES.get('refreshToken')
-    old_refresh = RefreshToken(refresh_token)
-    old_refresh.blacklist()
 
+    if not refresh_token and settings.HTTP_MODE:
+        response.delete_cookie('accessToken',
+        path="/")
+        response.delete_cookie('refreshToken', 
+        path="/")
+        response.delete_cookie('csrfauthtoken',
+        path="/")
+        return response
+    elif not refresh_token and not settings.HTTP_MODE:
+        response.delete_cookie('accessToken', domain=settings.DOMAIN_URL,
+        path="/")
+        response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL,
+        path="/")
+        response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL,
+        path="/")
+        return response
 
+    try:
+        # Attempt to blacklist the refresh token
+        old_refresh = RefreshToken(refresh_token)
+        old_refresh.blacklist()
+    except (TokenError, InvalidToken) as e:
+        # Handle specific JWT errors
+        if settings.HTTP_MODE:
+            response.delete_cookie('accessToken',
+            path="/")
+            response.delete_cookie('refreshToken', 
+            path="/")
+            response.delete_cookie('csrfauthtoken',
+            path="/")
 
-    # Invalidate the JWT cookie
-    response.delete_cookie('accessToken')
-    response.delete_cookie('refreshToken')
+        else:
+            response.delete_cookie('accessToken', domain=settings.DOMAIN_URL,
+            path="/")
+            response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL,
+            path="/")
+            response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL,
+            path="/")
+        return response
 
+    if settings.HTTP_MODE:
+        response.delete_cookie('accessToken',
+        path="/")
+        response.delete_cookie('refreshToken', 
+        path="/")
+        response.delete_cookie('csrfauthtoken',
+        path="/")
+    else:
+        # Invalidate the JWT cookies
+        response.delete_cookie('accessToken', domain=settings.DOMAIN_URL,
+            path="/")
+        response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL,
+            path="/")
+        response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL,
+            path="/")
 
     return response
-
 

@@ -50,15 +50,6 @@
             </div>
           </div>
         </template>
-        <template #image>
-          <transition appear name="fade">
-            <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-              <img
-                :src="require('@/assets/analytics.jpg')"
-                class="w-full exportImages"
-                alt="Sample image"
-              /></div></transition
-        ></template>
 
         <template #progress>
           <div
@@ -213,16 +204,8 @@
             ></p>
           </div>
           <div
-            class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 xl:gap-40 mb-40"
+            class="grid grid-cols-1 gap-10 lg:gap-20 xl:gap-40 mb-40"
           >
-            <BarChart
-              ref="barChart"
-              chart-id="bar-chart1"
-              :chart-data="chartDataPerThreat"
-              :chart-options="chartOptionsPerThreat"
-              title="Erreichte Punktzahl pro ITS-Bedrohung"
-              class="chart"
-            />
             <DoughnutChart
               :chart-data="chartDataAllThreats"
               :chart-options="chartOptionsAllThreats"

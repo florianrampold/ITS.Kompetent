@@ -110,35 +110,6 @@
     </div>
     <div class="fixed bottom-0 w-screen">
       <cookie-banner></cookie-banner>
-      <!-- <vue-cookie-comply
-        :preferences="preferences"
-        :accept-all-label="acceptAllLabel"
-        :preferences-label="preferencesLabel"
-        @on-accept-all-cookies="onAccept"
-        @on-save-cookie-preferences="onSavePreferences"
-      >
-        <template #header>
-          <header>Cookie Einstellungen</header>
-          <p>
-            Wir verwenden Cookies und ähnliche Technologien, um Inhalte zu
-            personalisieren und ein besseres Erlebnis zu bieten. Sie können sie
-            anpassen, indem Sie auf die Schaltfläche Einstellungen klicken.
-          </p>
-        </template>
-
-        <template #modal-header>
-          <h3 class="text-center mb-2">Ihre Cookie Einstellungen</h3>
-        </template>
-
-        <template #modal-body="{ preference }">
-          <div class="font-bold text-lg mb-4 mt-2">{{ preference.title }}</div>
-          <p>{{ preference.description }}</p>
-        </template>
-
-        <template #modal-footer>
-          <footer>My custom modal footer</footer>
-        </template>
-      </vue-cookie-comply> -->
     </div>
   </footer>
   <base-modal
@@ -170,19 +141,6 @@ export default {
     return {
       showModal: false,
       currentYear: new Date().getFullYear(),
-      preferences: [
-        {
-          title: "Technisch notwendige Cookies",
-          description:
-            "Cookies zur Gewährleistung der Betriebsbereitschaft können nicht deaktiviert werden, soweit wir sie verwenden, um unsere Dienste bereitzustellen. Um den Betrieb von ITS.kompetent zu gewährleisten speichern wir die Ergebnisse Ihres ITS-Kompetenztests temporär im Local Storage Ihres Browsers. Dies ist zwingend notwendig, um Ihnen die Ergebnisse der Messung zu präsentieren. Dabei werden keine persönlichen Daten verarbeitet, die Rückschluss auf Ihre Person geben. Wenn Sie dies nicht wünschen, können Sie nicht an ITS.kompetent teilnehmen. In diesem Fall schließen Sie bitte die Webseite. Wir bitten um Ihr Verständnis.",
-          items: [{ label: "Aktiv", value: "performance", isRequired: true }],
-        },
-      ],
-      headerTitle: "Cookie Einstellungen",
-      preferencesLabel: "Einstellungen",
-      acceptAllLabel: "Akzeptieren",
-      headerDescription:
-        "Wir verwenden Cookies und ähnliche Technologien, um Inhalte zu personalisieren und ein besseres Erlebnis zu bieten. Sie können sie anpassen, indem Sie auf die Schaltfläche Einstellungen klicken.",
     };
   },
   methods: {
@@ -197,8 +155,7 @@ export default {
      *
      */
     pushToStart() {
-      this.competenceTestStore.endTest();
-      this.competenceTestStore.setTestButtonInactive();
+      this.$router.push("/");
     },
     /**
      * Shows a modal if test has started to make the user conform to really end the competence test.
@@ -208,8 +165,6 @@ export default {
     checkTestMode() {
       if (this.competenceTestStore.testStarted) {
         this.showModal = true;
-      } else {
-        this.competenceTestStore.setTestButtonInactive();
       }
     },
   },

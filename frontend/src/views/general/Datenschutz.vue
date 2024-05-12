@@ -172,12 +172,16 @@
         werden nicht an Dritte weitergegeben.
       </p> -->
 
-      <p>
+      <p v-if="doNotTrackEnabled">
         Das Tracking ist bei Ihnen derzeit nicht aktiv, denn Ihr Browser hat uns
         mitgeteilt, dass Sie kein Tracking wünschen. Hierbei handelt es sich um
         eine Browsereinstellung. Um das Tracking wieder zu aktivieren, müssen
         Sie die sogenannte &#8222;Do Not Track&#8220;-Einstellung in Ihren
         Browsereinstellungen deaktivieren.
+      </p>
+      <p v-else>
+        Tracking ist aktiviert. Ihre Aktivitäten auf dieser Seite können
+        verfolgt werden.
       </p>
       <br />
       <p><strong>§ 4 Zweck und Rechtsgrundlage der Verarbeitung</strong></p>
@@ -192,6 +196,7 @@
         Forschungsarbeiten des Betreibers haben was wiederum ggf. Implikationen
         für das Forschungsvorhaben liefert.
       </p>
+
       <br />
       <p><strong>§ 5 Datenweitergabe an Dritte</strong></p>
 
@@ -207,8 +212,27 @@
         automatisch gelöscht.
       </p>
       <br />
+      <p>
+        <strong>Kontaktformulare</strong>
+        <br />
+        Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre
+        Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen
+        Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von
+        Anschlussfragen bei uns gespeichert und verarbeitet. Ihre Daten werden
+        ausschließlich zweckgebunden zur Beantwortung und Bearbeitung Ihrer
+        Frage genutzt. Die Datenverarbeitung erfolgt hier nach Art. 6 Abs. S. 1
+        lit. f DSGVO auf Grundlage des berechtigten Interesses.Ihre Daten werden
+        nach abschließender Bearbeitung Ihrer Anfrage gelöscht. Dies ist der
+        Fall, wenn sich aus den Umständen entnehmen lässt, dass der betroffene
+        Sachverhalt abschließend geklärt ist und sofern keine gesetzlichen
+        Aufbewahrungspflichten entgegenstehen.
+      </p>
+
+      <br />
+
       <p><strong>English:</strong></p>
       <br />
+
       <p>
         <strong
           >Article 1: Information on the Collection of Personal Data
@@ -350,13 +374,16 @@
         the cookie(s) about your usage of the site will not be transmitted to
         third parties.
       </p> -->
-
-      <p>
-        Tracking is not currently active for you as your browser has told us
-        that you do not want tracking to be activated. This is a browser
-        setting. To reactivate tracking, you must deactivate the so-called
-        &#8222;Do Not Track&#8220; setting in your browser settings.
+      <p v-if="doNotTrackEnabled">
+        Tracking is currently not active for you because your browser has
+        informed us that you do not wish to be tracked. This is a browser
+        setting. To reactivate tracking, you must deactivate the so-called Do
+        Not Track setting in your browser settings
       </p>
+      <p v-else>
+        Tracking is activated. Your activities on this site can be be tracked.
+      </p>
+
       <br />
       <p>
         <strong>Article 4: Purpose and legal basis of data processing</strong>
@@ -385,12 +412,48 @@
         The collected data will be stored for 365 days and will be automatically
         deleted afterwards.
       </p>
+      <p>
+        <strong>Contact Forms</strong>
+        <br />
+        If you send us inquiries via the contact form, your details from the
+        inquiry form, including the contact data you provide there, will be
+        stored and processed by us for the purpose of processing the inquiry and
+        in the event of follow-up questions. Your data will be used exclusively
+        for the purpose of answering and processing your question. The data
+        processing takes place here in accordance with Art. 6 para. 1 lit. f
+        GDPR on the basis of legitimate interest.Your data will be deleted after
+        final processing of your request. This is the case when it can be
+        inferred from the circumstances that the matter in question has been
+        conclusively clarified and provided that there are no statutory
+        retention obligations to the contrary.
+      </p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  components: {},
+  name: "TrackInfoComponent",
+
+  computed: {
+    doNotTrackEnabled() {
+      return navigator.doNotTrack === "1" || navigator.doNotTrack === "yes";
+    },
+  },
+  created() {
+    this.updateTrackingPreference();
+  },
+
+  methods: {
+    updateTrackingPreference() {
+      if (this.doNotTrackEnabled) {
+        console.log("Tracking is disabled per browser setting.");
+        // Additional logic to disable tracking scripts
+      } else {
+        console.log("Tracking is enabled.");
+        // Additional logic to enable tracking scripts
+      }
+    },
+  },
 };
 </script>

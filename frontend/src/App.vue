@@ -59,7 +59,6 @@ export default {
    * Also handles checking authentication state
    */
   mounted() {
-    console.log("mount")
     window.addEventListener("mousemove", this.setInteractionTime);
     window.addEventListener("keypress", this.setInteractionTime);
     window.addEventListener("click", this.setInteractionTime);

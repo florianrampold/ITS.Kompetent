@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 import campagneService from "../services/campagne.service";
-import { useStorage } from "@vueuse/core";
-
+//import { useStorage } from "@vueuse/core";
+import { useAuthStore } from "./AuthStore";
 export const useCampagneStore = defineStore("campagne", {
   state: () => {
     return {
-      campagneStarted: useStorage("campagneStarted", false),
+      campagneStarted: false,
     };
   },
   getters: {
@@ -35,6 +35,7 @@ export const useCampagneStore = defineStore("campagne", {
      */
     async generateInvitationTokens({ emails = [] }) {
       const payload = {};
+      const auth = useAuthStore();
 
       // Include emails only if it's provided and not empty
       if (emails && emails.length > 0) {
@@ -47,8 +48,11 @@ export const useCampagneStore = defineStore("campagne", {
         });
         return response.data;
       } catch (error) {
-        console.error("Error during generating invitation tokens:", error);
-        throw error;
+        if (error.response && error.response.status === 403) {
+          auth.logout();
+        } else {
+          throw error;
+        }
       }
     },
     /**
@@ -71,7 +75,18 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the fetched test results.
      */
     async getCompetenceTestResults(profileID) {
-      return await campagneService.getCompetenceTestResults(profileID);
+      const auth = useAuthStore();
+
+      try {
+        return await campagneService.getCompetenceTestResults(profileID);
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -79,7 +94,17 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the list of participants per profile.
      */
     async getParticipantsPerProfile() {
-      return await campagneService.getParticipantsPerProfile();
+      const auth = useAuthStore();
+      try {
+        return await campagneService.getParticipantsPerProfile();
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -87,7 +112,17 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the list of invited employees.
      */
     async getInvitedEmployees() {
-      return await campagneService.getInvitedEmployees();
+      const auth = useAuthStore();
+      try {
+        return await campagneService.getInvitedEmployees();
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -96,7 +131,17 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the validation result.
      */
     async validateInvitationToken(token) {
-      return await campagneService.validateInvitationToken(token);
+      const auth = useAuthStore();
+      try {
+        return await campagneService.validateInvitationToken(token);
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -104,11 +149,19 @@ export const useCampagneStore = defineStore("campagne", {
      * @throws {Error} If the deletion fails.
      */
     async deleteCampagne() {
+      const auth = useAuthStore();
+
       try {
         await campagneService.deleteCampagne();
       } catch (error) {
-        console.error("Error during deleting attempt:", error);
-        throw error;
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
       }
     },
 
@@ -118,12 +171,18 @@ export const useCampagneStore = defineStore("campagne", {
      * @throws {Error} If posting the campaign fails.
      */
     async postCampagne(oneInvitationToken) {
-      console.log(oneInvitationToken, " the mode");
+      const auth = useAuthStore();
       try {
         await campagneService.postCampagne(oneInvitationToken);
       } catch (error) {
-        console.error("Error during posting attempt", error);
-        throw error;
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
       }
     },
 
@@ -132,11 +191,19 @@ export const useCampagneStore = defineStore("campagne", {
      * @throws {Error} If removing the security key fails.
      */
     async removeSecurityKey() {
+      const auth = useAuthStore();
+
       try {
         await campagneService.removeSecurityKey();
       } catch (error) {
-        console.error("Error during removing attempt", error);
-        throw error;
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
       }
     },
 
@@ -145,7 +212,15 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the campaign details.
      */
     async getCampagne() {
-      return await campagneService.getCampagne();
+      const auth = useAuthStore();
+
+      try {
+        return await campagneService.getCampagne();
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -153,7 +228,15 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the generated security key.
      */
     async generateSecurityKey() {
-      return await campagneService.generateSecurityKey();
+      const auth = useAuthStore();
+
+      try {
+        return await campagneService.generateSecurityKey();
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          auth.logout();
+        }
+      }
     },
 
     /**
@@ -163,12 +246,20 @@ export const useCampagneStore = defineStore("campagne", {
      * @throws {Error} If decryption fails.
      */
     async decryptEmails(data) {
+      const auth = useAuthStore();
+
       try {
         const response = await campagneService.decryptEmails(data);
         return response;
       } catch (error) {
-        console.error("Error during decrypting attempt", error);
-        throw error;
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
       }
     },
 
@@ -177,7 +268,18 @@ export const useCampagneStore = defineStore("campagne", {
      * @returns {Promise<Object>} A promise that resolves to the management report.
      */
     async getManagementReport() {
-      return await campagneService.getManagementReport();
+      const auth = useAuthStore();
+
+      try {
+        return await campagneService.getManagementReport();
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        }
+      }
     },
   },
 });

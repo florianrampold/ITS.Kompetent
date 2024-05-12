@@ -1,12 +1,10 @@
 // src/config.js
 
 let frontendUrl;
-
-if (process.env.NODE_ENV === "development") {
-  frontendUrl = "http://localhost:8080";
-} else {
-  frontendUrl = "https://itskompetent.uni-goettingen.de";
-}
-
+let backendURL;
+frontendUrl = "http://192.168.2.59";
+//frontendUrl = "http://10.116.65.170"
+//backendURL = "http://10.116.65.170:8100/api"
+backendURL= "http://192.168.2.59:8100/api"
 // Export the variable after its value has been set
-export { frontendUrl };
+export { frontendUrl, backendURL };
