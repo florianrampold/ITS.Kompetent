@@ -57,15 +57,6 @@
         </div>
       </div>
     </template>
-    <template #image>
-      <transition appear name="fade">
-        <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-          <img
-            src="@/assets/home.jpg"
-            class="w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
   </Hero>
   <main class="bg-white pt-40 pb-20">
     <h1 class="main-heading pb-20">Unser Ansatz</h1>
@@ -208,30 +199,11 @@
             fehlenden Kompetenzen effektiv aufgebaut werden (Wie?).
           </p>
         </div>
-        <transition appear name="fade">
-          <div
-            class="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-6/12 lg:w-6/12 md:w-6/12 mb-12 md:mb-0"
-          >
-            <img
-              :src="require('@/assets/matching.jpg')"
-              class="w-full"
-              alt="Matching of ITS-competencies"
-            /></div
-        ></transition>
+        
       </div>
       <div
         class="flex flex-col sm:flex-row justify-center lg:justify-end flex-wrap pt-40"
       >
-        <transition appear name="fade">
-          <div
-            class="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-6/12 lg:w-6/12 md:w-6/12 mb-12 md:mb-0"
-          >
-            <img
-              src="@/assets/analytics.jpg"
-              class="w-full"
-              alt="ITS.kompetent analytics"
-            /></div
-        ></transition>
         <div class="w-full lg:w-1/2 text-center lg:text-left divide-secondary">
           <h1 class="main-heading">
             <span class="text-primary xl:inline"
@@ -289,9 +261,6 @@ export default {
    *
    */
   beforeMount() {
-    this.competenceTestStore.endTest();
-    this.competenceTestStore.setTestButtonInactive();
-    this.competenceTestStore.setGetStartedButtonInactive();
     this.competenceTestStore.setCompetenceTestResult({});
   },
   /**

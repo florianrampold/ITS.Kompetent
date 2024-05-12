@@ -16,18 +16,37 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = f"Set the {var_name} environment variable"
+        raise ImproperlyConfigured(error_msg)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-SECRET_KEY = 'django-insecure-h9k^vqp$njywd!fyfv5&#!5683e%_$lz+=-3eji!ob*k9!$3_z'
+SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 
 #SECRET_KEY=os.environ.get('ITSKOMPETENT_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
+HTTP_MODE = True
+
+DOMAIN_URL=get_env_variable('API_URL')
 SITE_ID = 1  # typically 1 for a new project, but this can vary
+# Application definition
+CSRF_COOKIE_AGE = None
+#CSRF_COOKIE_SECURE = False
+#SESSION_COOKIE_SECURE = False
+#CSRF_COOKIE_SAMESITE = 'None'
+#SESSION_COOKIE_SAMESITE = 'None'
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,12 +75,15 @@ INSTALLED_APPS = [
 ]
 CORS_ALLOWED_ORIGINS = [
 "http://localhost:8081",
-"https://*.127.0.0.1"
+"https://*.127.0.0.1",
+"http://localhost",
+"http://192.168.2.59",
+"http://10.116.65.170"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', "http://localhost:8081"]
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://localhost", "http://192.168.2.59", "http://10.116.65.170"]
 
 from datetime import timedelta
 
@@ -119,6 +141,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'users.middlewares.JWTWithCSRFMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -153,16 +176,14 @@ WSGI_APPLICATION = 'itskompetent.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'itskompetent',
-        'USER': 'root_itskompetent',
-        'PASSWORD': 'itskompetent_password',
-        'HOST': 'db',  # Use the service name defined in docker-compose
+        'NAME': get_env_variable('DB_NAME'),
+        'USER': get_env_variable('DB_USER'),
+        'PASSWORD': get_env_variable('DB_PASS'),
+        'HOST': get_env_variable('DB_HOST'),
         'PORT': '3306',  # The port inside the container remains 3306
     }
 }
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800# Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 
 
@@ -202,8 +223,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = get_env_variable('API_URL') + '/static/'
+
+
+STATIC_ROOT = '/code/src/staticfiles'
+
 
 
 
@@ -214,11 +238,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Base url to serve media files
-MEDIA_URL = '/media/'
-
+MEDIA_URL = get_env_variable('API_URL')+ '/media/backend/'
 # Path where media is stored
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
+MEDIA_ROOT = '/code/src/media'
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)

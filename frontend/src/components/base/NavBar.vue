@@ -44,7 +44,7 @@
             class="w-full pt-3 bg-white text-xl text-gray-500 lg:flex lg:justify-between lg:items-center pt-0 divide-y divide-gray-200 lg:divide-none"
           >
             <li
-              v-if="!competenceTestStore.getTestButtonActive"
+              v-if="!isTestButtonActive"
               class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
             >
               <router-link
@@ -56,7 +56,7 @@
               </router-link>
             </li>
             <li
-              v-if="!competenceTestStore.getTestButtonActive"
+              v-if="!isTestButtonActive"
               class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
             >
               <router-link
@@ -68,7 +68,7 @@
               </router-link>
             </li>
             <li
-              v-if="!competenceTestStore.getTestButtonActive"
+              v-if="!isTestButtonActive"
               class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
             >
               <router-link
@@ -80,15 +80,12 @@
               </router-link>
             </li>
             <li
-              v-if="!competenceTestStore.getTestButtonActive"
+              v-if="!isTestButtonActive"
               class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
             >
               <router-link
                 class="lg:p-4 py-2 hover:text-primary lg:shadow-none"
-                :class="{
-                  'active-started':
-                    competenceTestStore.getGetStartedButtonActive,
-                }"
+                :class="{ 'active-started': isGetStartedButtonActive }"
                 to="/getstarted"
                 @click="toggle"
               >
@@ -96,17 +93,18 @@
               </router-link>
             </li>
             <li
-              v-if="competenceTestStore.getTestButtonActive"
+              v-if="isTestButtonActive"
               class="h-14 flex text-primary justify-center lg:items-center lg:h-auto lg:justify-none shadow-xl lg:shadow-none"
             >
               <router-link v-slot="{ href }" to="/competence-tests">
                 <button
                   :href="href"
                   :class="{
-                    'active-link': competenceTestStore.getTestButtonActive,
+                    'active-link': isTestButtonActive,
+                    'hover:scale-105': isTestButtonActive,
                   }"
                   class="w-40 transform disabled:opacity-50 hover:scale-105 duration-500 border-primary border-2 my-2 py-1 px-4 mx-2 rounded hover:text-white hover:bg-primary"
-                  :disabled="competenceTestStore.getTestButtonActive"
+                  :disabled="isTestButtonActive"
                   @click="toggleButton"
                 >
                   Tests
@@ -150,6 +148,17 @@ export default {
       },
     };
   },
+  computed: {
+    isTestButtonActive() {
+      // Check meta field
+      return this.$route.meta.testButtonActive;
+    },
+    isGetStartedButtonActive() {
+      // Check meta field
+      return this.$route.meta.getStartedActive;
+    },
+  },
+
   // a beforeMount call to add a listener to the window
   beforeMount() {
     window.addEventListener("scroll", this.handleScroll);
@@ -168,13 +177,9 @@ export default {
      */
     toggle() {
       this.open = !this.open;
-      this.competenceTestStore.setTestButtonInactive();
-      this.competenceTestStore.setGetStartedButtonInactive();
     },
     toggleButton() {
       this.open = !this.open;
-      this.competenceTestStore.setTestButtonActive();
-      this.competenceTestStore.setGetStartedButtonInactive();
     },
     /**
      * Tracks click events in the navigation bar for the Test Button
@@ -182,11 +187,10 @@ export default {
      *
      */
     checkTestMode() {
-      if (this.competenceTestStore.testStarted) {
+      if (this.isTestButtonActive) {
         this.showModal = true;
       } else {
         this.$router.push("/");
-        this.competenceTestStore.setTestButtonInactive();
       }
     },
     /**
@@ -195,10 +199,6 @@ export default {
      *
      */
     pushToStart() {
-      this.competenceTestStore.endTest();
-      this.competenceTestStore.setTestButtonInactive();
-      this.competenceTestStore.setGetStartedButtonInactive();
-
       this.$router.push("/");
     },
     /**

@@ -16,15 +16,7 @@
       </p></template
     >
     >
-    <template #image>
-      <transition appear name="fade">
-        <div class="grow-0 shrink-1 md:shrink-0 basis-auto md:mb-0">
-          <img
-            :src="require('@/assets/contact.jpg')"
-            class="w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
+
     <template #progress>
       <!-- Tabs Navigation -->
       <div
@@ -209,7 +201,6 @@ import { required, email } from "@vee-validate/rules";
 import { configure } from "vee-validate";
 configure({
   generateMessage: (context) => {
-    console.log("Context:", context.field); // Inspect the entire context object
     switch (context.field) {
       case "name":
         return "Sie müssen einen Namen eingeben.";

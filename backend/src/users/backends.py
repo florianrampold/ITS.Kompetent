@@ -19,6 +19,8 @@ class CookieJWTAuthentication(JWTAuthentication):
             Tuple containing the user object and the validated JWT token if authentication succeeds,
             otherwise returns None.
         """
+        if request.path == '/api/logout/':
+            return None
         header = self.get_header(request)
         if header is None:
             raw_token = request.COOKIES.get('accessToken')  # This fetches the JWT token from the cookie

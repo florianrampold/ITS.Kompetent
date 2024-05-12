@@ -34,15 +34,7 @@
     </template>
     <template #buttons> </template>
 
-    <template #image>
-      <transition appear name="fade">
-        <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-          <img
-            :src="require('@/assets/test_overview.jpg')"
-            class="w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
+   
     <template #progress> </template>
   </Hero>
 
@@ -141,7 +133,6 @@ export default {
         this.$router.push({
           name: "TestIntroduction",
         });
-        this.competenceTestStore.setTestButtonActive();
       } else if (this.selectedValue == 2) {
         this.invitationTokenValid =
           await this.campagneStore.validateInvitationToken(
@@ -156,8 +147,6 @@ export default {
             params: { invitationToken: this.invitationToken },
           });
         }
-
-        this.competenceTestStore.setGetStartedButtonActive();
       }
     },
     /**

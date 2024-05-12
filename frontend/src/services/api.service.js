@@ -13,9 +13,9 @@ const APIService = {
       const cookies = document.cookie.split(";");
       for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i].trim();
-        if (cookie.substring(0, "csrftoken".length + 1) === "csrftoken" + "=") {
+        if (cookie.substring(0, "csrfauthtoken".length + 1) === "csrfauthtoken" + "=") {
           csrfToken = decodeURIComponent(
-            cookie.substring("csrftoken".length + 1)
+            cookie.substring("csrfauthtoken".length + 1)
           );
           break;
         }
@@ -29,7 +29,6 @@ const APIService = {
    * @param {string} baseURL - The base URL to set for all Axios requests.
    */
   init(baseURL) {
-    console.log(baseURL, "baseit")
     axios.defaults.baseURL = baseURL;
     axios.defaults.withCredentials = true;
   },

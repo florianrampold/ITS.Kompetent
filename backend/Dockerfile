@@ -30,9 +30,13 @@ RUN apt-get update && apt-get install -y \
 COPY ./requirements.txt /code/src/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+
 # Copy project
 COPY ./src /code/src
+
+CMD /usr/wait-for-it.sh -t 60 db:3306 -- python manage.py migrate && python manage.py collectstatic --noinput && gunicorn itskompetent.wsgi:application --bind 0.0.0.0:8000 --workers 3 --threads 2
 # Expose the port the app runs on
 EXPOSE 8000
+
 
 

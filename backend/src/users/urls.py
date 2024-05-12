@@ -1,7 +1,7 @@
 # urls.py
 
 from django.urls import path, include
-from .views import  CustomTokenRefreshView, obtain_jwt_token_with_cookie, logout_view, status
+from .views import  CustomTokenRefreshView, obtain_jwt_token_with_cookie, logout_view, status, get_user_profile
 urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/jwt/', include('djoser.urls.jwt')),
@@ -9,6 +9,8 @@ urlpatterns = [
     path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('status/', status, name='status'),
     path('logout/', logout_view, name='logout'),
+    path('get_user_profile/', get_user_profile, name='get_user_profile'),
+
     
     #path('accounts/', include('django.contrib.auth.urls')),
 

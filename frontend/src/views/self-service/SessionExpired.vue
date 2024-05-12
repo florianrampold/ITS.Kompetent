@@ -5,11 +5,6 @@
         v-if="show"
         class="relative z-10 p-8 bg-white shadow-xl rounded-lg w-1/3 transition-transform transform scale-95 hover:scale-100"
       >
-        <img
-          class="w-full mb-4 object-cover rounded"
-          src="@/assets/home.jpg"
-          alt="Sitzung abgelaufen"
-        />
 
         <h1 class="text-2xl font-semibold mb-4">Sitzung abgelaufen</h1>
         <p class="text-md mb-6">

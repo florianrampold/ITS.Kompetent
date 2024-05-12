@@ -1,13 +1,11 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-
+import { backendURL } from '@/config.js'; // Make sure the path is correct based on your file structure
 //import { useCompetenceTestStore } from "@/stores/CompetenceTestStore";
 import App from "./App.vue";
 import "./styles/app.css";
 import router from "./router";
 import APIService from "./services/api.service.js";
-import VueCookieComply from "vue-cookie-comply";
-import "vue-cookie-comply/dist/style.css";
 import Spinner from "@/components/base/Spinner.vue";
 import PopUp from "@/components/base/PopUp.vue";
 import SkeletonLoader from "@/components/base/Skeleton.vue";
@@ -42,14 +40,11 @@ import {
 const pinia = createPinia();
 
 const app = createApp(App);
-APIService.init("http://localhost:8100/api");
+APIService.init(backendURL);
 APIService.setHeader();
-app.provide("frontendURL", "http://localhost:8100");
 
-  console.log("developmentt");
 app.use(pinia);
 app.use(router);
-app.use(VueCookieComply);
 
 app.component("Spinner", Spinner);
 app.component("SkeletonLoader", SkeletonLoader);

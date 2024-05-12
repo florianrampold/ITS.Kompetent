@@ -5,7 +5,7 @@ import competenceTestService from "../services/competence_test.service";
 export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
   state: () => {
     return {
-      competenceTestResult: useStorage("competenceTestResult", {}),
+      competenceTestResult: {},
       testStarted: useStorage("testStarted", false),
       testButtonActive: useStorage("testButtonActive", false),
       getStartedButtonActive: useStorage("getStartedButtonActive", false),

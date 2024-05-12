@@ -32,15 +32,7 @@
         </div>
       </div></template
     >
-    <template #image>
-      <transition appear name="fade">
-        <div class="grow-0 shrink-1 md:shrink-0 basis-auto md:mb-0">
-          <img
-            :src="require('@/assets/project.jpg')"
-            class="w-full"
-            alt="Sample image"
-          /></div></transition
-    ></template>
+  
   </Hero>
   <div class="page-background">
     <h1

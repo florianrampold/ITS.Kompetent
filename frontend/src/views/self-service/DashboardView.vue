@@ -38,23 +38,22 @@
             Zudem habe Sie die Möglichkeit sich die Ergebnisse als
             Management-Report PDF-Datei erzeugen zu lassen. Ebenso können Sie
             die ITS-Trainingsempfehlungen als Excel-Datei exportieren.
+
+            <br />
+            <br />
+            <strong>Achtung:</strong> In der Einstellung, die von Ihrem oder
+            Ihrer Adminstrator*in vorgenommen wurde, werden Ihnen erst
+            aggregierte Daten zu einem ITS-Anforderungsprofil angezeigt, wenn
+            mindestens {{ securityDisplayThreshold }} Mitarbeiter*innen aus
+            diesem ITS-Anforderungsprofil an der Kampagne teilgenommen haben.
           </p>
         </div>
       </template>
 
-      <template #image>
-        <transition appear name="fade">
-          <div class="grow-0 shrink-1 md:shrink-0 basis-auto mb-12 md:mb-0">
-            <img
-              src="@/assets/home.jpg"
-              class="w-full"
-              alt="Sample image"
-            /></div></transition
-      ></template>
       <template #buttons>
         <div
+          v-if="totalNumberOfParticipants >= securityDisplayThreshold"
           class="flex flex-row justify-center items-center lg:justify-start"
-          v-if="totalNumberOfParticipants > 0"
         >
           <div class="flex mr-4 flex-col">
             <a
@@ -177,7 +176,7 @@
         </div>
       </template>
     </Hero>
-    <div v-if="totalNumberOfParticipants > 0">
+    <div v-if="totalNumberOfParticipants >= securityDisplayThreshold">
       <div class="bg-primary py-20">
         <div class="standard-container">
           <h2 class="main-heading pt-5 pb-10 text-white">Filter</h2>
@@ -192,9 +191,13 @@
               class="mt-3 text-base text-white sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl lg:mx-0"
             >
               Hier können Sie die Ergebnisse der ITS-Kompetenztests nach
-              ITS-Anforderungsprofilen filtern. In der voreingestellten
-              Filterung 'Alle' werden die Ergebnisse über alle 5
-              ITS-Anforderungsprofile aggregiert dargestellt.
+              ITS-Anforderungsprofilen filtern. Sobald mindestens
+              {{ securityDisplayThreshold }} Personen innerhalb eines
+              ITS-Anforderungsprofils teilgenommen haben, erscheint das
+              ITS-Anforderungsprofil in dem Dropdown. Die Einstellung "Alle"
+              wird sichtbar, sobald es mindestens
+              {{ securityDisplayThreshold }} Teilnehmende innerhalb mindestens 2
+              verschiedener ITS-Anforderungsprofile gibt.
             </p>
           </div>
           <div class="flex justify-center items-center">
@@ -278,7 +281,7 @@
           </div>
           <div
             v-if="
-              competenceTestResults[0].total_threat_situation_scores &&
+              competenceTestResults &&
               !isLoading &&
               selectedProfile.job_profile_id != 0
             "
@@ -345,10 +348,11 @@
                 {{ invitationTokens.length }} Mitarbeiter*innen den
                 ITS-Kompetenztest erfolgreich absolviert. Insgesamt haben sich
                 Ihre Mitarbeiter*innen zu
-                {{ jobProfiles.length - 1 }} verschiedenen
+                {{ jobProfileDistribution.length - 1 }} verschiedenen
                 ITS-Anforderungsprofilen zugeordnet.
               </p>
             </div>
+
             <div v-else class="flex justify-center">
               <p
                 class="mt-3 mb-10 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
@@ -357,7 +361,7 @@
                 {{ totalNumberOfParticipants }} Mitarbeiter*innen den
                 ITS-Kompetenztest erfolgreich absolviert. Insgesamt haben sich
                 Ihre Mitarbeiter*innen zu
-                {{ jobProfiles.length - 1 }} verschiedenen
+                {{ jobProfileDistribution.length - 1 }} verschiedenen
                 ITS-Anforderungsprofilen zugeordnet.
               </p>
             </div>
@@ -373,6 +377,45 @@
             </div>
           </div>
           <div>
+            <h2
+              v-if="selectedProfile.job_profile_id === 0"
+              class="text-2xl tracking-tight font-extrabold text-primary text-center sm:text-3xl md:text-4xl mb-10"
+            >
+              Aggregierte Ergebnisse für die ITS-Anforderungsprofile <br />
+              mit mindestens {{ securityDisplayThreshold }} Teilnehmer*innen
+            </h2>
+            <div
+              v-if="selectedProfile.job_profile_id === 0"
+              class="flex flex-row justify-center items-center"
+            >
+              <div
+                class="border-b-4 rounded-lg w-14 border-secondary mb-20"
+              ></div>
+            </div>
+            <div
+              v-if="selectedProfile.job_profile_id === 0"
+              class="flex flex-col justify-center items-center"
+            >
+              <p
+                class="mt-3 mb-6 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+              >
+                Die folgenden Statistiken beziehen sich ausschließlich auf die
+                ITS-Anforderungsprofile, bei denen mindestens
+                {{ securityDisplayThreshold }} Mitarbeiter*innen den
+                ITS-Kompetenztest abgeschlosen haben. <br />
+                <br />
+                Dies sind die ITS-Anforderungsprofile:
+              </p>
+              <ul
+                v-for="profile in jobProfiles"
+                :key="profile"
+                class="mb-2 text-base text-gray-500 sm:text-lg sm:max-w-xl sm:mx-auto md:text-xl lg:mx-0"
+              >
+                <li v-if="profile.job_profile_id != 0" class="font-semibold">
+                  {{ profile.job_profile_name }}
+                </li>
+              </ul>
+            </div>
             <div
               class="grid grid-cols-1 pt-10 lg:grid-cols-2 gap-10 lg:gap-20 2xl:gap-40 mb-10"
             >
@@ -525,6 +568,8 @@ import CampagneService from "../../services/campagne.service.js";
 import TrainingsTable from "@/components/training/TrainingsTable.vue";
 import { useCampagneStore } from "@/store/CampagneStore";
 import { useTrainingsStore } from "@/store/TrainingsStore";
+import { useAuthStore } from "@/store/AuthStore";
+
 import * as XLSX from "xlsx";
 import {
   Listbox,
@@ -568,8 +613,9 @@ export default {
   setup() {
     const campagneStore = useCampagneStore();
     const trainingsStore = useTrainingsStore();
+    const authStore = useAuthStore();
 
-    return { campagneStore, trainingsStore };
+    return { campagneStore, trainingsStore, authStore };
   },
 
   data() {
@@ -585,6 +631,7 @@ export default {
       numberOfThreats: [],
       numberOfCompetenceDImensions: 0,
       jobProfiles: [],
+      jobProfileDistribution: [],
       trainings: [],
       competenceTestResults: {},
       oneInvitationCode: null,
@@ -594,6 +641,8 @@ export default {
         job_profile_name: "Alle",
         number_of_participants: 0,
       },
+
+      securityDisplayThreshold: 0,
 
       mockedThreatData: [],
       mockedCompetenceData: [],
@@ -663,6 +712,8 @@ export default {
    * It basically fecthes the data on scored points and prepares all chart data that is displayed including the results of the aggregated test results.
    */
   async mounted() {
+    const response = await this.authStore.getUserProfile();
+    this.securityDisplayThreshold = response.security_display_threshold;
     this.refreshData();
   },
   methods: {
@@ -686,24 +737,39 @@ export default {
       }
 
       this.jobProfiles = await CampagneService.getParticipantsPerProfile();
-      this.jobProfiles = Object.values(this.jobProfiles).filter(
+      this.jobProfileDistribution = Object.values(this.jobProfiles).filter(
         (obj) => obj.number_of_participants > 0
       );
-
-      await this.fetchCompetenceTestResults(
-        this.selectedProfile.job_profile_id
+      this.jobProfiles = Object.values(this.jobProfileDistribution).filter(
+        (obj) => obj.number_of_participants >= this.securityDisplayThreshold
       );
-      this.setUpThreats();
-      this.setUpProfileDistribution();
-      this.setUpCompetenceBarChart();
-      this.setCompetenceScores();
+      if (this.jobProfiles.length > 0) {
+        this.selectedProfile = this.jobProfiles[0];
+      } else {
+        setTimeout(() => (this.isLoading = false), 500);
+        return;
+      }
 
-      this.trainings = await this.trainingsStore.getTrainings();
-      this.matchTrainings(this.trainings);
-      this.trainings = this.sortAndShuffleTrainings(this.trainings);
-      this.filterTrainingsPerPage(this.trainings);
+      if (
+        this.selectedProfile.number_of_participants >=
+        this.securityDisplayThreshold
+      ) {
+        await this.fetchCompetenceTestResults(
+          this.selectedProfile.job_profile_id
+        );
+        this.setUpThreats();
+        this.setUpProfileDistribution();
+        this.setUpCompetenceBarChart();
+        this.setCompetenceScores();
 
-      this.totalPages = Math.ceil(this.trainings.length / this.perPage);
+        this.trainings = await this.trainingsStore.getTrainings();
+        this.matchTrainings(this.trainings);
+        this.trainings = this.sortAndShuffleTrainings(this.trainings);
+        this.filterTrainingsPerPage(this.trainings);
+
+        this.totalPages = Math.ceil(this.trainings.length / this.perPage);
+      }
+      setTimeout(() => (this.isLoading = false), 500);
     },
     /**
      * A method to export a management report including the aggregated results from the competence tests.
@@ -1087,15 +1153,15 @@ export default {
       if (this.selectedProfile.job_profile_id == 0) {
         for (const element of this.jobProfiles) {
           if (element.job_profile_id != 0) {
-            //console.log(element.job_profile_name);
-            // console.log(element.number_of_threat_situations, "NUM THREAT");
-            // console.log(element.number_of_participants, "NUM PART");
-            // console.log(this.maxPointsPerCompetenceDimension, " max Comp");
+            console.log(element.job_profile_name);
+            console.log(element.number_of_threat_situations, "NUM THREAT");
+            console.log(element.number_of_participants, "NUM PART");
+            console.log(this.maxPointsPerCompetenceDimension, " max Comp");
             maxPoints +=
               element.number_of_participants *
               this.maxPointsPerCompetenceDimension *
               element.number_of_threat_situations;
-            // console.log(maxPoints, "MAX");
+            console.log(maxPoints, "MAX");
           }
         }
       }
@@ -1178,7 +1244,7 @@ export default {
     setUpProfileDistribution() {
       let profileDistributionData = [];
       let profileJobNameData = [];
-      for (const profileData of Object.values(this.jobProfiles)) {
+      for (const profileData of Object.values(this.jobProfileDistribution)) {
         if (profileData.job_profile_id != 0) {
           profileDistributionData.push(
             Math.round(
