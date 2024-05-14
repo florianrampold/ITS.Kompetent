@@ -21,6 +21,9 @@ class JWTWithCSRFMiddleware(MiddlewareMixin):
         '/api/delete_campagne/',
         '/api/decrypt_emails/',
         '/api/remove_security_key/',
+        '/api/invalidate_invitation_tokens/',
+        '/api/end_campaign/',
+
     }
     def process_response(self, request, response):
 

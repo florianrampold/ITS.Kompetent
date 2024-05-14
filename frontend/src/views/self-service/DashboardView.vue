@@ -11,11 +11,11 @@
         >
           <h1 class="main-heading">
             <span class="text-primary font-semibold"
-              >Willkommen im <br />
+              >Ergebnisse zu<br />
             </span>
             {{ " " }}
             <span class="text-secondary xl:inline"
-              >KMU-Kampagnen-Management-Portal</span
+              >den ITS-Kompetenztests</span
             >
           </h1>
         </div>
@@ -41,18 +41,23 @@
 
             <br />
             <br />
-            <strong>Achtung:</strong> In der Einstellung, die von Ihrem oder
-            Ihrer Adminstrator*in vorgenommen wurde, werden Ihnen erst
+            <strong>Achtung:</strong> In der Einstellung, die Sie vorgenommen haben, werden Ihnen erst
             aggregierte Daten zu einem ITS-Anforderungsprofil angezeigt, wenn
             mindestens {{ securityDisplayThreshold }} Mitarbeiter*innen aus
             diesem ITS-Anforderungsprofil an der Kampagne teilgenommen haben.
+            <br/>   <br/>
+            Sobald die Mindestanzahl erreicht ist, können Sie sich dazu
+            entscheiden die Kampagne zu beenden.
           </p>
         </div>
       </template>
 
       <template #buttons>
         <div
-          v-if="totalNumberOfParticipants >= securityDisplayThreshold"
+          v-if="
+            totalNumberOfParticipants >= securityDisplayThreshold &&
+            campagneStore.campagneEnded
+          "
           class="flex flex-row justify-center items-center lg:justify-start"
         >
           <div class="flex mr-4 flex-col">
@@ -72,6 +77,20 @@
               @click="exportTrainingsToExcel()"
             >
               Trainings abrufen
+              <CloudArrowDownIcon class="ml-4 w-8 h-8"></CloudArrowDownIcon>
+            </a>
+          </div>
+        </div>
+        <div
+          v-if="!campagneStore.campagneEnded"
+          class="flex flex-row justify-center items-center lg:justify-start"
+        >
+          <div class="flex mr-4 flex-col">
+            <a
+              class="w-full cursor-pointer flex justify-between font-semibold items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-secondary hover:bg-secondaryAccent mt-12 md:py-4 md:text-lg md:px-10"
+              @click="openEndCampagneModal()"
+            >
+              <span> Kampagne beenden </span>
               <CloudArrowDownIcon class="ml-4 w-8 h-8"></CloudArrowDownIcon>
             </a>
           </div>
@@ -176,7 +195,12 @@
         </div>
       </template>
     </Hero>
-    <div v-if="totalNumberOfParticipants >= securityDisplayThreshold">
+    <div
+      v-if="
+        totalNumberOfParticipants >= securityDisplayThreshold &&
+        campagneStore.campagneEnded
+      "
+    >
       <div class="bg-primary py-20">
         <div class="standard-container">
           <h2 class="main-heading pt-5 pb-10 text-white">Filter</h2>
@@ -191,13 +215,9 @@
               class="mt-3 text-base text-white sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl lg:mx-0"
             >
               Hier können Sie die Ergebnisse der ITS-Kompetenztests nach
-              ITS-Anforderungsprofilen filtern. Sobald mindestens
+              ITS-Anforderungsprofilen filtern. Dies ist nur möglich, wenn mindestens
               {{ securityDisplayThreshold }} Personen innerhalb eines
-              ITS-Anforderungsprofils teilgenommen haben, erscheint das
-              ITS-Anforderungsprofil in dem Dropdown. Die Einstellung "Alle"
-              wird sichtbar, sobald es mindestens
-              {{ securityDisplayThreshold }} Teilnehmende innerhalb mindestens 2
-              verschiedener ITS-Anforderungsprofile gibt.
+              ITS-Anforderungsprofils teilgenommen haben.
             </p>
           </div>
           <div class="flex justify-center items-center">
@@ -378,14 +398,14 @@
           </div>
           <div>
             <h2
-              v-if="selectedProfile.job_profile_id === 0"
+              v-if="selectedProfile.job_profile_id === 0 && !showAll"
               class="text-2xl tracking-tight font-extrabold text-primary text-center sm:text-3xl md:text-4xl mb-10"
             >
               Aggregierte Ergebnisse für die ITS-Anforderungsprofile <br />
               mit mindestens {{ securityDisplayThreshold }} Teilnehmer*innen
             </h2>
             <div
-              v-if="selectedProfile.job_profile_id === 0"
+              v-if="selectedProfile.job_profile_id === 0 && !showAll"
               class="flex flex-row justify-center items-center"
             >
               <div
@@ -393,7 +413,7 @@
               ></div>
             </div>
             <div
-              v-if="selectedProfile.job_profile_id === 0"
+              v-if="selectedProfile.job_profile_id === 0 && !showAll"
               class="flex flex-col justify-center items-center"
             >
               <p
@@ -555,6 +575,21 @@
         </div>
       </div>
     </div>
+    <div v-if="endCampagneModal">
+      <end-campagne-modal
+        :job-profiles="jobProfileDistribution.slice(1)"
+        :security-display-threshold="securityDisplayThreshold"
+        @close-modal="endCampagneModal = false"
+        @end-campaign="endCampaign"
+      ></end-campagne-modal>
+    </div>
+    <PopUp
+      v-if="showFailurePopUp"
+      :type="popupType"
+      :title="popupTitle"
+      :content="popupContent"
+      @popup-closed="showFailurePopUp = false"
+    />
   </template>
 </template>
 
@@ -568,6 +603,8 @@ import CampagneService from "../../services/campagne.service.js";
 import TrainingsTable from "@/components/training/TrainingsTable.vue";
 import { useCampagneStore } from "@/store/CampagneStore";
 import { useTrainingsStore } from "@/store/TrainingsStore";
+import EndCampagneModal from "@/components/self-service/EndCampagneModal.vue";
+
 import { useAuthStore } from "@/store/AuthStore";
 
 import * as XLSX from "xlsx";
@@ -587,6 +624,7 @@ export default {
     DoughnutChart,
     TrainingsTable,
     ThreatsTable,
+    EndCampagneModal,
     Listbox,
     ListboxButton,
     ListboxOptions,
@@ -632,6 +670,7 @@ export default {
       numberOfCompetenceDImensions: 0,
       jobProfiles: [],
       jobProfileDistribution: [],
+      jobProfilesCopy: [],
       trainings: [],
       competenceTestResults: {},
       oneInvitationCode: null,
@@ -643,6 +682,8 @@ export default {
       },
 
       securityDisplayThreshold: 0,
+      aggregateOverSingleProfiles: false,
+      showAll: false,
 
       mockedThreatData: [],
       mockedCompetenceData: [],
@@ -666,6 +707,14 @@ export default {
       competenceScoreGood: "",
       competenceScoreMedium: "",
       competenceScoreBad: "",
+
+      endCampagneModal: false,
+      showFailurePopUp: false,
+
+      //popup
+      popupTitle: "",
+      popupType: "",
+      popupContent: "",
     };
   },
   /**
@@ -712,15 +761,49 @@ export default {
    * It basically fecthes the data on scored points and prepares all chart data that is displayed including the results of the aggregated test results.
    */
   async mounted() {
-    const response = await this.authStore.getUserProfile();
-    this.securityDisplayThreshold = response.security_display_threshold;
+    // const response = await this.authStore.getUserProfile();
+    const campagneData = await this.campagneStore.getCampagne();
+    if (campagneData.campaign_ended) {
+      this.campagneStore.setCampagneEnded();
+    }
     this.refreshData();
+
+    // this.securityDisplayThreshold = response.security_display_threshold;
   },
   methods: {
+    async endCampaign(aggregateOverAllProfiles) {
+      this.aggregateOverSingleProfiles = !aggregateOverAllProfiles;
+
+      this.campagneStore.setCampagneEnded();
+      this.isLoading = true;
+      await this.campagneStore.endCampaign({
+        aggregateOverSingleProfiles: this.aggregateOverSingleProfiles,
+      });
+      await this.campagneStore.invalidateInvitationTokens();
+      this.$nextTick(async () => {
+        await this.refreshData();
+      });
+    },
+     openEndCampagneModal() {
+      if (this.totalNumberOfParticipants >= this.securityDisplayThreshold) {
+        this.endCampagneModal = true;
+      } else {
+        this.popupType = "danger";
+        this.popupTitle = "Kampagne beenden";
+        this.popupContent = `Die Kampagne kann nur beendet werden, wenn mindestens ${this.securityDisplayThreshold} Mitarbeiter*innen teilgenommen haben.`;
+
+        this.showFailurePopUp = true;
+      }
+    },
     async refreshData() {
       this.isLoading = true;
+      this.trainings = await this.trainingsStore.getTrainings();
+
       const campagneData = await this.campagneStore.getCampagne();
       this.oneInvitationCode = campagneData.one_token_mode;
+      this.securityDisplayThreshold = campagneData.security_display_threshold;
+      this.aggregateOverSingleProfiles =
+        campagneData.aggregate_over_single_profiles;
 
       this.invitationTokens = await CampagneService.getInvitedEmployees();
       // if each employee gets a separate invitation code
@@ -743,6 +826,12 @@ export default {
       this.jobProfiles = Object.values(this.jobProfileDistribution).filter(
         (obj) => obj.number_of_participants >= this.securityDisplayThreshold
       );
+
+      if (!this.aggregateOverSingleProfiles) {
+        this.jobProfilesCopy = Object.values(this.jobProfiles);
+        this.jobProfiles = this.jobProfiles.slice(0, 1);
+        this.showAll = true;
+      }
       if (this.jobProfiles.length > 0) {
         this.selectedProfile = this.jobProfiles[0];
       } else {
@@ -762,7 +851,6 @@ export default {
         this.setUpCompetenceBarChart();
         this.setCompetenceScores();
 
-        this.trainings = await this.trainingsStore.getTrainings();
         this.matchTrainings(this.trainings);
         this.trainings = this.sortAndShuffleTrainings(this.trainings);
         this.filterTrainingsPerPage(this.trainings);
@@ -779,7 +867,6 @@ export default {
       try {
         this.isLoading = true;
         const response = await this.campagneStore.getManagementReport();
-        console.log(response, "the response");
 
         const file = new Blob([response.data], { type: "application/pdf" });
 
@@ -1062,8 +1149,6 @@ export default {
       dataToExport = this.prepareDataForExport(dataToExport);
       var i = 0;
 
-      console.log(dataToExport, " export data");
-
       // Continue with the SheetJS export process
       const workbook = XLSX.utils.book_new();
 
@@ -1095,9 +1180,16 @@ export default {
         // ... fetch data logic ...
         this.competenceTestResults =
           await CampagneService.getCompetenceTestResults(newProfile);
-        this.numberOfThreats = Object.values(
-          this.competenceTestResults[0].total_threat_situation_scores
-        ).length;
+
+        if (newProfile != 0) {
+          this.numberOfThreats = Object.values(
+            this.competenceTestResults[0].total_threat_situation_scores
+          ).length;
+        } else {
+          this.numberOfThreats =
+            this.competenceTestResults[0].number_of_threats;
+        }
+
         this.numberOfCompetenceDimensions = Object.values(
           this.competenceTestResults[0].total_competence_dimension_scores
         ).length;
@@ -1150,18 +1242,20 @@ export default {
       let competenceScoreData = [];
       let competenceDimensionData = [];
       let maxPoints = 0;
+      let array = [];
+      if (this.showAll) {
+        array = this.jobProfileDistribution;
+      } else {
+        array = this.jobProfiles;
+      }
       if (this.selectedProfile.job_profile_id == 0) {
-        for (const element of this.jobProfiles) {
+        for (const element of array) {
           if (element.job_profile_id != 0) {
-            console.log(element.job_profile_name);
-            console.log(element.number_of_threat_situations, "NUM THREAT");
-            console.log(element.number_of_participants, "NUM PART");
-            console.log(this.maxPointsPerCompetenceDimension, " max Comp");
+          
             maxPoints +=
               element.number_of_participants *
               this.maxPointsPerCompetenceDimension *
               element.number_of_threat_situations;
-            console.log(maxPoints, "MAX");
           }
         }
       }
@@ -1313,17 +1407,37 @@ export default {
     setUpThreats() {
       let totalPoints = 0;
       let maxPoints = 0;
-      for (const element of Object.values(
-        this.competenceTestResults[0].total_threat_situation_scores
-      )) {
-        totalPoints += element.total_scoredPoints;
+      let array = [];
+      if (this.showAll) {
+        array = this.jobProfileDistribution;
+      } else {
+        array = this.jobProfiles;
       }
       if (this.selectedProfile.job_profile_id != 0) {
-        maxPoints =
-          this.competenceTestResults[0].number_of_participants *
-          (this.totalPossiblePointsPerThreat * this.numberOfThreats);
+        for (const element of Object.values(
+          this.competenceTestResults[0].total_threat_situation_scores
+        )) {
+          totalPoints += element.total_scoredPoints;
+        }
+        if (this.selectedProfile.job_profile_id != 0) {
+          maxPoints =
+            this.competenceTestResults[0].number_of_participants *
+            (this.totalPossiblePointsPerThreat * this.numberOfThreats);
+        } else {
+          for (const element of array) {
+            if (element.job_profile_id != 0) {
+              maxPoints +=
+                element.number_of_participants *
+                this.totalPossiblePointsPerThreat *
+                element.number_of_threat_situations;
+            }
+          }
+        }
       } else {
-        for (const element of this.jobProfiles) {
+        totalPoints =
+          this.competenceTestResults[0].total_threat_situation_scores
+            .total_scoredPoints;
+        for (const element of array) {
           if (element.job_profile_id != 0) {
             maxPoints +=
               element.number_of_participants *

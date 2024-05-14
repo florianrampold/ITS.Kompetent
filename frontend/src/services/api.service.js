@@ -1,5 +1,4 @@
 import axios from "axios";
-
 const APIService = {
   _401interceptor: null,
 
@@ -13,7 +12,10 @@ const APIService = {
       const cookies = document.cookie.split(";");
       for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i].trim();
-        if (cookie.substring(0, "csrfauthtoken".length + 1) === "csrfauthtoken" + "=") {
+        if (
+          cookie.substring(0, "csrfauthtoken".length + 1) ===
+          "csrfauthtoken" + "="
+        ) {
           csrfToken = decodeURIComponent(
             cookie.substring("csrfauthtoken".length + 1)
           );
@@ -31,6 +33,7 @@ const APIService = {
   init(baseURL) {
     axios.defaults.baseURL = baseURL;
     axios.defaults.withCredentials = true;
+    this.setupCsrfInterceptor();
   },
 
   /**
@@ -39,7 +42,28 @@ const APIService = {
   setHeader() {
     axios.defaults.headers.common["Content-Type"] = "application/json";
     axios.defaults.headers.common["Accept"] = "application/json";
-    axios.defaults.headers.common["X-CSRFToken"] = this.getCsrfToken();
+  },
+  /**
+   * Sets up a request interceptor to add the CSRF token dynamically to each request.
+   */
+  setupCsrfInterceptor() {
+    axios.interceptors.request.use(
+      (config) => {
+        // Retrieve the most recent CSRF token
+        const csrfToken = this.getCsrfToken();
+        if (csrfToken) {
+          config.headers["X-CSRFToken"] = csrfToken;
+        }
+        // Set other common headers
+        config.headers["Content-Type"] = "application/json";
+        config.headers["Accept"] = "application/json";
+        return config;
+      },
+      (error) => {
+        // Handle the request error
+        return Promise.reject(error);
+      }
+    );
   },
 
   /**

@@ -118,8 +118,8 @@ export default {
       default: () => [],
     },
     disadvantages: {
-      type: String,
-      default: "",
+      type: Array,
+      default: () => [],
     },
     label: {
       type: Number,

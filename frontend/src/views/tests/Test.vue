@@ -763,7 +763,6 @@ export default {
           this.questionIndex += 1;
           // wenn ja, ändere die aktuell aktive Frage
           if (this.questionIndex < this.activeTestItem.question_item.length) {
-            //console.log("FRAGE ZUM ITEM");
 
             this.activeQuestion =
               this.activeTestItem.question_item[this.questionIndex];
@@ -789,7 +788,6 @@ export default {
 
               this.activeQuestion = this.activeTestItem.question_item[0];
               await this.getAnswerOptions(this.activeQuestion.id);
-              //this.increasePercentage();
               // wenn nicht gehe zum nächsten ThreatVector
             } else {
               this.threatVectorIndex += 1;
@@ -807,22 +805,14 @@ export default {
                 this.threatAwareness = true;
                 this.showImpulse = true;
 
-                /*  await this.getThreatSituations(
-                  this.testSituations[0].threat_vector[
-                    this.threatVectorIndex - 1
-                  ].id,
-                  this.profileID
-                ); */
-
+              
                 // IMMER threatSituation 0 zunächst, da nur eine Handlungssituation pro ThreatVector modelliert wird
                 this.activeThreatSituation =
                   this.testSituations[this.threatVectorIndex - 1];
 
-                //console.log(this.threatSituations, " situations");
                 // get alle TestSzenarien für den ersten ThreatVector
                 await this.getTestItems(this.activeThreatSituation.id);
 
-                //this.contentProgress = 0;
 
                 await this.getAnswerOptions(this.activeQuestion.id);
                 this.getScenarioNumber();

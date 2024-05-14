@@ -66,16 +66,41 @@
               enthält.
             </p>
           </div>
+          <div v-else>
+            <p
+              class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl lg:mx-0"
+            >
+              In dieser Ansicht können Sie zunächst Mitarbeiter*innen einladen
+              an ITS.Kompetent teilzunehmen. Sie können sich zunächst
+              entscheiden, ob sie einen Einladungs-Code, den alle
+              Mitarbeiter*innen nutzen oder einen Einladungs-Code pro
+              Mitarbeiter*in generieren möchten. <br />
+              <br />
 
-          <p
-            v-else
-            class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl lg:mx-0"
-          >
-            In dieser Ansicht können Sie zunächst Mitarbeiter*innen einladen an
-            ITS.Kompetent teilzunehmen. Sie können sich zunächst entscheiden, ob
-            sie einen Einladungs-Code, den alle Mitarbeiter*innen nutzen oder
-            einen Einladungs-Code pro Mitarbeiter*in generieren möchten.
-          </p>
+              Sie müssen sich an dieser Stelle zudem festlegen, ab wie vielen
+              Teilnehmenden aus einem ITS-Anforderungsprofil Ergebnisse
+              angezeigt werden sollen. Der Minimum-Wert liegt aus
+              Datenschutzgründen bei 5 Teilnehmenden.
+            </p>
+            <div class="py-5 max-w-lg">
+              <!-- Field for securityDisplayThreshold -->
+              <div class="mb-4">
+                <label
+                  for="securityDisplayThreshold"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Minimum Teilnehmende für die Datenaggregation (Minimum 5)
+                </label>
+                <input
+                  id="securityDisplayThreshold"
+                  v-model.number="form.securityDisplayThreshold"
+                  type="number"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  @input="validateThreshold"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </template>
       <template #buttons>
@@ -580,6 +605,12 @@ export default {
 
       securityKey: null,
       securityKeyActivated: true,
+      form: {
+        securityDisplayThreshold: 5,
+        securityDisplayProfile: 1,
+      },
+      maxThreshold: 10, // This could be dynamically determined from other data
+      maxProfile: 5, // This could be dynamically determined from other data
       oneInvitationCode: null,
       uploadModalOpen: false,
       confirmationModalOpen: false,
@@ -713,6 +744,18 @@ export default {
     this.applyFilters();
   },
   methods: {
+    validateThreshold() {
+      if (this.form.securityDisplayThreshold < 1) {
+        this.form.securityDisplayThreshold = 1; // Reset to min if below 5
+      }
+    },
+    validateProfile() {
+      if (this.form.securityDisplayProfile < 1) {
+        this.form.securityDisplayProfile = 1;
+      } else if (this.form.securityDisplayProfile > this.maxProfile) {
+        this.form.securityDisplayProfile = this.maxProfile;
+      }
+    },
     /**
      * Sets the domainURL. This has the purpose to directly link to the competence tests with a specific invitation token
      *
@@ -851,7 +894,6 @@ export default {
       } else if (this.invitationOption == 2) {
         this.oneInvitationCode = false;
         this.securityKey = await this.campagneStore.generateSecurityKey();
-        console.log(this.securityKey);
         this.downloadSecurityKey();
       }
     },
@@ -908,8 +950,19 @@ export default {
       this.uploadName = payload.uploadName;
       this.uploadCount = payload.uploadCount;
       this.emails = payload.uploadedEmails;
-      console.log(this.uploadName, this.uploadCount);
-      this.generateInvitationTokens();
+
+      if (
+        this.emails.length < this.form.securityDisplayThreshold &&
+        this.invitationObjects < 1
+      ) {
+        this.popupType = "danger";
+        this.popupTitle = "E-Mail hochladen";
+        this.popupContent = `Bitte laden Sie mindestens ${this.form.securityDisplayThreshold} E-Mail-Adressen hoch.`;
+
+        this.showFailurePopUp = true;
+      } else {
+        this.generateInvitationTokens();
+      }
     },
     /**
      * A method that generates the invitation tokens
@@ -920,6 +973,8 @@ export default {
       // create new campagne if this is the first time the user generates invitation tokens
       if (!this.campagneStore.campagneStarted) {
         await this.campagneStore.postCampagne({
+          securityDisplayThreshold: this.form.securityDisplayThreshold,
+          securityDisplayProfile: this.form.securityDisplayProfile,
           oneInvitationToken: this.oneInvitationCode,
         });
       }

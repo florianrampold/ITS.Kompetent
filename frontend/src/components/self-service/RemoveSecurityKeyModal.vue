@@ -5,6 +5,7 @@
   >
     <div
       class="relative mx-auto p-5 border w-1/2 shadow-lg rounded-md bg-white"
+      style="max-height: calc(100vh - 4rem); overflow-y: auto"
       @click.stop
     >
       <div class="text-center">

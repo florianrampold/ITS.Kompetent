@@ -9,7 +9,6 @@ urlpatterns = [
     path('auth/jwt/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('status/', status, name='status'),
     path('logout/', logout_view, name='logout'),
-    path('get_user_profile/', get_user_profile, name='get_user_profile'),
 
     
     #path('accounts/', include('django.contrib.auth.urls')),

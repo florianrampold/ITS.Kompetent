@@ -100,9 +100,13 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
     df_job_profiles = pd.DataFrame.from_dict(job_profiles, orient='index')
 
     # Calculate total_points from competence test results
-    number_of_threats = df_competence_test_results['total_threat_situation_scores'].apply(len).sum()
-    total_points = df_competence_test_results['total_threat_situation_scores'].apply(
-    lambda row: sum(item['total_scoredPoints'] for item in row.values())).sum()
+    if selected_profile != 0:
+        number_of_threats = df_competence_test_results['total_threat_situation_scores'].apply(len).sum()
+        total_points = df_competence_test_results['total_threat_situation_scores'].apply(
+        lambda row: sum(item['total_scoredPoints'] for item in row.values())).sum()
+    else:
+        number_of_threats = df_competence_test_results['number_of_threats']
+        total_points = df_competence_test_results['total_threat_situation_scores'][0]['total_scoredPoints']
 
 
     # If 0 job_profile = Allgemein
@@ -187,7 +191,7 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
 
     return img_html
     
-def generate_competence_bar_chart(competence_test_results, job_profiles, selected_profile_id):
+def generate_competence_bar_chart(competence_test_results, job_profiles, selected_profile_id, security_display_threshold, aggregate_over_single_profiles):
     """Creates a bar chart showing the percentage of scored points per competence dimension over all security threats related to a job profile.
 
     Args:
@@ -202,9 +206,12 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
     # Convert dictionaries to pandas DataFrames
     df_competence_test_results = pd.DataFrame.from_dict(competence_test_results, orient='index')
     df_job_profiles = pd.DataFrame.from_dict(job_profiles, orient='index')
+    if aggregate_over_single_profiles:
+        df_job_profiles = df_job_profiles[(df_job_profiles['number_of_participants'] >= security_display_threshold)]
 
-    # Constants (you may need to adjust these based on your actual data)
-    NUMBER_OF_THREATS = df_competence_test_results['total_threat_situation_scores'].apply(len).sum()
+    
+
+    NUMBER_OF_THREATS = df_competence_test_results['number_of_threats'].iloc[0]
 
 
     # Initialize variables
@@ -233,6 +240,8 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
                 score = round((element['total_scoredPoints'] / maxPoints) * 100) if maxPoints else 0
             competenceScoreData.append(score)
             competenceDimensionData.append(element['description'])
+    
+      
 
     df_for_plotting = pd.DataFrame({
     'CompetenceDimension': competenceDimensionData,
@@ -318,7 +327,6 @@ def generate_competence_bar_chart_per_threat(threat, competence_test_results):
 
     # Loop through competence test results to calculate scores
     for competence_dimension in threat.values():
-                        # Assuming 'number_of_participants' is a column in df_competence_test_results for the selected profile
                     participants = df_competence_test_results.iloc[0]['number_of_participants']
                     score = round(
                         (competence_dimension['total_scoredPoints'] /

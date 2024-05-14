@@ -88,7 +88,6 @@ export default {
      */
     handleVisibilityChange() {
       if (document.visibilityState === "visible" && this.authStore.isLoggedIn) {
-        console.log("Page is now in the foreground. Checking token...");
         this.authStore.refreshToken();
         this.authStore.startTokenExpiryTimer();
       }

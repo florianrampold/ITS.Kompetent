@@ -6,6 +6,7 @@ export const useCampagneStore = defineStore("campagne", {
   state: () => {
     return {
       campagneStarted: false,
+      campagneEnded: false,
     };
   },
   getters: {
@@ -30,6 +31,19 @@ export const useCampagneStore = defineStore("campagne", {
     setCampagneStarted(value) {
       this.campagneStarted = Boolean(value);
     },
+    /**
+     * Ends a campaign
+     */
+    setCampagneEnded() {
+      this.campagneEnded = true;
+    },
+    /**
+     * Ends a campaign
+     */
+    setCampagneEndedBack() {
+      this.campagneEnded = false;
+    },
+
     /**
      * Generates invitation tokens and calls the campagneService to perform the action
      */
@@ -170,10 +184,10 @@ export const useCampagneStore = defineStore("campagne", {
      * @param {string} oneInvitationToken - The token to use for the new campaign.
      * @throws {Error} If posting the campaign fails.
      */
-    async postCampagne(oneInvitationToken) {
+    async postCampagne(data) {
       const auth = useAuthStore();
       try {
-        await campagneService.postCampagne(oneInvitationToken);
+        await campagneService.postCampagne(data);
       } catch (error) {
         if (
           (error.response && error.response.status === 403) ||
@@ -195,6 +209,46 @@ export const useCampagneStore = defineStore("campagne", {
 
       try {
         await campagneService.removeSecurityKey();
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
+      }
+    },
+    /**
+     * Asynchronously ends the campaign.
+     * @throws {Error} If ending the campaign fails.
+     */
+    async endCampaign(data) {
+      const auth = useAuthStore();
+
+      try {
+        await campagneService.endCampaign(data);
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 403) ||
+          error.response.status === 401
+        ) {
+          auth.logout();
+        } else {
+          throw error;
+        }
+      }
+    },
+    /**
+     * Asynchronously ends the campaign.
+     * @throws {Error} If ending the campaign fails.
+     */
+    async invalidateInvitationTokens() {
+      const auth = useAuthStore();
+
+      try {
+        await campagneService.invalidateInvitationTokens();
       } catch (error) {
         if (
           (error.response && error.response.status === 403) ||

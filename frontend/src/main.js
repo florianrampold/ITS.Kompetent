@@ -42,7 +42,6 @@ const pinia = createPinia();
 const app = createApp(App);
 APIService.init(backendURL);
 APIService.setHeader();
-
 app.use(pinia);
 app.use(router);
 

@@ -13,8 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 import os
 from django.core.exceptions import ImproperlyConfigured
@@ -41,6 +40,8 @@ DOMAIN_URL=get_env_variable('API_URL')
 SITE_ID = 1  # typically 1 for a new project, but this can vary
 # Application definition
 CSRF_COOKIE_AGE = None
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 #CSRF_COOKIE_SECURE = False
 #SESSION_COOKIE_SECURE = False
 #CSRF_COOKIE_SAMESITE = 'None'
@@ -87,12 +88,21 @@ CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://l
 
 from datetime import timedelta
 
-# Fetching keys from environment variables and replacing escaped newlines
-#SIGNING_KEY = os.environ.get('ITSKOMPETENT_RSA_PRIVATE_KEY', '').replace('\\n', '\n')
-#VERIFYING_KEY = os.environ.get('ITSKOMPETENT_RSA_PUBLIC_KEY', '').replace('\\n', '\n')
+#For RSA KEY USAGE
 
-#if not SIGNING_KEY or not VERIFYING_KEY:
-    #raise Exception("RSA keys are not loaded from environment variables.")
+""" BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Path to the RSA keys
+RSA_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'keys', 'mykey')
+RSA_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'keys', 'mykey.pub')
+
+# Read the private key
+with open(RSA_PRIVATE_KEY_PATH, 'r') as key_file:
+    RSA_PRIVATE_KEY = key_file.read()
+
+# Read the public key
+with open(RSA_PUBLIC_KEY_PATH, 'r') as key_file:
+    RSA_PUBLIC_KEY = key_file.read() """
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=300),  # Set to your desired lifetime
@@ -110,6 +120,25 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 
 }
+
+# FOR RSA USAGE
+""" SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=300),  # Set to your desired lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=18000),  # Set to your desired lifetime
+    'ROTATE_REFRESH_TOKENS': True,  # enable refresh token rotation
+    'BLACKLIST_AFTER_ROTATION': True,  # enable blacklisting for older refresh tokens
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'ALGORITHM': 'RS256',
+    'SIGNING_KEY': RSA_PRIVATE_KEY,
+    'VERIFYING_KEY': RSA_PUBLIC_KEY,
+    'VERIFYING_KEY': None ,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+} """
 
 
 

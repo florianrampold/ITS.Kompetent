@@ -107,6 +107,7 @@ export const useAuthStore = defineStore({
         console.error("Error during logout:", error);
       }
     },
+
     /**
      * Starts a counter until the access token stored as HTTPOnlyCookie becomes invalid. The interval should be set to repeat shortly before the access token lifetime expires.
      * Calls refreshToken to make an API call to refresh access and refresh token.
@@ -117,9 +118,8 @@ export const useAuthStore = defineStore({
 
       this.refreshInterval = setInterval(() => {
         this.refreshToken();
-      }, 250000); // Refresh every 250 seconds
+      }, 280000); // Refresh every 250 seconds
     },
-   
     /**
      * Stops the interval to make an API call to refresk tokens.
      */
@@ -146,21 +146,6 @@ export const useAuthStore = defineStore({
         ) {
           await this.logout(true);
           this.stopTokenExpiryTimer();
-        }
-      }
-    },
-    /**
-     * Asynchronously retrieves user profile details.
-     * @returns {Promise<Object>} A promise that resolves to the campaign details.
-     */
-     async getUserProfile() {
-      const auth = useAuthStore();
-
-      try {
-        return await authService.getUserProfile();
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          auth.logout();
         }
       }
     },
