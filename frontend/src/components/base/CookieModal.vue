@@ -60,13 +60,7 @@
         >
           <div class="justify-start">
             <div>
-              <router-link
-                class="font-bold"
-                to="/impressum"
-                @click="checkTestMode()"
-              >
-                Impressum </router-link
-              >|
+              
               <router-link
                 class="font-bold"
                 to="/datenschutz"

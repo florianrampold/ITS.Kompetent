@@ -16,79 +16,7 @@
             </p>
           </div>
 
-          <div class="mt-10">
-            <h5 class="uppercase font-bold mb-2.5 text-primary">
-              ITS.kompetent
-            </h5>
-
-            <ul class="list-none mb-0">
-              <li>
-                <router-link
-                  class="text-primary"
-                  to="/contact"
-                  @click="checkTestMode()"
-                >
-                  Kontakt
-                </router-link>
-              </li>
-              <li>
-                <router-link
-                  class="text-primary"
-                  to="/about"
-                  @click="checkTestMode()"
-                >
-                  Über uns
-                </router-link>
-              </li>
-              <!--  <li>
-              <a
-                href="https://www.uni-goettingen.de/de/3240.html"
-                target="_blank"
-                class="text-primary"
-                >News</a
-              >
-            </li> -->
-            </ul>
-          </div>
-
-          <div class="mt-10">
-            <h5 class="uppercase font-bold mb-2.5 text-primary">Partner</h5>
-
-            <ul class="list-none mb-0">
-              <li>
-                <a
-                  href="https://www.bmwi.de/Navigation/DE/Home/home.html"
-                  target="_blank"
-                  class="text-primary"
-                  >BMWK</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://www.it-sicherheit-in-der-wirtschaft.de/ITS/Navigation/DE/Home/home.html"
-                  target="_blank"
-                  class="text-primary"
-                  >IT-Sicherheit in der Wirtschaft</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://www.mittelstand-digital.de/MD/Navigation/DE/Home/home.html"
-                  target="_blank"
-                  class="text-primary"
-                  >Mittelstand Digital</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://www.uni-goettingen.de"
-                  target="_blank"
-                  class="text-primary"
-                  >Universität Göttingen</a
-                >
-              </li>
-            </ul>
-          </div>
+         
         </div>
       </div>
     </div>
@@ -96,9 +24,7 @@
     <div class="text-primary text-center p-4 bg-white flex justify-evenly">
       <p>© {{ currentYear }} ITS.Kompetent</p>
       <div>
-        <router-link class="font-bold" to="/impressum" @click="checkTestMode()">
-          Impressum </router-link
-        >|
+        
         <router-link
           class="font-bold"
           to="/datenschutz"

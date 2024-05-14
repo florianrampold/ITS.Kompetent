@@ -63,6 +63,8 @@ class ImageItemAdmin(admin.ModelAdmin):
     """
 
     list_display = ("image_name", "image_description")
+    search_fields = ("image_name",)
+
 
 class ChoiceItemAdmin(admin.ModelAdmin):
     """

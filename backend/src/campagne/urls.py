@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('post_invitations/', views.create_invitations, name='create_invitations'),
+    path('invalidate_invitation_tokens/', views.invalidate_invitation_tokens, name='invalidate_invitation_tokens'),
+
     path('get_invitations/', views.get_invitations, name='get_invitations'),
    # path('modify_invitations/', views.modify_all_invitations, name='modify_all_invitations'),
    # path('invitations/<str:invitationToken>/', views.modify_invitation, name='modify_invitation'),
@@ -14,6 +16,7 @@ urlpatterns = [
     path('create_campagne/', views.create_campagne),
     path('get_campagne/', views.get_campagne),
     path('remove_security_key/', views.remove_security_key),
+    path('end_campaign/', views.end_campaign),
     path('generate_key/', views.generate_key_view),
     path('decrypt_emails/', views.decrypt_emails_view),
    # path('generate_invitation_email/', views.generate_invitation_email, name='generate_invitation_email'),

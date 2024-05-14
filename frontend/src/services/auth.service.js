@@ -1,4 +1,5 @@
 import API from "./api.service";
+import router from "../router/index.js";
 
 export default {
   /**
@@ -38,11 +39,15 @@ export default {
    * @returns {Promise<Object>} A promise that resolves to the data of the logout response.
    * @throws {Error} Rethrows any error encountered during the API request.
    */
-  async logout() {
+  async logout(intercepted) {
     // eslint-disable-next-line no-useless-catch
     try {
       const response = await API.get("/logout/");
-      return response.data;
+      if (intercepted) {
+        router.push("/login");
+      } else {
+        return response.data;
+      }
     } catch (error) {
       throw error;
     }
@@ -70,18 +75,4 @@ export default {
       }
     }
   },
-    /**
-   * Asynchronously gets the user profile in the database
-   * @returns {Promise<Object>} A promise that resolves to the data of the get response
-   * @throws {Error} Rethrows any error encountered during the API request.
-   */
-     async getUserProfile() {
-      try {
-        const response = await API.get("/get_user_profile/");
-        return response.data;
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    },
 };

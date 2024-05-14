@@ -146,10 +146,11 @@ export default {
    * @returns {Promise<Object>} A promise that resolves to the data of the post response
    * @throws {Error} Rethrows any error encountered during the API request.
    */
-  async postCampagne(oneInvitationToken) {
+  async postCampagne(data) {
+
     // eslint-disable-next-line no-useless-catch
     try {
-      const response = await API.post("/create_campagne/", oneInvitationToken);
+      const response = await API.post("/create_campagne/", data);
       return response.data;
     } catch (error) {
       throw error;
@@ -193,6 +194,40 @@ export default {
   async removeSecurityKey() {
     try {
       const response = await API.put("/remove_security_key/");
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      if (error.response && error.response.data) {
+        return null;
+      }
+      return []; // or throw error;
+    }
+  },
+  /**
+   * Asynchronously ends a campaign
+   * @returns {Promise<Object>} A promise that resolves to the data of the put response
+   * @throws {Error} Rethrows any error encountered during the API request.
+   */
+  async endCampaign(data) {
+    try {
+      const response = await API.put("/end_campaign/", data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      if (error.response && error.response.data) {
+        return null;
+      }
+      return []; // or throw error;
+    }
+  },
+  /**
+   * Asynchronously ends a campaign
+   * @returns {Promise<Object>} A promise that resolves to the data of the put response
+   * @throws {Error} Rethrows any error encountered during the API request.
+   */
+  async invalidateInvitationTokens() {
+    try {
+      const response = await API.put("/invalidate_invitation_tokens/");
       return response.data;
     } catch (error) {
       console.log(error);

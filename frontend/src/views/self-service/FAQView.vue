@@ -5,9 +5,12 @@
         class="flex justify-center items-center lg:items-start lg:justify-start"
       >
         <h1 class="main-heading">
-          <span class="text-primary font-semibold">Antworten auf <br /> </span>
-          {{ " " }}
-          <span class="text-secondary xl:inline">Ihre Fragen</span>
+           <span class="text-primary font-semibold"
+              >Willkommen im <br />
+            </span>
+            {{ " " }}
+            <span class="text-secondary xl:inline"
+              >KMU-Kampagnen-Management-Portal</span>
         </h1>
       </div>
     </template>

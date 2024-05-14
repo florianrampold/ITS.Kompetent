@@ -4,7 +4,6 @@
       <div class="flex flex-wrap items-center justify-between">
         <div class="flex sm:w-0 sm:flex-1 items-center">
           <span class="flex rounded-lg bg-indigo-800 p-2">
-            <!-- Heroicon name: outline/megaphone -->
             <MegaphoneIcon class="h-6 w-6 text-white"> </MegaphoneIcon>
           </span>
           <p class="ml-3 truncate font-medium text-white">
@@ -75,7 +74,7 @@ export default {
       default: "",
     },
   },
- 
+
   data() {
     return {
       showModal: false,
@@ -83,6 +82,10 @@ export default {
       updateTrigger: false, // This is used to force updates
     };
   },
+   /**
+     * Determines if user blocks cookies by browser
+     *
+     */
   computed: {
     getCookie() {
       return !!Cookies.get("dataPolicySet") || this.updateTrigger;
@@ -102,8 +105,8 @@ export default {
      *
      */
     saveCookies() {
-      const expires = 30; // days until the cookie expires
-      Cookies.set("dataPolicySet", true, { expires });
+      //const expires = 30; // days until the cookie expires
+      Cookies.set("dataPolicySet", true);
       this.updateTrigger = !this.updateTrigger; // Toggle to force reactivity
     },
   },

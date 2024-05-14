@@ -4,7 +4,11 @@
     class="fixed inset-0 flex items-center justify-center z-10"
     @click="closeModal"
   >
-    <div class="bg-white w-2/3 md:w-1/2 rounded shadow-lg" @click.stop>
+    <div
+      class="bg-white w-2/3 md:w-1/2 rounded shadow-lg"
+      style="max-height: calc(100vh - 4rem); overflow-y: auto"
+      @click.stop
+    >
       <div class="p-6">
         <!-- Modal header -->
         <div class="flex justify-between items-center mb-6">
@@ -144,8 +148,8 @@
           v-else
           class="text-white font-bold py-2 px-4 rounded"
           :class="{
-            'bg-gray-200': disabled,
-            'bg-primary hover:bg-primaryAccent': !disabled,
+            'bg-gray-200': isDisabled,
+            'bg-primary hover:bg-primaryAccent': !isDisabled,
           }"
           :disabled="!fileData"
           @click="saveData"
@@ -188,6 +192,12 @@ export default {
     };
   },
   computed: {
+    /**
+     * A computed property that set upload button to disabled if there is no file data
+     */
+    isDisabled() {
+      return !this.fileData;
+    },
     /**
      * A computed property to only retrieve the e-mail uplaoded on the respective page
      */

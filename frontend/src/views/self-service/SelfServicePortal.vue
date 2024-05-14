@@ -54,7 +54,7 @@
           <div class="ml-auto flex items-center">
             <button
               :class="{ hidden: activeTab != 'Dashboard' }"
-              class="text-white bg-primary font-semibold rounded-md px-4 py-2 flex items-center"
+              class="text-white bg-primary font-semibold rounded-md px-4 py-2 mr-4 flex items-center"
               @click="refreshData"
             >
               Aktualisieren
@@ -89,14 +89,25 @@
             @save-decision="deleteCampagne"
           ></confirmation-modal>
         </div>
-        <div class="fixed bottom-0 h-16 bg-white shadow-2xl w-full">
-          <div
-            class="text-primary text-center p-4 flex justify-start items-center"
-          >
-            <p>© {{ currentYear }} ITS.Kompetent</p>
-          </div>
+        <div v-if="endCampaignModal">
+          <confirmation-modal
+            @close-modal="endCampaignModal = false"
+            @save-decision="endCampaign"
+          ></confirmation-modal>
         </div>
       </div>
+    </div>
+    <div
+      class="hidden xl:block xl:fixed xl:bottom-0 xl:h-16 xl:bg-white xl:shadow-2xl xl:w-full"
+    >
+      <div
+        class="text-primary text-center p-4 flex justify-center items-center"
+      >
+        <p>© {{ currentYear }} ITS.Kompetent</p>
+      </div>
+    </div>
+    <div class="fixed bottom-0 w-screen">
+      <cookie-banner></cookie-banner>
     </div>
   </template>
 </template>
@@ -140,6 +151,7 @@ export default {
     return {
       loading: false,
       deleteCampagneModal: false,
+      endCampaignModal: false,
       activeTab: "",
       currentYear: new Date().getFullYear(),
       refresh: false,
@@ -169,8 +181,11 @@ export default {
   methods: {
     async setCampagne() {
       try {
-        await this.campagneStore.getCampagne();
+        const campagne = await this.campagneStore.getCampagne();
         this.campagneStore.setCampagneStarted(true);
+        if (campagne.campaign_ended) {
+          this.campagneStore.setCampagneEnded(true);
+        }
       } catch (error) {
         this.campagneStore.setCampagneStarted(false);
       }
@@ -200,12 +215,26 @@ export default {
       this.deleteCampagneModal = true;
     },
     /**
+     * Opens a modal that asks the user whether he or she is sure to delete the campagne.
+     */
+    openEndCampagneModal() {
+      this.endCampaignModal = true;
+    },
+    /**
      * Method to delete a campagne. Wait for the async call and triggers loading screen until the campagne is deleted.
      */
     async deleteCampagne() {
       this.campagneStore.removeCampagneStarted();
       this.loading = true;
       await this.campagneStore.deleteCampagne();
+      setTimeout(() => (this.loading = false), 500);
+    },
+    async endCampaign() {
+      this.campagneStore.setCampagneEndedBack();
+      this.loading = true;
+      await this.campagneStore.endCampaign({
+        aggregateOverSingleProfiles: true,
+      });
       setTimeout(() => (this.loading = false), 500);
     },
   },

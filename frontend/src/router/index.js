@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/AuthStore";
 import { useCampagneStore } from "@/store/CampagneStore";
 import Home from "../views/general/Home.vue";
 import GetStarted from "../views/tests/GetStarted.vue";
+import Contact from "../views/general/Contact.vue";
 import About from "../views/general/About.vue";
 import Impressum from "../views/general/Impressum.vue";
 import Datenschutz from "../views/general/Datenschutz.vue";
@@ -28,24 +29,26 @@ const routes = [
     path: "/getstarted",
     name: "GetStarted",
     component: GetStarted,
+    meta: { getStartedActive: true },
   },
 
   {
     path: "/competence-tests/introduction/:invitationToken?",
     name: "TestIntroduction",
     component: TestIntroduction,
-    meta: { invitationToken: true }, // This meta field will be used to check for invitation token
+    meta: { invitationToken: true, testButtonActive: true }, // This meta field will be used to check for invitation token
   },
   {
     path: "/competence-tests/profile/:invitationToken?",
     name: "Profile",
     component: Profile,
+    meta: { testButtonActive: true },
   },
   {
     path: "/competence-tests/overview/:invitationToken?",
     name: "TestLanding",
     component: TestLanding,
-    meta: { invitationToken: true }, // This meta field will be used to check for authentication
+    meta: { invitationToken: true, testButtonActive: true }, // This meta field will be used to check for authentication
   },
   {
     path: "/dashboard",
@@ -57,7 +60,7 @@ const routes = [
     path: "/competence-tests/test/:invitationToken?",
     name: "Test",
     component: Test,
-    meta: { invitationToken: true }, // This meta field will be used to check for authentication
+    meta: { invitationToken: true, testButtonActive: true }, // This meta field will be used to check for authentication
   },
   {
     path: "/login",
@@ -76,7 +79,14 @@ const routes = [
     path: "/competence-tests/dashboard/",
     name: "Dashboard",
     component: Dashboard,
+    meta: { testButtonActive: true },
+
     // meta: { invitationToken: true }, // This meta field will be used to check for authentication
+  },
+  {
+    path: "/contact",
+    name: "Contact",
+    component: Contact,
   },
   {
     path: "/about",
@@ -102,6 +112,8 @@ const routes = [
     path: "/competence-tests/trainings/",
     name: "TrainingsLanding",
     component: TrainingsLanding,
+    meta: { testButtonActive: true },
+
     // meta: { invitationToken: true }, // This meta field will be used to check for authentication
   },
   { path: "/:pathMatch(.*)*", component: PathNotFound },
@@ -117,6 +129,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore();
+
   const campagneStore = useCampagneStore();
 
   // Wait for the app's authentication status check to complete
@@ -154,7 +167,6 @@ router.beforeEach(async (to, from, next) => {
 
   // For accessing protected routes
   if (isProtectedRoute && !auth.isLoggedIn) {
-    console.log("redirect");
     return next({ path: "/login", query: { redirect: to.fullPath } });
   } else {
     return next();

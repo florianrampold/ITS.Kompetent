@@ -31,8 +31,8 @@ from .charts import  *
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views import decorators
 from django.db.models import Count
-import os
 from django.core.exceptions import ImproperlyConfigured
+
 
 def is_valid_fernet_key(key):
     """Check if the key provided is a valid fernet key. A valid Fernet key is 44 URL-safe base64-encoded characters.
@@ -159,8 +159,9 @@ def create_campagne(request):
     try:
         data = json.loads(request.body)
         oneInvitationToken = data.get('oneInvitationToken')
+        security_display_threshold = data.get('securityDisplayThreshold')
         created_by = request.user
-        Campagne.objects.create(created_by=created_by, one_token_mode=oneInvitationToken)
+        Campagne.objects.create(created_by=created_by, one_token_mode=oneInvitationToken, security_display_threshold = security_display_threshold)
         return Response({'message': 'Campagne created'}, status=200)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
@@ -184,9 +185,79 @@ def remove_security_key(request):
     """
     user = request.user
     try:
-        campagne = Campagne.objects.get(created_by_id=user)
+        campagne = Campagne.objects.get(created_by=user)
         campagne.security_key_activated = False
         serializer = CampagneSerializer(campagne, data={"security_key_activated": False}, partial=True)
+
+
+        if serializer.is_valid():
+
+            serializer.save()  # Save the instance
+            return Response({'message': 'Campagne changed'}, status=200)
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Campagne.DoesNotExist:
+        return Response({'error': 'Campagne not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def invalidate_invitation_tokens(request):
+    """
+    Removes the usage of a security key to decrypt e-mails stored in the data base.
+
+    Args:
+        request (HttpRequest): A Django HttpRequest object containing the HTTP request information.
+        The method expects the authenticated user to be set in request.POST parameters.
+
+    Returns:
+        Response: A Django Response object. 
+        - Returns a success message and status 200 if the campagne is changed successfully.
+        - Returns an error message and status 400 if the campagne cannot be created due to invalid input or server errors.
+        - Returns an error message and status 404 if the campagne associated to the specified user is not found.
+
+    """
+    user = request.user
+    try:
+        invitations = Invitation.objects.filter(created_by_id=user)
+        with transaction.atomic():
+            for invitation in invitations:
+                serializer = InvitationSerializer(invitation, data={'usage_active': False}, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'message': 'Invitations changed'}, status=200)
+
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Invitation.DoesNotExist:
+        return Response({'error': 'Invitation not found'}, status=status.HTTP_404_NOT_FOUND)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def end_campaign(request):
+    """
+    End the campaign.
+
+    Args:
+        request (HttpRequest): A Django HttpRequest object containing the HTTP request information.
+        The method expects the authenticated user to be set in request.POST parameters.
+
+    Returns:
+        Response: A Django Response object. 
+        - Returns a success message and status 200 if the campagne is changed successfully.
+        - Returns an error message and status 400 if the campagne cannot be created due to invalid input or server errors.
+        - Returns an error message and status 404 if the campagne associated to the specified user is not found.
+
+    """
+    user = request.user
+    try:
+        data = json.loads(request.body)
+        campagne = Campagne.objects.get(created_by_id=user)
+        campagne.campaign_ended = True
+        aggregate_over_single_profiles = data.get('aggregateOverSingleProfiles')
+
+        serializer = CampagneSerializer(campagne, data={"campaign_ended": True, "aggregate_over_single_profiles": aggregate_over_single_profiles}, partial=True)
 
         if serializer.is_valid():
             serializer.save()  # Save the instance
@@ -305,7 +376,8 @@ def validate_invitation_token(request, invitation_token):
     # Fetch the invitation from the database
     try:
         invitation = Invitation.objects.get(token=invitation_token)
-        if invitation.is_participated:
+        print(invitation.usage_active, " usage")
+        if invitation.is_participated or not invitation.usage_active:
             return Response({'valid': False}, status=400)
         else: 
             return Response({'valid': True})
@@ -414,6 +486,7 @@ def get_competence_test_results(request, profile_id):
     user = request.user
     aggregated_results = defaultdict(lambda: {
             'total_threat_situation_scores': defaultdict(lambda: {'total_scoredPoints': 0, 'threat_vector_name': '', 'threat_vector_description': '', 'ids': []}),
+            'number_of_threats': 0,  # This will be calculated based on entries in total_threat_situation_scores
             'total_competence_dimension_scores': defaultdict(lambda: {'total_scoredPoints': 0, 'description': ''})
     })
     if profile_id != 0:
@@ -423,17 +496,34 @@ def get_competence_test_results(request, profile_id):
 
     # profile_id is 0 --> aggregates competence_test results over all job profiles
     else:
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile = Campagne.objects.get(created_by=user)
+
+
         queryset = CompetenceTestResult.objects.filter(created_by=user)
-        # Annotating each entry with the count of participants for the same job profile
-        queryset = queryset.values('job_profile').annotate(participant_count=Count('id'))
+        
 
-        # Filtering to keep only those job profiles with at least 5 participants
-        queryset = queryset.filter(participant_count__gte=user_profile.security_display_threshold)
+        if user_profile.aggregate_over_single_profiles:
+            # Annotating each entry with the count of participants for the same job profile
+            queryset = queryset.values('job_profile').annotate(participant_count=Count('id'))
 
-        # Now, get the actual test results matching the job profiles with enough participants
-        filtered_job_profiles = queryset.values_list('job_profile', flat=True)
-        final_queryset = CompetenceTestResult.objects.filter(job_profile__in=filtered_job_profiles, created_by=user)
+            # Filtering to keep only those job profiles with at least 5 participants
+            queryset = queryset.filter(participant_count__gte=user_profile.security_display_threshold)
+             # Now, get the actual test results matching the job profiles with enough participants
+            filtered_job_profiles = queryset.values_list('job_profile', flat=True)
+            final_queryset = CompetenceTestResult.objects.filter(job_profile__in=filtered_job_profiles, created_by=user)
+            # Now, get the actual test results matching the job profiles with enough participants
+            filtered_job_profiles = queryset.values_list('job_profile', flat=True)
+            final_queryset = CompetenceTestResult.objects.filter(job_profile__in=filtered_job_profiles, created_by=user)
+
+        else:
+            final_queryset = CompetenceTestResult.objects.filter(created_by=user)
+
+        
+        
+
+        
+
+           
 
         # Serializing the data
         serializer = CompetenceTestResultSerializer(final_queryset, many=True)
@@ -444,6 +534,7 @@ def get_competence_test_results(request, profile_id):
     competence_scores = defaultdict(lambda: {'total_scoredPoints': 0, 'competence_dimension_name': ''})
     threat_competence_scores = defaultdict(lambda: {'competence_dimension_id': 0, 'competence_dimension_name': '', 'total_scoredPoints':0})
     competence_scores_per_threat = defaultdict(lambda: defaultdict(lambda: { 'competence_dimension_name': '', 'total_scoredPoints': 0}))
+
     for item in serialized_data:
         job_profile_id = profile_id
         job_profile_aggregate = aggregated_results[0]
@@ -467,11 +558,14 @@ def get_competence_test_results(request, profile_id):
 
         
         # Aggregate ThreatSituationScore
+       
+
         for threat_score in item['threat_situation_score']:
            
             key = threat_score['threat_situation']
             aggregate = job_profile_aggregate['total_threat_situation_scores'][key]
             aggregate['total_scoredPoints'] += threat_score['scoredPoints']
+
             threat_situation = ThreatSituation.objects.get(pk=threat_score['threat_situation'])
             threat_vector = ThreatVector.objects.get(pk=threat_score['threat_vector'])
             threat_vector_description = threat_vector.threat_vector_description
@@ -519,20 +613,31 @@ def get_competence_test_results(request, profile_id):
                         'competence_dimension_name': score_info["competence_dimension_name"], 
                         'total_scoredPoints': score_info["scoredPoints"]
                     }
-           
 
-            aggregate['job_profile'] = str(threat_situation.job_profile)
-            aggregate['job_profile_id'] = threat_situation.job_profile.id
-            aggregate['threat_vector_name'] = str(threat_event_name) + "/" + str(threat_area_name)
-            aggregate['threat_vector_description'] = threat_vector_description
-            aggregate['ids'].append(threat_score['id'])
-            aggregate['related_competence_dimension_scores'] = competence_scores_per_threat
+   
+                aggregate['job_profile'] = str(threat_situation.job_profile)
+                aggregate['job_profile_id'] = threat_situation.job_profile.id
+                aggregate['threat_vector_name'] = str(threat_event_name) + "/" + str(threat_area_name)
+                aggregate['threat_vector_description'] = threat_vector_description
+                aggregate['ids'].append(threat_score['id'])
+                aggregate['related_competence_dimension_scores'] = competence_scores_per_threat
+           
+    for ts_id in aggregated_results:
+        aggregated_results[ts_id]['number_of_threats'] = len(aggregated_results[ts_id]['total_threat_situation_scores'])
 
     # Convert defaultdict to regular dict for serialization
     aggregated_results = {k: dict(v) for k, v in aggregated_results.items()}
     for job_profile in aggregated_results.values():
         job_profile['total_competence_dimension_scores'] = dict(job_profile['total_competence_dimension_scores'])
         job_profile['total_threat_situation_scores'] = dict(job_profile['total_threat_situation_scores'])
+
+
+    # If profile_id is 0, replace detailed scores with just the sum of total_scoredPoints
+    if int(profile_id) == 0:
+        for ts_id, data in aggregated_results.items():
+            total_scoredPoints = sum(score['total_scoredPoints'] for score in data['total_threat_situation_scores'].values())
+            # Replace old detailed dict with a new one that only contains the total sum
+            aggregated_results[ts_id]['total_threat_situation_scores'] = {'total_scoredPoints': total_scoredPoints}
 
     return Response(aggregated_results)
     
@@ -580,7 +685,7 @@ def get_participants_per_profile(request):
     
     user = request.user
 
-    user_profile = UserProfile.objects.get(user=user)
+    user_profile = Campagne.objects.get(created_by=user)
 
 
 
@@ -616,27 +721,25 @@ def get_participants_per_profile(request):
 
     index = 0
     id =0
-    if num_job_profiles_secure > 1:
-        queryset = CompetenceTestResult.objects.filter(created_by=user)
-        competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
-
+    queryset = CompetenceTestResult.objects.filter(created_by=user)
+    competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
+    #if num_job_profiles_secure >= user_profile.security_display_profile:
+    if not user_profile.aggregate_over_single_profiles:
         job_profile_dict[index] = {
             "job_profile_id": id,
             "job_profile_name": "Alle",
-            "number_of_participants": participant_count_secure
+            "number_of_participants": len(competence_serializer.data)
         }
+    elif len(competence_serializer.data) >= user_profile.security_display_threshold and user_profile.aggregate_over_single_profiles:
+        job_profile_dict[index] = {
+            "job_profile_id": id,
+            "job_profile_name": "Alle",
+            "number_of_participants": len(competence_serializer.data)
+        }
+
 
     return Response(job_profile_dict)
 
-
-
-
-def get_env_variable(var_name):
-    try:
-        return os.environ[var_name]
-    except KeyError:
-        error_msg = f"Set the {var_name} environment variable"
-        raise ImproperlyConfigured(error_msg)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -659,16 +762,27 @@ def generate_management_report(request):
     trainings = Training.objects.order_by('training_name')
     competence_dimensions = list(CompetenceDimension.objects.all())
 
+    user = request.user
+    user_profile = Campagne.objects.get(created_by=user)
+
+
 
     # content over all participants
     job_profiles = get_participants_per_profile(request._request)
+
+
 
 
     df = pd.DataFrame.from_dict(job_profiles.data, orient='index')
 
     
     # Filter out entries with 'Alle' and zero participants
-    df_filtered = df[(df['number_of_participants'] > 0)]
+    if user_profile.aggregate_over_single_profiles:
+        df_filtered = df[(df['number_of_participants'] >= user_profile.security_display_threshold)]
+    else:
+        df_filtered = df[(df['number_of_participants'] >0)]
+        df_filtered =  df[df['job_profile_id'] == 0]
+
     total_number_of_partcipants = df_filtered.iloc[0]['number_of_participants']
     job_profile_with_data = len(df[(df['number_of_participants'] > 0)])
     df_filtered['sort_helper'] = (df_filtered['job_profile_id'] == 0).astype(int)
@@ -694,31 +808,33 @@ def generate_management_report(request):
         # Generate charts
         threat_chart = generate_threat_chart(competence_test_results.data, job_profiles.data, selected_profile)
         threat_charts.append(threat_chart)
-        competence_bar_chart = generate_competence_bar_chart(competence_test_results.data, job_profiles.data, selected_profile)
+        competence_bar_chart = generate_competence_bar_chart(competence_test_results.data, job_profiles.data, selected_profile, user_profile.security_display_threshold, user_profile.aggregate_over_single_profiles)
         competence_bar_charts.append(competence_bar_chart)
+        
+        if selected_profile != 0:
 
-        for _, row in df_competence_test_results.iterrows():
-            for threat in row['total_threat_situation_scores'].values():
+            for _, row in df_competence_test_results.iterrows():
+                for threat in row['total_threat_situation_scores'].values():
 
-                threat['score'] = round((threat['total_scoredPoints'] /
-                    (df_competence_test_results.iloc[0]['number_of_participants'] *
-                      14)) * 100)
-                if threat['score'] >=66:
-                    threat['result'] = 'good'
-                elif threat['score'] <=33:
-                    threat['result'] = 'bad'
-                else: 
-                    threat['result'] = 'medium'
+                    threat['score'] = round((threat['total_scoredPoints'] /
+                        (df_competence_test_results.iloc[0]['number_of_participants'] *
+                        14)) * 100)
+                    if threat['score'] >=66:
+                        threat['result'] = 'good'
+                    elif threat['score'] <=33:
+                        threat['result'] = 'bad'
+                    else: 
+                        threat['result'] = 'medium'
 
 
-                values = list(threat['related_competence_dimension_scores'].values())
+                    values = list(threat['related_competence_dimension_scores'].values())
 
-                if values:  # Check if the list of values is not empty
-                    first_value = values[0]  # Access the first value
-                
-                if selected_profile != 0:
-                    competence_bar_chart_per_threat = generate_competence_bar_chart_per_threat(first_value, competence_test_results.data)
-                    threat_chart_per_profile.append({'chart': competence_bar_chart_per_threat, 'threat': threat})
+                    if values:  # Check if the list of values is not empty
+                        first_value = values[0]  # Access the first value
+                    
+                    if selected_profile != 0:
+                        competence_bar_chart_per_threat = generate_competence_bar_chart_per_threat(first_value, competence_test_results.data)
+                        threat_chart_per_profile.append({'chart': competence_bar_chart_per_threat, 'threat': threat})
 
         competence_bar_charts_per_threat.append(threat_chart_per_profile)                    
     profile_distribution = generate_job_profile_distribution(job_profiles.data)
@@ -748,3 +864,11 @@ def generate_management_report(request):
     # Anpassen an IP-Adresse der VM oder des virtuellen Webservers
     HTML(string=html_string, base_url=get_env_variable('API_URL')).write_pdf(response)
     return response
+
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = f"Set the {var_name} environment variable"
+        raise ImproperlyConfigured(error_msg)

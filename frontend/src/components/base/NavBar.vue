@@ -55,30 +55,8 @@
                 Home
               </router-link>
             </li>
-            <li
-              v-if="!isTestButtonActive"
-              class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
-            >
-              <router-link
-                class="lg:p-4 py-2 hover:text-primary lg:shadow-none"
-                to="/about"
-                @click="toggle"
-              >
-                Über Uns
-              </router-link>
-            </li>
-            <li
-              v-if="!isTestButtonActive"
-              class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
-            >
-              <router-link
-                class="lg:p-4 py-2 hover:text-primary lg:shadow-none"
-                to="/contact"
-                @click="toggle"
-              >
-                Kontakt
-              </router-link>
-            </li>
+            
+            
             <li
               v-if="!isTestButtonActive"
               class="flex justify-center lg:flex-none lg:justify-none h-14 lg:h-auto"
@@ -89,7 +67,7 @@
                 to="/getstarted"
                 @click="toggle"
               >
-                Los geht's
+                Zum Test
               </router-link>
             </li>
             <li

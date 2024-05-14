@@ -74,7 +74,7 @@
     <div class="flex flex-row justify-center items-center">
       <div class="border-b-4 rounded-lg w-14 border-secondary mb-10"></div>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 gap-y-20 lg:gap-x-20">
+    <div class="grid grid-cols-1 gap-10 gap-y-20 lg:gap-x-20 justify-items-center items-center">
       <test-mode
         :value="selectedValue"
         :label="2"
@@ -83,13 +83,6 @@
         name="An einer bestehenden Kampagne teilnehmen"
         @change="changeTestMode"
         @input="checkInvitationToken"
-      ></test-mode>
-      <test-mode
-        :value="selectedValue"
-        :label="1"
-        description="Sie haben Interesse, dass Ihr KMU an ITS.Kompetent teilnimmt oder möchten im Voraus einen Einblick in unsere ITS-Kompetenztests erhalten? Dann wählen Sie diese Option und nehmen erfolgreich an ITS.Kompetent teil!"
-        name="ITS.Kompetent als Testversion ausprobieren"
-        @change="changeTestMode"
       ></test-mode>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
   <div
-    class="bg-white border-2 h-150 lg:h-200 border-gray-200 rounded-lg"
+    class="bg-white border-2 w-full md:w-3/4 lg:w-1/2 h-150 lg:h-200 border-gray-200 rounded-lg"
     :class="{ 'border-primary': value == label }"
   >
     <div class="mx-auto px-4 sm:px-6 lg:px-8">
