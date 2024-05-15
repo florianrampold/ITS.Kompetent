@@ -745,8 +745,8 @@ export default {
   },
   methods: {
     validateThreshold() {
-      if (this.form.securityDisplayThreshold < 1) {
-        this.form.securityDisplayThreshold = 1; // Reset to min if below 5
+      if (this.form.securityDisplayThreshold < 5) {
+        this.form.securityDisplayThreshold = 5; // Reset to min if below 5
       }
     },
     validateProfile() {

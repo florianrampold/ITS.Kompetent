@@ -87,8 +87,8 @@ class Campagne(models.Model):
     # none if not set, true for one invitation code, false for multiple invitation codes
     one_token_mode = models.BooleanField(null=True)
     security_key_activated = models.BooleanField(default=True)
-    security_display_threshold = models.IntegerField(default= 1, validators=[
-        MinValueValidator(1)
+    security_display_threshold = models.IntegerField(default= 5, validators=[
+        MinValueValidator(5)
     ], verbose_name="Minimum Teilnehmende für die Datenaggregation")
     aggregate_over_single_profiles= models.BooleanField(default=True)
     campaign_ended = models.BooleanField(default=False)
