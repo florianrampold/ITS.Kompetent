@@ -4,8 +4,6 @@ import { useCampagneStore } from "@/store/CampagneStore";
 import Home from "../views/general/Home.vue";
 import GetStarted from "../views/tests/GetStarted.vue";
 import Contact from "../views/general/Contact.vue";
-import About from "../views/general/About.vue";
-import Impressum from "../views/general/Impressum.vue";
 import Datenschutz from "../views/general/Datenschutz.vue";
 import Profile from "../views/profile/ProfileLanding.vue";
 import TestLanding from "../views/tests/TestLanding.vue";
@@ -89,19 +87,9 @@ const routes = [
     component: Contact,
   },
   {
-    path: "/about",
-    name: "About Us",
-    component: About,
-  },
-  {
     path: "/account",
     name: "Account",
     component: Login,
-  },
-  {
-    path: "/impressum",
-    name: "Impressum",
-    component: Impressum,
   },
   {
     path: "/datenschutz",
