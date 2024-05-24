@@ -55,7 +55,7 @@ media
 # Distribution / packaging
 .Python
 build/
-db/
+#db/
 develop-eggs/
 dist/
 downloads/
