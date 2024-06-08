@@ -46,7 +46,7 @@ class JWTWithCSRFMiddleware(MiddlewareMixin):
         if request.path in self.protected_routes:
             csrf_token_header = request.headers.get('X-CSRFToken')
             csrf_token_cookie = request.COOKIES.get('csrfauthtoken')
-            print(csrf_token_cookie, "cookie")
+           # print(csrf_token_cookie, "cookie")
 
             if not csrf_token_header or not csrf_token_cookie or csrf_token_header != csrf_token_cookie:
                 return HttpResponseForbidden('CSRF cookie not set')
