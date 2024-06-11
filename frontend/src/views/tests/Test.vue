@@ -530,8 +530,7 @@ export default {
     },
     /**
      * Changes the answer option given by the user for multiple choice questions
-     * Finally calls getImpulseItems
-     * @param {Object} newAnswer The new answer emitted to the Test vue 
+     * @param {Object} newAnswer The new answer emitted to the Test vue
      * @param {Array} answerRating The array including the rating of the answer (0 bad, 1 medium, 2 good)
 
      */
@@ -549,13 +548,14 @@ export default {
           1
         );
       }
-      var i = 0;
-      for (i; i < this.answerRatingsByUser.length; i++) {
-        if (this.answerRatingsByUser[i] != 2) {
-          this.activeAnswer.answerQuality = 0;
-        } else {
-          this.activeAnswer.answerQuality = 2;
-        }
+
+      // Check the contents of answerRatingsByUser
+      if (this.answerRatingsByUser.every((rating) => rating === 2)) {
+        this.activeAnswer.answerQuality = 2;
+      } else if (this.answerRatingsByUser.some((rating) => rating === 2)) {
+        this.activeAnswer.answerQuality = 1;
+      } else {
+        this.activeAnswer.answerQuality = 0;
       }
     },
     /**

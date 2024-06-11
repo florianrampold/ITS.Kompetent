@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
-
-
-
 import os
 from django.core.exceptions import ImproperlyConfigured
 
@@ -78,13 +75,11 @@ CORS_ALLOWED_ORIGINS = [
 "http://localhost:8081",
 "https://*.127.0.0.1",
 "http://localhost",
-"http://192.168.2.59",
-"http://10.116.65.170"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://localhost", "http://192.168.2.59", "http://10.116.65.170"]
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://localhost"]
 
 from datetime import timedelta
 
