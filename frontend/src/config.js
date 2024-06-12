@@ -2,8 +2,8 @@
 
 let frontendUrl;
 let backendURL;
-frontendUrl = "http://XXX.XXX.XXX";
+frontendUrl = "http://XXX.XXX.XX";
 
-backendURL= "http://XXX.XXX.XXX:8000/api"
+backendURL= "http://XXX.XXX.XX:8000/api"
 
 export { frontendUrl, backendURL };

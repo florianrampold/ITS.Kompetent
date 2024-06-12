@@ -682,6 +682,7 @@ export default {
         var j = 0;
 
         for (j; j < this.numberOfCompetenceDimensions; j++) {
+        
           tempScore =
             this.competenceTestResult.test_situations[i].threat_vector
               .test_items[j].question_item[0].points;

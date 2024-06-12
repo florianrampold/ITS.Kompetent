@@ -79,7 +79,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://localhost"]
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', "http://localhost:8081","http://localhost",]
 
 from datetime import timedelta
 

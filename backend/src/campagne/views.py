@@ -17,6 +17,7 @@ from threats.models import ThreatVector, ThreatSituation
 from competence_tests.models import CompetenceTest
 import base64
 import ast
+import os
 from collections import defaultdict
 from cryptography.fernet import Fernet
 from django.template.loader import render_to_string
@@ -376,7 +377,6 @@ def validate_invitation_token(request, invitation_token):
     # Fetch the invitation from the database
     try:
         invitation = Invitation.objects.get(token=invitation_token)
-        print(invitation.usage_active, " usage")
         if invitation.is_participated or not invitation.usage_active:
             return Response({'valid': False}, status=400)
         else: 

@@ -477,19 +477,24 @@ export default {
      * Finally calls getImpulseItems
      * @param {Object} threatSituation The threatSituations that is used to retrieve the related test items.
      */
-    async getTestItems(threatSituation) {
-      this.testItems = await this.competenceTestStore.getTestItems(
-        threatSituation
-      );
-      this.activeTestItem = this.testItems[0];
-      // There may be multiple questions to a threat situation (NOT IMPLEMENTED)
-      this.activeQuestion = this.activeTestItem.question_item[0];
-      this.competenceTestResult.test_situations[
-        this.threatVectorIndex - 1
-      ].threat_vector.test_items = JSON.parse(JSON.stringify(this.testItems));
-      if (this.activeTestItem.impulse_item) {
-        this.getImpulseItems();
-      }
+     async getTestItems(threatSituation) {
+        this.testItems = await this.competenceTestStore.getTestItems(
+          threatSituation
+        );
+        this.testItems.sort(
+          (a, b) => a.competence_dimension.id - b.competence_dimension.id
+        );
+
+
+        this.activeTestItem = this.testItems[0];
+        // There may be multiple questions to a threat situation (NOT IMPLEMENTED)
+        this.activeQuestion = this.activeTestItem.question_item[0];
+        this.competenceTestResult.test_situations[
+          this.threatVectorIndex - 1
+        ].threat_vector.test_items = JSON.parse(JSON.stringify(this.testItems));
+        if (this.activeTestItem.impulse_item) {
+          this.getImpulseItems();
+        }
     },
     /**
      * Gets the impulse items related to the test items retrieved before and sets these impulse items into an active array.

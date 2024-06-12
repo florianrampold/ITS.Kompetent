@@ -54,13 +54,6 @@
                       />
                     </div>
                     <div
-                      class="flex justfiy-start underline hover:text-primary cursor-pointer"
-                    >
-                      <span @click="navigateToPasswordReset()"
-                        >Passwort zurücksetzen</span
-                      >
-                    </div>
-                    <div
                       class="col-span-2 pt-5 my-5 flex justify-center items-center"
                     >
                       <button class="btn-primary" type="submit">
