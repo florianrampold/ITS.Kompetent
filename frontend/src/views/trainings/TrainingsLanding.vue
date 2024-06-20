@@ -29,15 +29,28 @@
         <br />
         Durch einen Klick auf das jeweilige Training erhalten Sie umfassende
         Informationen zu dem Trainings-Angebot. Ihr ITS-Kompetenztest ist nun
-        beendet. Vielen Dank für Ihre Teilnahme!
+        beendet. Vielen Dank für Ihre Teilnahme! <br />
+        <br />
+
+         <strong>
+          Bitte nehmen Sie nun an der bereitgestellten Umfrage zu ITS.kompetent
+          teil. Dazu klicke Sie bitte auf den Button "Zur Umfrage".</strong
+        >
       </p></template
     >
     <template #buttons>
-      <div
-        class="flex justify-center items-center lg:items-start lg:justify-start flex-row"
-      >
+      <div class="flex flex-row justify-center items-center lg:justify-start">
+        <div class="flex mr-4 flex-col">
+          <a
+            class="w-full cursor-pointer flex justify-between font-semibold items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-secondary hover:bg-secondaryAccent mt-12 md:py-4 md:text-lg md:px-10"
+            href="https://example.com/survey"
+          >
+            <span> Zur Umfrage </span>
+            <CloudArrowDownIcon class="ml-4 w-8 h-8"></CloudArrowDownIcon>
+          </a>
+        </div>
         <div
-          class="flex justify-center items-center lg:items-start lg:justify-start"
+          class="flex ml-4 flex-col justify-center items-center lg:items-start lg:justify-start"
         >
           <a
             class="w-full cursor-pointer flex justify-between font-semibold items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primaryAccent mt-12 md:py-4 md:text-lg md:px-10"
