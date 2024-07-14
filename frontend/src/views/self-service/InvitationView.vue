@@ -1051,6 +1051,11 @@ export default {
           throw new Error("Decryption failed");
         });
     },
+    /**
+     * Maps the decrpyted_email to the encrypted_email object in filteredInvitationObjects
+     * @param {Number} obj The emails (encrypted, decrypted) from the backend
+     *
+     */
     updateInvitationObjects(emails) {
       emails.forEach((emailData) => {
         const index = this.filteredInvitationObjects.findIndex(
