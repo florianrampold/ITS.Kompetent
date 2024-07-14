@@ -101,19 +101,20 @@ def decrypt_emails_view(request):
     serializer = InvitationSerializer(invitations, many=True)
     encrypted_emails = [item['email_encrypted'] for item in serializer.data]
     try:
-        # Convert the key from URL-safe base64-encoded string to bytes
         f = Fernet(key)
-        decrypted_emails = []
-        for email in encrypted_emails:
-            # Convert string representation of bytes to actual bytes
-            byte_email = ast.literal_eval(email)
+        email_data = []
+        for invitation_data in serializer.data:
+            encrypted_email = invitation_data['email_encrypted']
+            byte_email = ast.literal_eval(encrypted_email)
             decrypted_email = f.decrypt(byte_email).decode()
-            decrypted_emails.append(decrypted_email)
+            email_data.append({
+                'encrypted_email': encrypted_email,
+                'decrypted_email': decrypted_email
+            })
 
-        return JsonResponse({'decrypted_emails': decrypted_emails})
+        return JsonResponse({'emails': email_data})
     except Exception as e:
-        return JsonResponse({'Invalid security key': str(e)}, status=400)
-
+        return JsonResponse({'error': str(e)}, status=400)
 
 
 

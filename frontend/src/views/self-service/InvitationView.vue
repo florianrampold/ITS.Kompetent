@@ -458,7 +458,7 @@
                   </tr>
                 </thead>
                 <tbody
-                  v-for="(resource, index) in filteredInvitationObjects"
+                  v-for="resource in filteredInvitationObjects"
                   :key="resource.id"
                 >
                   <tr v-if="oneInvitationCode == false" class="">
@@ -477,7 +477,7 @@
                       v-if="decryptedEmails.length > 0"
                       class="py-4 px-6 border-b text-center"
                     >
-                      {{ decryptedEmails[index] }}
+                      {{ resource.decrypted_email }}
                     </td>
 
                     <td class="py-4 px-6 border-b">
@@ -1038,7 +1038,8 @@ export default {
           key: this.securityKey,
         })
         .then((response) => {
-          this.decryptedEmails = response.decrypted_emails;
+          this.updateInvitationObjects(response.emails);
+          this.decryptedEmails = response.emails;
         })
         .catch((error) => {
           // Handle decryption error
@@ -1049,6 +1050,17 @@ export default {
           console.error(error);
           throw new Error("Decryption failed");
         });
+    },
+    updateInvitationObjects(emails) {
+      emails.forEach((emailData) => {
+        const index = this.filteredInvitationObjects.findIndex(
+          (obj) => obj.email_encrypted === emailData.encrypted_email
+        );
+        if (index !== -1) {
+          this.filteredInvitationObjects[index].decrypted_email =
+            emailData.decrypted_email;
+        }
+      });
     },
     /**
      * A method that prepares the data of invitation tokens inot better redable format in an excel file.
