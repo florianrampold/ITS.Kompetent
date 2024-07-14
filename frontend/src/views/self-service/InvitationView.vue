@@ -1073,9 +1073,9 @@ export default {
      *
      */
     prepareDataForExport(dataArray) {
-      return dataArray.map((item, index) => ({
+      return dataArray.map((item) => ({
         "Einladungs-Code": item.token,
-        "E-Mail-Adresse": this.decryptedEmails[index],
+        "E-Mail-Adresse": item.decrypted_email,
         Teilgenommen: item.is_participated ? "Ja" : "Nein", // Convert boolean to a readable format
       }));
     },
