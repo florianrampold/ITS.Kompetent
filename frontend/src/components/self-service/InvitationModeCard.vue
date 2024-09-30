@@ -1,4 +1,3 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
   <div class="bg-white border-2 h-300 xl:h-200 border-white rounded-lg">
     <div class="mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,7 +75,6 @@
                 @update-is-visible="(val) => (showDisadvantages[index] = val)"
               >
                 <template #trigger>
-                  <!-- Use InformationCircleIcon as a trigger -->
                   <InformationCircleIcon
                     class="h-4 w-4 text-gray-400 hover:text-gray-500"
                     @mouseenter="showDisadvantages[index] = true"

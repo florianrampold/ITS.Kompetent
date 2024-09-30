@@ -1,5 +1,4 @@
 
-# Create your views here.
 from rest_framework.viewsets import ModelViewSet
 
 from .models import ThreatArea

@@ -2,8 +2,11 @@
 
 let frontendUrl;
 let backendURL;
+let passwordChangeURL;
 frontendUrl = "http://XXX.XXX.XX";
 
-backendURL= "http://XXX.XXX.XX:8000/api"
+backendURL = "http://XXX.XXX.XX:8000/api";
 
-export { frontendUrl, backendURL };
+passwordChangeURL = "http://XXX.XXX.XX:8000";
+
+export { frontendUrl, backendURL, passwordChangeURL };

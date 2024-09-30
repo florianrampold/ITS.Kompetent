@@ -8,9 +8,10 @@
           <div class="relative mb-2">
             <div
               :class="{
-                'bg-green-500 border-2 border-action': activestate == '1',
+                'bg-green-500 border-2 border-green-500': activestate == 1,
+                'bg-gray-400': activestate != 1,
               }"
-              class="w-10 h-10 mx-auto bg-gray-400 cursor-pointer rounded-full text-lg text-white flex items-center"
+              class="w-10 h-10 mx-auto cursor-pointer rounded-full text-lg text-white flex items-center"
               @click="changeStep(1)"
             >
               <span class="text-center text-white font-bold w-full"> 1 </span>
@@ -49,8 +50,11 @@
             </div>
 
             <div
-              :class="{ 'bg-action': activestate == '2' }"
-              class="w-10 h-10 mx-auto bg-gray-400 cursor-pointer hover:bg-green-500 rounded-full text-lg text-white flex items-center"
+              :class="{
+                'bg-action': activestate == 2,
+                'bg-gray-400': activestate != 2,
+              }"
+              class="w-10 h-10 mx-auto cursor-pointer hover:bg-green-500 rounded-full text-lg text-white flex items-center"
               @click="changeStep(2)"
             >
               <span class="text-center text-white font-bold w-full"> 2 </span>
@@ -82,13 +86,15 @@
                   class="w-0 bg-green-300 py-1 rounded"
                   style="width: ${procentBar}%;"
                 ></div>
-                <!-- middle part 100 full & 50 half progressstatus-->
               </div>
             </div>
 
             <div
-              :class="{ 'bg-action': activestate == '3' }"
-              class="w-10 h-10 mx-auto bg-gray-400 cursor-pointer hover:bg-green-500 rounded-full text-lg text-white flex items-center"
+              :class="{
+                'bg-action': activestate == 3,
+                'bg-gray-400': activestate != 3,
+              }"
+              class="w-10 h-10 mx-auto cursor-pointer hover:bg-green-500 rounded-full text-lg text-white flex items-center"
               @click="changeStep(3)"
             >
               <span class="text-center text-white font-bold w-full"> 3 </span>
@@ -102,7 +108,6 @@
           </div>
         </div>
 
-        <!-- progress item middle -->
         <div class="w-1/4">
           <div class="relative mb-2">
             <div
@@ -121,13 +126,15 @@
                   class="w-0 bg-green-300 py-1 rounded"
                   style="width: ${procentBar}%;"
                 ></div>
-                <!-- middle part 100 full & 50 half progressstatus-->
               </div>
             </div>
 
             <div
-              :class="{ 'bg-action': activestate == '4' }"
-              class="w-10 h-10 mx-auto bg-gray-400 hover:bg-green-500 cursor-pointer rounded-full text-lg text-white flex items-center"
+              :class="{
+                'bg-green-500': activestate == 4,
+                'bg-gray-400': activestate != 4,
+              }"
+              class="w-10 h-10 mx-auto hover:bg-green-500 cursor-pointer rounded-full text-lg text-white flex items-center"
               @click="changeStep(4)"
             >
               <span class="text-center text-white font-bold w-full"> 4 </span>

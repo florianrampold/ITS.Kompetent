@@ -5,7 +5,6 @@ import plotly.express as px
 import pandas as pd
 
 
-# Define constants
 TOTAL_POSSIBLE_POINTS_PER_THREAT = 14  
 MAX_POINTS_PER_COMPETENCE_DIMENSION = 2 
 
@@ -42,7 +41,6 @@ def generate_job_profile_distribution(job_profiles):
     fig = px.pie(df_filtered, names='job_profile_name', values='percentage_number_of_participants', hole=0.3,
                  color='job_profile_name', color_discrete_sequence=custom_colors )
 
-    # Adjust the legend position
     fig.update_layout(
     legend=dict(
         orientation="h",
@@ -95,7 +93,6 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
     Returns:
         str: An HTML string representing the generated bar chart image.
     """
-    # Convert your dictionary to a pandas DataFrame
     df_competence_test_results = pd.DataFrame.from_dict(competence_test_results, orient='index')
     df_job_profiles = pd.DataFrame.from_dict(job_profiles, orient='index')
 
@@ -109,7 +106,7 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
         total_points = df_competence_test_results['total_threat_situation_scores'][0]['total_scoredPoints']
 
 
-    # If 0 job_profile = Allgemein
+    # If 0 job_profile = Alle
     if selected_profile != 0:
         max_points = (
             df_competence_test_results.iloc[0]['number_of_participants'] *
@@ -125,28 +122,22 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
                     row['number_of_threat_situations']
                 )
 
-    # Names for the data points
     names = ["Korrekt beantwortet", "Falsch beantwortet"]
 
 
-    # Data to be added
     data = {
         'threat_data': [total_points, max_points - total_points],
         'threat_names': names
     }
-    # Convert data to DataFrame and append to the empty DataFrame
     df_new_rows = pd.DataFrame(data)
 
     df_new_rows['Percentage'] = (df_new_rows['threat_data'] / max_points) * 100
 
-    # Append percentage to the Category label
     df_new_rows['threat_names'] =  df_new_rows.apply(lambda row: f"{row['threat_names']} ({row['Percentage']:.2f}%)", axis=1)
 
-    # Create the pie chart using Plotly Express
     fig = px.pie(df_new_rows, names='threat_names', values='Percentage', hole=0.3,
                  color=["Korrekt beantwortet", "Falsch beantwortet"], color_discrete_sequence=custom_colors)
 
-    # Adjust the legend position
     fig.update_layout(
 
     legend=dict(
@@ -178,10 +169,8 @@ def generate_threat_chart(competence_test_results, job_profiles, selected_profil
     )
 
 
-     # Convert the figure to SVG
     svg = pio.to_image(fig, format='svg')
 
-    # Encode the SVG data to base64
     base64_string = b64encode(svg).decode()
 
     img_html = f"""
@@ -214,7 +203,6 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
     NUMBER_OF_THREATS = df_competence_test_results['number_of_threats'].iloc[0]
 
 
-    # Initialize variables
     competenceScoreData = []
     competenceDimensionData = []
     maxPoints = 0
@@ -251,7 +239,6 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
     fig = px.bar(df_for_plotting, x='CompetenceDimension', y='CompetenceScore', text=competenceScoreData, labels={'competenceDimensionData': 'Kompetenzdimension', 'competenceScoreData':'Erzielte Punkte in %'},
                   color_discrete_sequence=custom_colors,template="simple_white")
 
-    # Adjust the legend position
     fig.update_layout(xaxis_title="ITS-Kompetenzdimension", xaxis_title_standoff=25,
     yaxis_title="Erzielte Punkte in %",
     yaxis=dict(ticksuffix="%", range=[0, 110]),
@@ -271,7 +258,6 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
         family="Georgia, serif",  
         size=16, 
     ),
-    # Update font size for the labels and title
     uniformtext_minsize=20,  
     uniformtext_mode='hide',
     title_font=dict(
@@ -280,19 +266,17 @@ def generate_competence_bar_chart(competence_test_results, job_profiles, selecte
         )
     )
     fig.update_traces(textangle=-45, textposition='inside')
-    fig.add_shape( # add a horizontal "target" line
+    fig.add_shape( 
     type="line", line_color="salmon", line_width=3, opacity=1, line_dash="dot",
     x0=0, x1=1, xref="paper", y0=50, y1=51, yref="y"
     )
-    fig.add_shape( # add a horizontal "target" line
+    fig.add_shape( 
     type="line", line_color="green", line_width=3, opacity=1, line_dash="dot",
     x0=0, x1=1, xref="paper", y0=66, y1=67, yref="y"
     ) 
 
-     # Convert the figure to SVG
     svg = pio.to_image(fig, format='svg')
 
-    # Encode the SVG data to base64
     base64_string = b64encode(svg).decode()
 
     
@@ -325,7 +309,6 @@ def generate_competence_bar_chart_per_threat(threat, competence_test_results):
     competenceDimensionData = []
 
 
-    # Loop through competence test results to calculate scores
     for competence_dimension in threat.values():
                     participants = df_competence_test_results.iloc[0]['number_of_participants']
                     score = round(
@@ -345,7 +328,6 @@ def generate_competence_bar_chart_per_threat(threat, competence_test_results):
     fig = px.bar(df_for_plotting, x='CompetenceDimension', y='CompetenceScore', text=competenceScoreData, labels={'competenceDimensionData': 'Kompetenzdimension', 'competenceScoreData':'Erzielte Punkte in %'},
                   color_discrete_sequence=custom_colors,template="simple_white")
 
-    # Adjust the legend position
     fig.update_layout(xaxis_title="Kompetenzdimension", xaxis_title_standoff=50,
     yaxis_title="Erzielte Punkte in %",
     yaxis=dict(ticksuffix="%", range=[0, 110]),
@@ -365,7 +347,6 @@ def generate_competence_bar_chart_per_threat(threat, competence_test_results):
         family="Georgia, serif",  
         size=16,
     ),
-    # Update font size for the labels and title
     uniformtext_minsize=20, 
     uniformtext_mode='hide',
     title_font=dict(
@@ -375,23 +356,20 @@ def generate_competence_bar_chart_per_threat(threat, competence_test_results):
     )
     fig.update_traces(textangle=-45, textposition='inside')
 
-    fig.add_shape( # add a horizontal "target" line
+    fig.add_shape( 
     type="line", line_color="salmon", line_width=3, opacity=1, line_dash="dot",
     x0=0, x1=1, xref="paper", y0=50, y1=51, yref="y"
     )  
 
-    fig.add_shape( # add a horizontal "target" line
+    fig.add_shape( 
     type="line", line_color="green", line_width=3, opacity=1, line_dash="dot",
     x0=0, x1=1, xref="paper", y0=66, y1=67, yref="y"
     )  
 
-     # Convert the figure to SVG
     svg = pio.to_image(fig, format='svg')
 
-    # Encode the SVG data to base64
     base64_string = b64encode(svg).decode()
 
-    # Create the HTML img tag with the base64 string
     img_html = f"""
     <img class="centered-image" src="data:image/svg+xml;base64,{base64_string}" alt="Chart"/>
     </div>

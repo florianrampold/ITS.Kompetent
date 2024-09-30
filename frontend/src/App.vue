@@ -15,6 +15,17 @@ export default {
     NavBar,
     Footer,
   },
+  /**
+   * Initializes and returns the state for the Vue component using composition API.
+   *
+   * This setup function utilizes the pinia stores specific to campagne and trainings.
+   * It invokes `useAuthStore` to access and manage the state related to the campagne,
+   * and `useAuthStore` for managing state related to the campagne. The function
+   * then returns these stores for use within the Vue component, enabling reactive state management
+   * and encapsulation of business logic associated with the campagne and trainings.
+   *
+   * @returns {Object} An object containing references to `authStore`.
+   */
   setup() {
     const authStore = useAuthStore();
 
@@ -59,7 +70,6 @@ export default {
    * Also handles checking authentication state
    */
   mounted() {
-    console.log("mounted")
     window.addEventListener("mousemove", this.setInteractionTime);
     window.addEventListener("keypress", this.setInteractionTime);
     window.addEventListener("click", this.setInteractionTime);

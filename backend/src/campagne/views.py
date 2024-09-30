@@ -25,14 +25,12 @@ from django.http import HttpResponse
 from weasyprint import HTML
 from django.db import transaction
 from trainings.models import Training
-from users.models import UserProfile
 from competence_tests.models import CompetenceDimension
 from .charts import  *
-# Correct import path for CSRF decorators
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.views import decorators
 from django.db.models import Count
 from django.core.exceptions import ImproperlyConfigured
+from campagne.permissions import IsFromFrontendApp
+
 
 
 def is_valid_fernet_key(key):
@@ -46,7 +44,7 @@ def is_valid_fernet_key(key):
     """
     try:
         base64.urlsafe_b64decode(key)
-        return len(key) == 44  # Valid Fernet key is 44 URL-safe base64-encoded characters
+        return len(key) == 44  
     except Exception:
         return False
 
@@ -99,7 +97,6 @@ def decrypt_emails_view(request):
     user = request.user
     invitations = Invitation.objects.filter(created_by_id=user)
     serializer = InvitationSerializer(invitations, many=True)
-    encrypted_emails = [item['email_encrypted'] for item in serializer.data]
     try:
         f = Fernet(key)
         email_data = []
@@ -194,7 +191,7 @@ def remove_security_key(request):
 
         if serializer.is_valid():
 
-            serializer.save()  # Save the instance
+            serializer.save() 
             return Response({'message': 'Campagne changed'}, status=200)
 
         else:
@@ -235,6 +232,7 @@ def invalidate_invitation_tokens(request):
 
     except Invitation.DoesNotExist:
         return Response({'error': 'Invitation not found'}, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def end_campaign(request):
@@ -262,7 +260,7 @@ def end_campaign(request):
         serializer = CampagneSerializer(campagne, data={"campaign_ended": True, "aggregate_over_single_profiles": aggregate_over_single_profiles}, partial=True)
 
         if serializer.is_valid():
-            serializer.save()  # Save the instance
+            serializer.save()  
             return Response({'message': 'Campagne changed'}, status=200)
 
         else:
@@ -316,7 +314,6 @@ def create_invitations(request):
         - Returns an error message and status 404 if the associated campagne cannot be found.
     """
     user = request.user
-    # First try to get the campagne assicoated to the user
     try:
         campagne = Campagne.objects.get(created_by=user)
         serializer = CampagneSerializer(campagne)
@@ -386,9 +383,6 @@ def validate_invitation_token(request, invitation_token):
     except Invitation.DoesNotExist:
         return Response({'valid': False}, status=400)
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
@@ -450,10 +444,8 @@ def create_competence_test_result(request):
 
     invitation.save()
 
-    # Make a mutable copy of request.data
     data = request.data.copy()
 
-    # Add the created_by field to the data
     data['created_by'] = invitation.created_by.id
 
     serializer = CompetenceTestResultSerializer(data=data)
@@ -467,7 +459,7 @@ def create_competence_test_result(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsFromFrontendApp])
 def get_competence_test_results(request, profile_id):
     """
     Gets all competence test results accociated to a user and a job profile. 
@@ -487,7 +479,7 @@ def get_competence_test_results(request, profile_id):
     user = request.user
     aggregated_results = defaultdict(lambda: {
             'total_threat_situation_scores': defaultdict(lambda: {'total_scoredPoints': 0, 'threat_vector_name': '', 'threat_vector_description': '', 'ids': []}),
-            'number_of_threats': 0,  # This will be calculated based on entries in total_threat_situation_scores
+            'number_of_threats': 0, 
             'total_competence_dimension_scores': defaultdict(lambda: {'total_scoredPoints': 0, 'description': ''})
     })
     if profile_id != 0:
@@ -519,19 +511,9 @@ def get_competence_test_results(request, profile_id):
         else:
             final_queryset = CompetenceTestResult.objects.filter(created_by=user)
 
-        
-        
-
-        
-
-           
-
-        # Serializing the data
         serializer = CompetenceTestResultSerializer(final_queryset, many=True)
         serialized_data = serializer.data
             
-            
-
     competence_scores = defaultdict(lambda: {'total_scoredPoints': 0, 'competence_dimension_name': ''})
     threat_competence_scores = defaultdict(lambda: {'competence_dimension_id': 0, 'competence_dimension_name': '', 'total_scoredPoints':0})
     competence_scores_per_threat = defaultdict(lambda: defaultdict(lambda: { 'competence_dimension_name': '', 'total_scoredPoints': 0}))
@@ -558,7 +540,6 @@ def get_competence_test_results(request, profile_id):
                 aggregate['description'] = competence_dimension.dimension_name
 
         
-        # Aggregate ThreatSituationScore
        
 
         for threat_score in item['threat_situation_score']:
@@ -575,19 +556,17 @@ def get_competence_test_results(request, profile_id):
             competence_dimension_score= ThreatSituationScore.objects.get(pk=threat_score['id'])
             related_competence_scores = competence_dimension_score.related_competence_dimension_scores.all()
 
-            # Process and aggregate related competence scores
             competence_scores_info = []
 
             for competence_score in related_competence_scores:
                 
                 score_info = {
-                    "competence_dimension_id": competence_score.competence_dimension.id,  # Assuming there's a 'name' field
-                    "competence_dimension_name": competence_score.competence_dimension.dimension_name,  # Assuming there's a 'name' field
+                    "competence_dimension_id": competence_score.competence_dimension.id,  
+                    "competence_dimension_name": competence_score.competence_dimension.dimension_name,  
                     "scoredPoints": competence_score.scoredPoints,
                 }
                 competence_scores_info.append(score_info)
             
-            # Iterate over competence_scores_info to aggregate scores
             for score_info in competence_scores_info:
                 dim_id = score_info["competence_dimension_id"]
 
@@ -626,7 +605,6 @@ def get_competence_test_results(request, profile_id):
     for ts_id in aggregated_results:
         aggregated_results[ts_id]['number_of_threats'] = len(aggregated_results[ts_id]['total_threat_situation_scores'])
 
-    # Convert defaultdict to regular dict for serialization
     aggregated_results = {k: dict(v) for k, v in aggregated_results.items()}
     for job_profile in aggregated_results.values():
         job_profile['total_competence_dimension_scores'] = dict(job_profile['total_competence_dimension_scores'])
@@ -637,7 +615,6 @@ def get_competence_test_results(request, profile_id):
     if int(profile_id) == 0:
         for ts_id, data in aggregated_results.items():
             total_scoredPoints = sum(score['total_scoredPoints'] for score in data['total_threat_situation_scores'].values())
-            # Replace old detailed dict with a new one that only contains the total sum
             aggregated_results[ts_id]['total_threat_situation_scores'] = {'total_scoredPoints': total_scoredPoints}
 
     return Response(aggregated_results)
@@ -650,7 +627,6 @@ def get_participants_per_profile(request):
 
     Args:
         request (HttpRequest): A Django HttpRequest object containing the HTTP request information.
-        profile_id
         The method expects the competence test result to be set in request.POST parameters.
         The method expects the authenticated user to be set in request.POST parameters.
 
@@ -661,7 +637,6 @@ def get_participants_per_profile(request):
     """
     job_profiles = JobProfile.objects.all()
 
-    # Preparing a dictionary to hold the counts
     job_profile_threat_counts = {}
 
     for job_profile in job_profiles:
@@ -680,7 +655,7 @@ def get_participants_per_profile(request):
 
     
     job_profiles_queryset = JobProfile.objects.all()
-    serializer_context = {'threat_counts': job_profile_threat_counts}  # Pass the counts here
+    serializer_context = {'threat_counts': job_profile_threat_counts}  
     serializer = JobProfileSerializer(job_profiles_queryset, many=True, context=serializer_context)
     serialized_data = serializer.data
     
@@ -714,7 +689,7 @@ def get_participants_per_profile(request):
             "number_of_participants": num_participants,
             'number_of_threat_situations': profile['threat_count']
         }
-        # Add the participant count to the list if it's greater than 4
+        # Add the participant count to the list if it's greater than security display threshsold
         if num_participants >= user_profile.security_display_threshold:
             participant_count_secure += num_participants
             num_job_profiles_secure+=1
@@ -724,7 +699,6 @@ def get_participants_per_profile(request):
     id =0
     queryset = CompetenceTestResult.objects.filter(created_by=user)
     competence_serializer = CompetenceTestResultSerializer(queryset, many=True)
-    #if num_job_profiles_secure >= user_profile.security_display_profile:
     if not user_profile.aggregate_over_single_profiles:
         job_profile_dict[index] = {
             "job_profile_id": id,
@@ -766,9 +740,6 @@ def generate_management_report(request):
     user = request.user
     user_profile = Campagne.objects.get(created_by=user)
 
-
-
-    # content over all participants
     job_profiles = get_participants_per_profile(request._request)
 
 
@@ -842,9 +813,6 @@ def generate_management_report(request):
 
     filtered_profiles = [profile for profile in job_profile_names if profile['name'] != 'Alle']
 
-
-
-
     context = {
         'total_number_of_partcipants': total_number_of_partcipants,
         'total_number_of_trainings':len(trainings),
@@ -862,7 +830,6 @@ def generate_management_report(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="management_report.pdf"'
 
-    # Anpassen an IP-Adresse der VM oder des virtuellen Webservers
     HTML(string=html_string, base_url=get_env_variable('API_URL')).write_pdf(response)
     return response
 

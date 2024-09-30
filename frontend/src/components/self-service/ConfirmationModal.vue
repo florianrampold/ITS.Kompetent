@@ -8,7 +8,6 @@
       @click.stop
     >
       <div class="text-center">
-        <!-- Header -->
         <div
           class="flex justify-between items-center border-b border-gray-200 p-3"
         >
@@ -22,14 +21,12 @@
             <XMarkIcon class="h-6 w-6 text-gray-500"></XMarkIcon>
           </button>
         </div>
-        <!-- Body -->
         <div class="mt-2 px-7 py-3">
           <p class="text-left">
             Möchten Sie wirklich mit dieser Entscheidung fortfahren? Sie kann
             nicht rückgängig gemacht werden!
           </p>
         </div>
-        <!-- Footer -->
         <div class="border-t border-gray-200 px-4 py-3">
           <button
             class="px-4 py-2 bg-primary text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-primaryAccent focus:outline-none focus:ring-2 focus:ring-blue-300"

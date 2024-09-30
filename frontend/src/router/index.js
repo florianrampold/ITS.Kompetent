@@ -3,7 +3,6 @@ import { useAuthStore } from "@/store/AuthStore";
 import { useCampagneStore } from "@/store/CampagneStore";
 import Home from "../views/general/Home.vue";
 import GetStarted from "../views/tests/GetStarted.vue";
-import Contact from "../views/general/Contact.vue";
 import Datenschutz from "../views/general/Datenschutz.vue";
 import Profile from "../views/profile/ProfileLanding.vue";
 import TestLanding from "../views/tests/TestLanding.vue";
@@ -46,19 +45,19 @@ const routes = [
     path: "/competence-tests/overview/:invitationToken?",
     name: "TestLanding",
     component: TestLanding,
-    meta: { invitationToken: true, testButtonActive: true }, // This meta field will be used to check for authentication
+    meta: { invitationToken: true, testButtonActive: true },
   },
   {
     path: "/dashboard",
     name: "SelfServicePortal",
     component: SelfServicePortal,
-    meta: { requiresAuth: true }, // This meta field will be used to check for authentication
+    meta: { requiresAuth: true }, 
   },
   {
     path: "/competence-tests/test/:invitationToken?",
     name: "Test",
     component: Test,
-    meta: { invitationToken: true, testButtonActive: true }, // This meta field will be used to check for authentication
+    meta: { invitationToken: true, testButtonActive: true }, 
   },
   {
     path: "/login",
@@ -79,13 +78,8 @@ const routes = [
     component: Dashboard,
     meta: { testButtonActive: true },
 
-    // meta: { invitationToken: true }, // This meta field will be used to check for authentication
   },
-  {
-    path: "/contact",
-    name: "Contact",
-    component: Contact,
-  },
+  
   {
     path: "/account",
     name: "Account",
@@ -102,7 +96,6 @@ const routes = [
     component: TrainingsLanding,
     meta: { testButtonActive: true },
 
-    // meta: { invitationToken: true }, // This meta field will be used to check for authentication
   },
   { path: "/:pathMatch(.*)*", component: PathNotFound },
 ];
@@ -149,7 +142,7 @@ router.beforeEach(async (to, from, next) => {
 
   // If user is trying to access the /login route while already logged in, redirect to dashboard
   if (to.path === "/login" && auth.isLoggedIn) {
-    next("/dashboard"); // Adjust "/dashboard" to your actual dashboard route
+    next("/dashboard"); 
     return;
   }
 

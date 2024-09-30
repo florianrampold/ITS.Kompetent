@@ -9,29 +9,4 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "TrackInfoComponent",
 
-  computed: {
-    doNotTrackEnabled() {
-      return navigator.doNotTrack === "1" || navigator.doNotTrack === "yes";
-    },
-  },
-  created() {
-    this.updateTrackingPreference();
-  },
-
-  methods: {
-    updateTrackingPreference() {
-      if (this.doNotTrackEnabled) {
-        console.log("Tracking is disabled per browser setting.");
-        // Additional logic to disable tracking scripts
-      } else {
-        console.log("Tracking is enabled.");
-        // Additional logic to enable tracking scripts
-      }
-    },
-  },
-};
-</script>

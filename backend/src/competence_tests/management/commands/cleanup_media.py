@@ -1,8 +1,7 @@
-# your_app/management/commands/cleanup_media.py
 from django.core.management.base import BaseCommand
 import os
 from django.conf import settings
-from competence_tests.models import ImageItem  # Adjust this to the model that includes the file field.
+from competence_tests.models import ImageItem 
 
 class Command(BaseCommand):
     help = 'Removes files from the media folder that are no longer referenced in the database.'

@@ -4,7 +4,6 @@
   </div>
   <template v-if="loading">
     <spinner></spinner>
-    <!-- here use a loaded you prefer -->
   </template>
   <template v-else>
     <div>

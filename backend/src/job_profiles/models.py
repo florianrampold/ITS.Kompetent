@@ -11,7 +11,7 @@ class JobProfile(models.Model):
         show_job_profile (BooleanField): A boolean field that allows to display the job profile in the frontend or to hide it.
 
     Returns:
-        (str): The dimension name for the admin interface
+        (str): The job name for the admin interface
     """
     job_name = models.CharField(max_length=140, verbose_name='Bezeichnung')
     job_description = models.TextField(verbose_name='Beschreibung')

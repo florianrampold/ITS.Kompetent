@@ -192,20 +192,12 @@
           </div>
 
           <div class="flex flex-col items-center justify-center mb-10">
-            <!--  <p
-              ref="threatSummary"
-              class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
-              :innerHTML="setThreatSummary()"
-            ></p> -->
-
             <p
               class="mt-3 text-base font-semibold text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
               :innerHTML="setThreatMotivationStatement()"
             ></p>
           </div>
-          <div
-            class="grid grid-cols-1 gap-10 lg:gap-20 xl:gap-40 mb-40"
-          >
+          <div class="grid grid-cols-1 gap-10 lg:gap-20 xl:gap-40 mb-40">
             <DoughnutChart
               :chart-data="chartDataAllThreats"
               :chart-options="chartOptionsAllThreats"
@@ -224,9 +216,11 @@
               Berufsalltag IT-sicher zu handeln, sowie die damit verbundenen
               motivationalen und sozialen Bereitschaften und Fähigkeiten, um in
               variablen Situationen erfolgreich und verantwortungsvoll eine
-              Gefahr abwenden bzw. bewältigen zu können (Weinert 2001). Hierbei
-              konnten 7 Dimensionen identifiziert werden, die rechts agbildet
-              sind.</template
+              Gefahr abwenden bzw. bewältigen zu können (Weinert, F. E. (2000).
+              Lehren und Lernen für die Zukunft-Ansprüche an das Lernen in der
+              Schule. Nachrichten der Gesellschaft zur Förderung Pädagogischer
+              Forschung, 2, 4-23.). Hierbei konnten 7 Dimensionen identifiziert
+              werden, die rechts agbildet sind.</template
             >
 
             <template #image>
@@ -351,6 +345,192 @@
           ></recommendation-card>
         </div>
       </div>
+      <div class="page-background pt-20 pb-10">
+        <div class="standard-container">
+          <h1
+            class="text-2xl tracking-tight font-extrabold text-primary text-center sm:text-3xl md:text-4xl mb-10"
+          >
+            Ihre Antworten im ITS-Kompetenztest
+          </h1>
+          <div class="flex flex-row justify-center items-center">
+            <div
+              class="border-b-4 w-14 rounded-lg border-secondary mb-10"
+            ></div>
+          </div>
+          <div class="flex flex-row justify-center items-center">
+            <p
+              class="mt-3 text-base mb-20 text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+            >
+              Zum Schluss können Sie sich im Detail anschauen, welche Antworten
+              sie im ITS-Kompetenztest abgegeben haben und welche Antworten die
+              richtige Auswahl waren.
+              <br />
+              <br />
+              Antwortoptionen, die in grün hinterlegt sind, sind zuftreffend.
+              <br />
+              Antwortoptionen, die in gelb hinterlegt sind, sind weniger
+              zutreffend <br />
+              Antwortoptionen, die in rot hinterlegt sind, sind am wenigsten
+              zutreffend <br />
+            </p>
+          </div>
+          <button
+            v-for="(threat, index) in competenceTestResult.test_situations"
+            :key="threat.id"
+            :class="[
+              'flex-1 text-center px-4 mx-2 py-2 bg-white rounded-lg',
+              threat.id === activeTabId
+                ? 'bg-white shadow border-2 border-primary'
+                : 'text-gray-600',
+            ]"
+            @click="changeThreatSituation(threat.id, index)"
+          >
+            ITS-Bedrohung {{ index + 1 }}
+          </button>
+          <div
+            v-if="activeThreatSituation"
+            class="flex flex-row justify-center items-center mt-10"
+          >
+            <h3 class="text-xl text-center font-semibold mb-2">
+              {{ activeThreatSituation.threat_vector.threatVectorText }}
+            </h3>
+          </div>
+          <div
+            v-if="activeThreatSituation"
+            class="flex flex-row justify-center items-center mt-2"
+          >
+            <p
+              class="mt-3 text-base mb-20 text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+            >
+              {{
+                activeThreatSituation.threat_vector.threat_vector_description
+              }}
+            </p>
+          </div>
+          <div v-if="activeImpulseItems">
+            <email-simulation
+              v-if="activeImpulseItems.resourcetype == 'EmailImpulse'"
+              :emails="activeImpulseItems.email"
+              :filter-index="scenarioNumber"
+            ></email-simulation>
+            <image-impulse
+              v-if="
+                activeImpulseItems.resourcetype == 'ImageImpulse' && !loading
+              "
+              :images="activeImpulseItems.image"
+              :filter-index="scenarioNumber"
+            ></image-impulse>
+            <chat-impulse
+              v-if="activeImpulseItems.resourcetype == 'ChatImpulse'"
+              :chat-interfaces="activeImpulseItems.chat_interface"
+              :filter-index="scenarioNumber"
+            >
+            </chat-impulse>
+          </div>
+          <div class="flex flex-row justify-between items-center mt-2">
+            <div class="flex mt-10 justify-center items-center">
+              <button
+                class="w-40 lg:transform lg:hover:scale-105 lg:duration-500 bg-primary text-white lg:bg-white lg:border-primary border-2 border-primary lg:text-primary my-2 py-1 px-4 mx-2 rounded lg:hover:text-white lg:hover:bg-primary"
+                :disabled="activeTestItemIndex === 0"
+                @click="changeActiveQuestion(-1)"
+              >
+                Vorherige Frage
+              </button>
+            </div>
+            <div class="flex mt-10 justify-center items-center">
+              <button
+                class="w-40 lg:transform lg:hover:scale-105 lg:duration-500 bg-primary text-white lg:bg-white lg:border-primary border-2 border-primary lg:text-primary my-2 py-1 px-4 mx-2 rounded lg:hover:text-white lg:hover:bg-primary"
+                :disabled="activeTestItemIndex === 6"
+                @click="changeActiveQuestion(1)"
+              >
+                Nächste Frage
+              </button>
+            </div>
+          </div>
+          <steps-competence-dimensions
+            :activestate="activeTestItemIndex"
+            linecolor="gray"
+            class="pt-20 pb-20"
+          ></steps-competence-dimensions>
+          <div
+            v-if="activeThreatSituation"
+            class="flex flex-row justify-center items-center mt-10"
+          >
+            <h3 class="text-xl text-center font-semibold mb-2">
+              {{ activeTestItem.competence_dimension.dimension_name }}
+            </h3>
+          </div>
+          <div
+            v-if="activeTestItem"
+            class="flex flex-row justify-center items-center mt-5"
+          >
+            <p
+              class="mt-3 text-base mb-20 text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+            >
+              Bei dieser Frage konnten Sie
+              <strong>{{ activeTestItem.question_item[0].points }}</strong>
+              Punkt/e erzielen.
+            </p>
+          </div>
+
+          <div class="flex justify-center items-center">
+            <div class="">
+              <h3 class="text-xl text-center font-semibold mb-5">
+                Ihre Antwort
+              </h3>
+              <results-single-choice-question
+                v-if="activeQuestion.type == 1"
+                class="mb-10"
+                :value="activeUserAnswer"
+                :options="activeAnswerOptions"
+              >
+                <template #questionContent class="whitespace-pre-line"
+                  ><div class="whitespace-pre-line">
+                    {{ activeQuestion.question }}
+                  </div></template
+                >
+
+                <template #questionTag>{{
+                  activeTestItem.competence_dimension.dimension_name
+                }}</template>
+              </results-single-choice-question>
+              <results-multiple-choice-question
+                v-if="activeQuestion.type == 2"
+                class="mb-10"
+                :value="activeUserAnswer"
+                :options="activeAnswerOptions"
+                :correct-multiple-choice-question="false"
+              >
+                <template #questionContent>
+                  <div class="whitespace-pre-line">
+                    {{ activeQuestion.question }}
+                  </div></template
+                >
+                <template #questionTag>{{
+                  activeTestItem.competence_dimension.dimension_name
+                }}</template>
+                > >
+              </results-multiple-choice-question>
+              <results-sortable-question
+                v-if="activeQuestion.type == 3"
+                :options="activeAnswerOptions"
+                :user-answer="activeUserAnswer.userAnswer"
+                :correct-answer="false"
+              >
+                <template #questionContent
+                  ><div class="whitespace-pre-line">
+                    {{ activeQuestion.question }}
+                  </div></template
+                >
+
+                <template #questionTag>{{
+                  activeTestItem.competence_dimension.dimension_name
+                }}</template>
+              </results-sortable-question>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="page-background pb-10">
       <div class="standard-container">
@@ -393,6 +573,14 @@ import { useCompetenceTestStore } from "@/store/CompetenceTestStore.js";
 import { useJobProfileStore } from "@/store/JobProfileStore.js";
 import { mapState } from "pinia";
 import DOMPurify from "dompurify";
+import StepsCompetenceDimensions from "@/components/dashboard/StepsCompetenceDimensions.vue";
+import ResultsSortableQuestion from "@/components/dashboard/ResultsSortableQuestion.vue";
+import ResultsSingleChoiceQuestion from "@/components/dashboard/ResultsSingleChoiceQuestion.vue";
+import ResultsMultipleChoiceQuestion from "@/components/dashboard/ResultsMultipleChoiceQuestion.vue";
+// import Impulse items
+import ChatImpulse from "../../components/simulations/ChatImpulse.vue";
+import EmailSimulation from "../../components/simulations/EmailSimulation.vue";
+import ImageImpulse from "../../components/simulations/ImageImpulse.vue";
 
 export default {
   components: {
@@ -403,8 +591,17 @@ export default {
     DoughnutChart,
     ExplanationCard,
     RecommendationCard,
+    StepsCompetenceDimensions,
+    ResultsSortableQuestion,
+    ResultsSingleChoiceQuestion,
+    ResultsMultipleChoiceQuestion,
+    ChatImpulse,
+    EmailSimulation,
+    ImageImpulse,
   },
-
+  /**
+   * Initializes competenceTestStore when first loaded.
+   */
   setup() {
     const competenceTestStore = useCompetenceTestStore();
 
@@ -454,16 +651,58 @@ export default {
       popupContent: "",
       showFailurePopUp: false,
       showSuccessPopUp: false,
+
+      activeStepCompetenceDimension: 1,
+      activeQuestion: "",
+      activeImpulseItems: "",
+      activeTestItem: "",
+      activeTestItemIndex: 0,
+      activeThreatSituation: "",
+      activeThreatSituationIndex: 0,
+      activeAnswerOptions: [],
+      activeUserAnswer: null,
+      scenarioNumber: -1,
+      scenarioNumberIterator: 0,
+      correctAnswer: {},
     };
   },
+  watch: {
+    /**
+     * Chan
+     *
+     * @param {string} newVal - The identifier of the tab to activate.
+     */
+    scenarioNumber(newVal, oldVal) {
+      // Perform some action when scenarioNumber changes
+      console.log(`Scenario number changed from ${oldVal} to ${newVal}`);
+      // You can also update other properties or perform other actions here
+    },
+  },
+
   /**
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
    * It basically fecthes the data on scored points and prepares all chart data that is displayed including the results of the individual tst result.
    */
-  mounted() {
+  async mounted() {
     this.loading = true;
 
     this.competenceTestResult = this.getCompetenceTestResult();
+    if (Object.keys(this.competenceTestResult).length == 0) {
+      this.$router.push("/");
+      return;
+    }
+    this.activeTabId = this.competenceTestResult.test_situations[0].id;
+    this.activeThreatSituation = this.competenceTestResult.test_situations[0];
+    this.activeQuestion =
+      this.competenceTestResult.test_situations[0].threat_vector.test_items[0].question_item[0];
+    this.activeTestItem =
+      this.competenceTestResult.test_situations[0].threat_vector.test_items[0];
+    this.activeAnswerOptions =
+      this.competenceTestResult.test_situations[0].threat_vector.test_items[0].question_item[0].answerOptions;
+    this.activeUserAnswer =
+      this.competenceTestResult.test_situations[0].threat_vector.test_items[0].question_item[0].userAnswer;
+    await this.getImpulseItems();
+    this.getScenarioNumber();
 
     if (Object.keys(this.competenceTestResult).length == 0) {
       this.$router.push("/");
@@ -488,18 +727,146 @@ export default {
     setTimeout(() => (this.loading = false), 500);
   },
   methods: {
-    /*   async getCompetenceDimensions() {
-      this.competenceDimensions =
-        await CompetenceTestService.getCompetenceDimensions();
-      this.loading = false;
-    }, */
-
     ...mapState(useJobProfileStore, ["getProfile"]),
 
     ...mapState(useCompetenceTestStore, [
       "getCompetenceTestResult",
       "getCompetenceTestPost",
     ]),
+
+    /**
+     * Iterates through `activeAnswerOptions` to find  the scenario number for items where the answer rating is 2.
+     * When a match is found, it sets the `impulseScenario` to the current scenario number.
+     * This method finds the scenario that is the most threatining of the Threat Awareness question.
+     */
+    getScenarioNumber() {
+      var i = 0;
+
+      for (i = 0; i < this.activeAnswerOptions.length; i++) {
+        this.scenarioNumberIterator += 1;
+        if (this.activeAnswerOptions[i].answer_rating == 2) {
+          break;
+        }
+      }
+    },
+    /**
+     * Gets the impulse items related to the test items retrieved before and sets these impulse items into an active array.
+     * Therfore utilizes some async calls to competence test store
+     */
+    async getImpulseItems() {
+      this.activeImpulseItems = await this.competenceTestStore.getImpulseItems(
+        this.activeTestItem.impulse_item.id
+      );
+    },
+    /**
+     * Changes the active tab based on user interaction.
+     * This method resets the inner tab active state whenever a new tab is selected.
+     *
+     * @param {string} tab - The identifier of the tab to activate.
+     */
+    async changeThreatSituation(tab, index) {
+      this.activeTabId = tab;
+      this.activeThreatSituationIndex = index;
+      this.activeTestItemIndex = 0;
+      this.activeThreatSituation =
+        this.competenceTestResult.test_situations[index];
+
+      this.activeQuestion =
+        this.competenceTestResult.test_situations[
+          index
+        ].threat_vector.test_items[0].question_item[0];
+      this.activeTestItem =
+        this.competenceTestResult.test_situations[
+          index
+        ].threat_vector.test_items[0];
+      this.activeImpulseItems =
+        this.competenceTestResult.test_situations[
+          this.activeThreatSituationIndex
+        ].threat_vector.test_items[0].impulse_item;
+      if (this.activeQuestion.type == 3) {
+        this.activeAnswerOptions =
+          this.competenceTestResult.test_situations[
+            index
+          ].threat_vector.test_items[0].question_item[0].answerOptions;
+      } else {
+        this.activeAnswerOptions =
+          this.competenceTestResult.test_situations[
+            index
+          ].threat_vector.test_items[0].question_item[0].answerOptions;
+
+        this.activeAnswerOptions = this.activeAnswerOptions.filter(
+          (item) => item.answer_rating === 2
+        );
+      }
+
+      this.activeUserAnswer =
+        this.competenceTestResult.test_situations[
+          index
+        ].threat_vector.test_items[0].question_item[0].userAnswer;
+      await this.getImpulseItems();
+      this.scenarioNumber = -1;
+      this.scenarioNumberIterator = 0;
+      this.getScenarioNumber();
+    },
+    /**
+     * Changes the scnearioNumber when active competence dimension is Threat Awareness when user navigates thourgh questions.
+     *
+     * @param {Number} incrementor - Incementor either +1 or -1
+     */
+    changeActiveQuestion(incrementor) {
+      this.activeTestItemIndex += incrementor;
+      this.activeQuestion =
+        this.competenceTestResult.test_situations[
+          this.activeThreatSituationIndex
+        ].threat_vector.test_items[this.activeTestItemIndex].question_item[0];
+      this.activeTestItem =
+        this.competenceTestResult.test_situations[
+          this.activeThreatSituationIndex
+        ].threat_vector.test_items[this.activeTestItemIndex];
+
+      if (
+        this.activeTestItem.competence_dimension.dimension_name !=
+        "Threat Awareness"
+      ) {
+        this.scenarioNumber = this.scenarioNumberIterator - 1;
+      } else {
+        this.scenarioNumber = -1;
+      }
+
+      this.activeAnswerOptions =
+        this.competenceTestResult.test_situations[
+          this.activeThreatSituationIndex
+        ].threat_vector.test_items[
+          this.activeTestItemIndex
+        ].question_item[0].answerOptions;
+
+      this.activeUserAnswer =
+        this.competenceTestResult.test_situations[
+          this.activeThreatSituationIndex
+        ].threat_vector.test_items[
+          this.activeTestItemIndex
+        ].question_item[0].userAnswer;
+
+      let tempCorrectAnswer = null;
+
+      if (this.activeQuestion.type == 1) {
+        tempCorrectAnswer = this.activeAnswerOptions.filter(
+          (item) => item.answer_rating === 2
+        );
+        this.correctAnswer = { ...this.activeUserAnswer }; // Clone activeUserAnswer to avoid direct mutation
+        this.correctAnswer.userAnswer = tempCorrectAnswer.map(
+          (item) => item.id
+        );
+      } else if (this.activeQuestion.type == 2) {
+        tempCorrectAnswer = this.activeAnswerOptions.filter(
+          (item) => item.answer_rating === 2
+        );
+        this.correctAnswer = { ...this.activeUserAnswer }; // Clone activeUserAnswer to avoid direct mutation
+        this.correctAnswer.userAnswer = tempCorrectAnswer.map(
+          (item) => item.id
+        );
+      }
+    },
 
     /**
      * Routes to training landing page
@@ -682,7 +1049,6 @@ export default {
         var j = 0;
 
         for (j; j < this.numberOfCompetenceDimensions; j++) {
-        
           tempScore =
             this.competenceTestResult.test_situations[i].threat_vector
               .test_items[j].question_item[0].points;

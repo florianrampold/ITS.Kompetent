@@ -64,27 +64,20 @@ class ThreatSituationScoreSerializer(serializers.ModelSerializer):
             - Returns the threat situation score
         """
         with transaction.atomic():
-            # Separate 'competence_dimension_score' data from other fields
             competence_dimension_scores_data = validated_data.pop('related_competence_dimension_scores', [])
             
             
-            # Create the ThreatSituationScore instance without 'competence_dimension_score'
             threat_situation_score = ThreatSituationScore.objects.create(**validated_data)
             
-            # Now handle the 'competence_dimension_score' ManyToManyField
             for score_data in competence_dimension_scores_data:
-                # 'score_data' is an OrderedDict; ensure 'competence_dimension' is handled correctly
                 competence_dimension = score_data.get('competence_dimension')
                 scored_points = score_data.get('scoredPoints')
                 
-                # Create or retrieve CompetenceDimensionScorePerThreat instance
-                # Assuming CompetenceDimensionScorePerThreat model has fields 'scoredPoints' and 'competence_dimension'
                 competence_score_instance, created = CompetenceDimensionScorePerThreat.objects.get_or_create(
                     competence_dimension=competence_dimension,
                     defaults={'scoredPoints': scored_points}
                 )
                 
-                # Associate the CompetenceDimensionScorePerThreat instance with the ThreatSituationScore instance
                 threat_situation_score.related_competence_dimension_scores.add(competence_score_instance)
 
         return threat_situation_score
@@ -123,13 +116,10 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
         competence_test_result = CompetenceTestResult.objects.create(**validated_data)
 
         for threat_data in threat_situation_score_data:
-            # Pop 'competence_dimension_score' data to handle separately
             cds_data = threat_data.pop('related_competence_dimension_scores', [])
-            # Convert model instances to their PKs for serialization
             threat_data['threat_situation'] = threat_data['threat_situation'].pk
             threat_data['threat_vector'] = threat_data['threat_vector'].pk
             
-            # Create ThreatSituationScore instance
             threat_score_serializer = ThreatSituationScoreSerializer(data=threat_data)
             if not threat_score_serializer.is_valid():
                 print(threat_score_serializer.errors)
@@ -137,8 +127,6 @@ class CompetenceTestResultSerializer(serializers.ModelSerializer):
                 threat_score = threat_score_serializer.save()
 
                
-
-                # For each CompetenceDimensionScorePerThreat data, create and associate with ThreatSituationScore
                 for cds in cds_data:
                     cds['competence_dimension'] = cds['competence_dimension'].pk
                     cds_serializer = CompetenceDimensionScorePerThreatSerializer(data=cds)

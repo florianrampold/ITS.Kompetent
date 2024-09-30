@@ -1,4 +1,3 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
   <div
     class="bg-white border-2 w-full md:w-3/4 lg:w-1/2 h-150 lg:h-200 border-gray-200 rounded-lg"

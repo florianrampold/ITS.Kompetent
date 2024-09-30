@@ -76,16 +76,30 @@ export default {
       chatImpulseItems: [],
     };
   },
+  watch: {
+    filterIndex: "updateChatImpulseItems",
+  },
   /**
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
    * If filterIndex is not -1 (Threat Awareness) shoe the chatInterface which is the most threatining.
    */
+
   mounted() {
-    if (this.filterIndex != -1) {
-      this.chatImpulseItems = [];
-      this.chatImpulseItems[0] = this.chatInterfaces[this.filterIndex];
-      this.currentIndex = this.filterIndex + 1;
-    }
+    this.updateChatImpulseItems();
+  },
+
+  methods: {
+    updateChatImpulseItems() {
+      if (this.filterIndex !== -1) {
+        this.chatImpulseItems = [];
+        this.chatImpulseItems[0] = this.chatInterfaces[this.filterIndex];
+        this.currentIndex = this.filterIndex + 1;
+      } else {
+        // Optionally reset chatImpulseItems and currentIndex if filterIndex is -1
+        this.chatImpulseItems = this.chatInterfaces;
+        this.currentIndex = 0;
+      }
+    },
   },
 };
 </script>

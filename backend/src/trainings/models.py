@@ -127,3 +127,28 @@ class Training(models.Model):
         return self.training_name
 
 
+class TrainingCategory(models.Model):
+    """
+    Represents a model to store the threat vectors. A threat vector is composed of a threat event and a threat area
+
+    Attributes:
+        threat_event (ForeinKey): The associated threat event
+        threat_area(ForeinKey): The associated threat area
+        threat_vector_description (TextField): A description of the threat vector 
+
+    Returns:
+        (str): The threat vector name for the admin interface
+    """
+    training_category_name = models.CharField(max_length=140, verbose_name='Kategorie')
+    training_category_description = models.TextField(verbose_name='Erklärung')
+    
+    threat_event = models.ManyToManyField(ThreatEvent, verbose_name='Bedrohungsereignisse')
+
+
+
+    class Meta:
+        verbose_name = "Training-Modul"
+        verbose_name_plural = "Training-Module"
+
+    def __str__(self):
+        return self.training_category_name

@@ -53,6 +53,7 @@
                         class="text-red-600 text-left text-xs font-bold pb-5"
                       />
                     </div>
+
                     <div
                       class="col-span-2 pt-5 my-5 flex justify-center items-center"
                     >
@@ -91,8 +92,8 @@
 </template>
 
 <script>
-//import axios from "axios";
 import { useAuthStore } from "@/store/AuthStore";
+import { passwordChangeURL } from "@/config.js";
 
 import { Field, Form, ErrorMessage } from "vee-validate";
 import { defineRule } from "vee-validate";
@@ -137,8 +138,9 @@ export default {
      * @throws {Error} Throws various errors depending on the error response of the API.
      *
      */
-    handleSubmit() {
+    async handleSubmit() {
       const authStore = useAuthStore();
+      await authStore.ensureCsrfToken();
 
       authStore
         .login({
@@ -147,15 +149,14 @@ export default {
         })
         .then(() => {
           // Login successful, perform any necessary redirection or actions
-          this.$router.push({
-            name: "SelfServicePortal",
-          });
+          this.checkPasswordChange();
         })
         .catch((error) => {
           // Handle login error
           if (error.response && error.response.status === 403) {
             this.popUpContent =
               "Ex exisitiert ein Account, aber sie besitzen nicht die notwendigen Rechte sich hier anzumelden. Kontaktieren Sie Ihren Administrator!";
+            //this.checkPasswordChange();
           } else if (error.response && error.response.status === 401) {
             this.popUpContent =
               "Ihr Benutzername oder Passwort ist nicht korrekt. Überprüfen Sie Bitte Ihre Eingaben!";
@@ -168,19 +169,34 @@ export default {
           console.error(error);
         });
     },
+
+    checkPasswordChange() {
+      const authStore = useAuthStore();
+
+      authStore
+        .checkPasswordChange()
+        .then((response) => {
+          if (response.must_change_password) {
+            // Redirect to the Django password change page
+            //window.location.href = '/accounts/password_change/';
+            this.navigateToPasswordReset();
+          } else {
+            // Proceed with the normal flow, e.g., redirect to the dashboard
+            this.$router.push({
+              name: "SelfServicePortal",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking password change status:", error);
+        });
+    },
     /**
-     * A method that triggers the resetting of the password. Navigates to API password reset endpoints.
+     * A method that triggers the changing of the password. Navigates to API password change endpoints.
      *
      */
     navigateToPasswordReset() {
-      if (process.env.NODE_ENV === "development") {
-        window.open("http://localhost:8000/accounts/password_reset/", "_self");
-      } else {
-        window.open(
-          "https://api.itskompetent.uni-goettingen.de/accounts/password_reset/",
-          "_self"
-        );
-      }
+      window.open(`${passwordChangeURL}/accounts/password_change/`, "_self");
     },
   },
 };

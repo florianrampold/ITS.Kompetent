@@ -181,44 +181,7 @@ class ChoiceItemViewSet(ModelViewSet):
     filterset_fields = ['question']
     serializer_class = ChoiceItemSerializer
 
-        
-def contact_request(request):
-    """
-    Tries to send a contact formular request 
-
-    Args:
-        request (HttpRequest): A Django HttpRequest object containing the HTTP request information.
-
-    Returns:
-        Response: A Django Response object. 
-        - Returns a success message and status 200 if the contact request e-mail can be send
-    """
-    # Get the recipient and subject from the request
-    sender = request.POST.get('from')
-    email = request.POST.get('email')
-    message = request.POST.get('message')
-
-
-    # Render the email message body using the email.html template
-    text_message = render_to_string('contact.html', {
-        'subject': 'Neue Kontaktanfrage',
-        'sender': sender,
-        'email':email,
-        'message':message,
-    })
-
-    # Create the EmailMessage object and send the email
-    email = EmailMessage(
-        subject='Kontaktanfrage',
-        body=text_message,
-        #NEEDS TO BE ADAPTED TO BE REMOVED FOR COMPANIES
-        from_email='its.kompetent@uni-goettingen.de',
-        to=['its.kompetent@uni-goettingen.de']
-    )
-    email.content_subtype = 'html'
-    email.send()
-
-    return JsonResponse({'success': True})
+    
 
 @api_view(['POST'])
 def generate_individual_report(request):

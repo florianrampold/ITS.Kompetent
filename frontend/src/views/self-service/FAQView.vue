@@ -5,12 +5,11 @@
         class="flex justify-center items-center lg:items-start lg:justify-start"
       >
         <h1 class="main-heading">
-           <span class="text-primary font-semibold"
-              >Willkommen im <br />
-            </span>
-            {{ " " }}
-            <span class="text-secondary xl:inline"
-              >KMU-Kampagnen-Management-Portal</span>
+          <span class="text-primary font-semibold">Willkommen im <br /> </span>
+          {{ " " }}
+          <span class="text-secondary xl:inline"
+            >KMU-Kampagnen-Management-Portal</span
+          >
         </h1>
       </div>
     </template>
@@ -224,12 +223,10 @@
               die fehlenden Kompetenzen effektiv aufgebaut werden (Wie?).
             </p>
           </div>
-          
         </div>
         <div
           class="flex flex-col sm:flex-row justify-center lg:justify-end flex-wrap pt-40"
         >
-       
           <div
             class="w-full lg:w-1/2 text-center lg:text-left divide-secondary"
           >
@@ -272,7 +269,7 @@
             wählen Mitarbeiter*innen von KMUs Ihr ITS-Anforderungsprofil aus.
             Danach werden Ihre ITS-Kompetenzen basierend auf dem ausgewählten
             ITS-Anforderungsprofil bestimmt. Jeder ITS-Kompetenztest beinhaltet
-            pro ITS- Anforderungsprofil verschiedene IT-sicherheitskritische
+            pro ITS-Anforderungsprofil verschiedene IT-sicherheitskritische
             Situationen, die diesen im Arbeitsalltag begegnen können. In diesen
             Situationen werden Mitarbeiter*innen mit bis zu 5 ITS-Bedrohungen
             konfrontiert. Das Verhalten im Umgang mit diesen ITS-Bedrohungen
@@ -359,7 +356,7 @@
               Im zweiten Schritt bestimmen messen wir die ITS-Kompetenzen Ihrer
               Mitarbeiter*innen. Die ITS-Kompetenzen werden über bis zu 5
               ITS-Bedrohungen gemessen, die in jeweils eine Handlungssituation
-              eingebettet sind. Jede ITS-Bedrohun wird über eine Frage zu den 7
+              eingebettet sind. Jede ITS-Bedrohung wird über eine Frage zu den 7
               identifizierten ITS-Kompetenzdimensionen ermittelt. Im Folgenden
               stellen wir da, wie wir ITS-Bedrohungen und
               ITS-Kompetenzdimensionen definieren.
@@ -437,9 +434,11 @@
               Berufsalltag IT-sicher zu handeln, sowie die damit verbundenen
               motivationalen und sozialen Bereitschaften und Fähigkeiten, um in
               variablen Situationen erfolgreich und verantwortungsvoll eine
-              Gefahr abwenden bzw. bewältigen zu können (Weinert 2001). Hierbei
-              konnten 7 Dimensionen identifiziert werden, die rechts abgebildet
-              sind.</template
+              Gefahr abwenden bzw. bewältigen zu können (Weinert, F. E. (2000).
+              Lehren und Lernen für die Zukunft-Ansprüche an das Lernen in der
+              Schule. Nachrichten der Gesellschaft zur Förderung Pädagogischer
+              Forschung, 2, 4-23.). Hierbei konnten 7 Dimensionen identifiziert
+              werden, die rechts abgebildet sind.</template
             >
 
             <template #image>
@@ -528,9 +527,7 @@
             >
               Im vierten und letzten Schritt erhalten Ihre Mitarbeiter*innen
               ITS-Trainingsempfehlungen, die zu den individuellen Ergebnissen
-              aus dem ITS-Kompetenztest passen. Die untenstehende Abbildung
-              zeigt ein Beispiel für das Matching der ITS-Trainings auf
-              Mitarbeiter*innenebene.
+              aus dem ITS-Kompetenztest passen.
             </p>
           </div>
         </div>
@@ -561,7 +558,7 @@
             alle Mitarbeiter*innen nutzen. Alternativ können Sie für jeden
             Mitarbeitenden einen separaten Einladungs-Code genrieren. Im zweiten
             Schritt führen Ihre Mitarbeiter*innen den ITS-Kompetenztest
-            basierend auf Ihrem gewahlten ITS-Anforderungsprofil durch. Darauf
+            basierend auf Ihrem gewählten ITS-Anforderungsprofil durch. Darauf
             basierend zeigen wir Ihnen im dritten Schritt umfassende Statistiken
             zu den Ergebnissen der ITS-Kompetenzmessung. Diese Ergebnisse können
             Sie exportieren und erhalten einen Mangement Report, der weitere

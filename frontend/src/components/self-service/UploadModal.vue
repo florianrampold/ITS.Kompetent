@@ -1,5 +1,4 @@
 <template>
-  <!-- Modal -->
   <div
     class="fixed inset-0 flex items-center justify-center z-10"
     @click="closeModal"

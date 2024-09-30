@@ -34,7 +34,6 @@
     </template>
     <template #buttons> </template>
 
-   
     <template #progress> </template>
   </Hero>
 
@@ -74,12 +73,14 @@
     <div class="flex flex-row justify-center items-center">
       <div class="border-b-4 rounded-lg w-14 border-secondary mb-10"></div>
     </div>
-    <div class="grid grid-cols-1 gap-10 gap-y-20 lg:gap-x-20 justify-items-center items-center">
+    <div
+      class="grid grid-cols-1 gap-10 gap-y-20 lg:gap-x-20 justify-items-center items-center"
+    >
       <test-mode
         :value="selectedValue"
         :label="2"
         :invitation-token="invitationToken"
-        description="Haben Sie bereits eine Einladung erhalten an ITS.Kompetent teilzunehmen? Dann sind Sie hier genau richtig. Geben Sie ihren Einladungs-Code in das entsprechende Feld ein und beginnen Sie mit Ihrem ITS-Kompetenztest noch heute."
+        description="Haben Sie bereits eine Einladung erhalten an ITS.Kompetent teilzunehmen? Dann sind Sie hier genau richtig. Geben Sie ihren Einladungs-Code in das entsprechende Feld ein und beginnen Sie mit Ihrem ITS-Kompetenztest."
         name="An einer bestehenden Kampagne teilnehmen"
         @change="changeTestMode"
         @input="checkInvitationToken"
@@ -172,20 +173,5 @@ export default {
 }
 .fade-enter-active {
   transition: all 2s ease;
-}
-.coming-soon-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* semi-transparent black overlay */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  z-index: 1; /* ensure it's above the card content */
-  pointer-events: none;
 }
 </style>

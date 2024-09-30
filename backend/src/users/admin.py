@@ -6,11 +6,23 @@ from .models import UserProfile
 from django.utils.translation import gettext_lazy as _
 
 class UserProfileInline(admin.StackedInline):
+    """
+    Admin class for UserProfile model.
+
+    Attributes:
+        list_display: The table columns displayed in the list view.
+    """
     model = UserProfile
     can_delete = False
     verbose_name_plural = 'Kampagnen-Manager-Status'
 
 class CustomUserAdmin(UserAdmin):
+    """
+    Admin class for the custom user model.
+
+    Attributes:
+        list_display: The table columns displayed in the list view.
+    """
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
     inlines = (UserProfileInline,)

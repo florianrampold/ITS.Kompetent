@@ -5,11 +5,9 @@
 
   <template v-if="loading">
     <spinner></spinner>
-    <!-- here use a loaded you prefer -->
   </template>
 
   <template v-else>
-    <!-- Base Hero, is displayed -->
     <Hero
       ><template #title>
         <div class="flex justify-center items-center lg:justify-start">
@@ -52,7 +50,6 @@
           </p>
         </div>
       </template>
-     
     </Hero>
 
     <div ref="scrollTarget" class="mb-10"></div>
@@ -220,7 +217,7 @@
         v-if="showPopUp"
         type="danger"
         title="Antwortoption auswählen"
-        content="Bitte wählen Sie eine Antwortoption aus"
+        :content="popupContent"
         @popup-closed="showPopUp = false"
       />
     </div>
@@ -303,6 +300,8 @@ export default {
       impulseScenario: "",
       scenarioNumber: -1,
       scenarioNumberIterator: 0,
+      numberOfCorrectOptions: 0,
+      popupContent: "",
 
       // helper
       testTotalThreatSituations: [],
@@ -358,7 +357,7 @@ export default {
     this.loading = true;
 
     this.profileID = this.getProfileID();
-    this.catchError(this.profileID)
+    this.catchError(this.profileID);
 
     await this.getCompetenceTest();
 
@@ -425,7 +424,7 @@ export default {
         this.scenarioNumberIterator += 1;
 
         if (this.activeAnswerOptions[i].answer_rating == 2) {
-          this.impulseScenario = "Scenario " + this.scenarioNumberIterator;
+          this.impulseScenario = "Szenario " + this.scenarioNumberIterator;
           break;
         }
       }
@@ -444,8 +443,6 @@ export default {
      *
      */
     async getCompetenceTest() {
-      
-
       this.testSituations = await this.competenceTestStore.getCompetenceTest(
         this.profileID
       );
@@ -477,24 +474,23 @@ export default {
      * Finally calls getImpulseItems
      * @param {Object} threatSituation The threatSituations that is used to retrieve the related test items.
      */
-     async getTestItems(threatSituation) {
-        this.testItems = await this.competenceTestStore.getTestItems(
-          threatSituation
-        );
-        this.testItems.sort(
-          (a, b) => a.competence_dimension.id - b.competence_dimension.id
-        );
+    async getTestItems(threatSituation) {
+      this.testItems = await this.competenceTestStore.getTestItems(
+        threatSituation
+      );
+      this.testItems.sort(
+        (a, b) => a.competence_dimension.id - b.competence_dimension.id
+      );
 
-
-        this.activeTestItem = this.testItems[0];
-        // There may be multiple questions to a threat situation (NOT IMPLEMENTED)
-        this.activeQuestion = this.activeTestItem.question_item[0];
-        this.competenceTestResult.test_situations[
-          this.threatVectorIndex - 1
-        ].threat_vector.test_items = JSON.parse(JSON.stringify(this.testItems));
-        if (this.activeTestItem.impulse_item) {
-          this.getImpulseItems();
-        }
+      this.activeTestItem = this.testItems[0];
+      // There may be multiple questions to a threat situation (NOT IMPLEMENTED)
+      this.activeQuestion = this.activeTestItem.question_item[0];
+      this.competenceTestResult.test_situations[
+        this.threatVectorIndex - 1
+      ].threat_vector.test_items = JSON.parse(JSON.stringify(this.testItems));
+      if (this.activeTestItem.impulse_item) {
+        this.getImpulseItems();
+      }
     },
     /**
      * Gets the impulse items related to the test items retrieved before and sets these impulse items into an active array.
@@ -540,6 +536,12 @@ export default {
 
      */
     changesAnswerOfMultipleChoice(newAnswer, answerRating) {
+      this.numberOfCorrectOptions = this.activeAnswerOptions.filter(
+        (option) => option.answer_rating === 2
+      ).length;
+      const numberOfMediumRatedOptions = this.activeAnswerOptions.filter(
+        (option) => option.answer_rating === 1
+      ).length;
       if (!this.activeAnswer.userAnswer.includes(newAnswer)) {
         this.activeAnswer.userAnswer.push(newAnswer);
         this.answerRatingsByUser.push(answerRating);
@@ -555,9 +557,16 @@ export default {
       }
 
       // Check the contents of answerRatingsByUser
-      if (this.answerRatingsByUser.every((rating) => rating === 2)) {
+      if (
+        this.answerRatingsByUser.every((rating) => rating === 2) &&
+        this.answerRatingsByUser.length == this.numberOfCorrectOptions
+      ) {
         this.activeAnswer.answerQuality = 2;
-      } else if (this.answerRatingsByUser.some((rating) => rating === 2)) {
+      } else if (
+        this.answerRatingsByUser.some((rating) => rating === 2) ||
+        (this.answerRatingsByUser.every((rating) => rating === 1) &&
+          this.answerRatingsByUser.length == numberOfMediumRatedOptions)
+      ) {
         this.activeAnswer.answerQuality = 1;
       } else {
         this.activeAnswer.answerQuality = 0;
@@ -722,6 +731,15 @@ export default {
         (this.activeQuestion.type == 1 || this.activeQuestion.type == 2)
       ) {
         this.showPopUp = true;
+        this.popupContent = "Bitte wählen Sie eine Antwortoption aus.";
+        setTimeout(() => (this.showPopUp = false), 3000);
+      } else if (
+        this.activeQuestion.type == 2 &&
+        this.numberOfCorrectOptions != this.activeAnswer.userAnswer.length
+      ) {
+        this.showPopUp = true;
+        this.popupContent = `Bitte wählen Sie ${this.numberOfCorrectOptions} Antwortoptionen aus.`;
+
         setTimeout(() => (this.showPopUp = false), 3000);
       } else {
         this.increasePercentage();
@@ -768,7 +786,6 @@ export default {
           this.questionIndex += 1;
           // wenn ja, ändere die aktuell aktive Frage
           if (this.questionIndex < this.activeTestItem.question_item.length) {
-
             this.activeQuestion =
               this.activeTestItem.question_item[this.questionIndex];
             await this.getAnswerOptions(this.activeQuestion.id);
@@ -810,14 +827,12 @@ export default {
                 this.threatAwareness = true;
                 this.showImpulse = true;
 
-              
                 // IMMER threatSituation 0 zunächst, da nur eine Handlungssituation pro ThreatVector modelliert wird
                 this.activeThreatSituation =
                   this.testSituations[this.threatVectorIndex - 1];
 
                 // get alle TestSzenarien für den ersten ThreatVector
                 await this.getTestItems(this.activeThreatSituation.id);
-
 
                 await this.getAnswerOptions(this.activeQuestion.id);
                 this.getScenarioNumber();
@@ -830,7 +845,6 @@ export default {
 
                 this.prepareCompetenceTestResult();
 
-                this.competenceTestStore.endTest();
                 // only if invitaionToken was specified, else do not save the test result
                 if (this.$route.params.invitationToken) {
                   await this.campagneStore.postCompetenceTestResults(

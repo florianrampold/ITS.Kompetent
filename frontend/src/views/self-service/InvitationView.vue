@@ -1,7 +1,6 @@
 <template>
   <template v-if="isLoading">
     <spinner></spinner>
-    <!-- here use a loaded you prefer -->
   </template>
   <template v-else>
     <Hero
@@ -58,7 +57,7 @@
               Zusätzlich sollte ein Download gestartet haben, der den
               Sicherheits-Code in einer Text-Datei enthält. <br />
               <br />
-              <strong>{{ securityKey }}</strong>
+              <strong>{{ maskedSecurityKey }}</strong>
               <br />
               <br />
               Sie können nun Einladungs-Codes genrierien lassen, indem Sie eine
@@ -462,7 +461,10 @@
                   :key="resource.id"
                 >
                   <tr v-if="oneInvitationCode == false" class="">
-                    <td class="py-4 px-6 border-b">{{ resource.token }}</td>
+                    <td class="py-4 px-6 border-b">{{ domainURL }}/competence-tests/introduction/{{
+                        resource.token
+                      }}
+                    </td>
                     <td
                       v-if="decryptedEmails.length < 1"
                       class="py-4 px-6 border-b text-center"
@@ -516,7 +518,6 @@
       </div>
     </div>
     <div>
-      <!-- Modal section -->
       <div
         v-if="uploadModalOpen"
         class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75"
@@ -609,8 +610,7 @@ export default {
         securityDisplayThreshold: 5,
         securityDisplayProfile: 1,
       },
-      maxThreshold: 10, // This could be dynamically determined from other data
-      maxProfile: 5, // This could be dynamically determined from other data
+      maxProfile: 5, 
       oneInvitationCode: null,
       uploadModalOpen: false,
       confirmationModalOpen: false,
@@ -718,6 +718,19 @@ export default {
     };
   },
   /**
+   * A computed property
+   */
+  computed: {
+   /**
+   * Masks the last 10 digits of the security key for security reasons.
+   */
+    maskedSecurityKey() {
+      // Mask the last 5 characters of the UUID
+      return this.securityKey.slice(0, -10) + "**********";
+    },
+  },
+
+  /**
    * Watches if selctedParticipationFilter changes
    * If it changes applyFilters is called again
    */
@@ -726,10 +739,7 @@ export default {
       this.applyFilters();
     },
   },
-  /**
-   * Created hook: When page is created appyFilters is called initally
-   *
-   */
+  
 
   /**
    * Mounted hook: Called after created, sets loading state initialy true.
@@ -744,16 +754,13 @@ export default {
     this.applyFilters();
   },
   methods: {
+    /**
+     * Validates the security threshold entered by the user
+     *
+     */
     validateThreshold() {
       if (this.form.securityDisplayThreshold < 5) {
-        this.form.securityDisplayThreshold = 5; // Reset to min if below 5
-      }
-    },
-    validateProfile() {
-      if (this.form.securityDisplayProfile < 1) {
-        this.form.securityDisplayProfile = 1;
-      } else if (this.form.securityDisplayProfile > this.maxProfile) {
-        this.form.securityDisplayProfile = this.maxProfile;
+        this.form.securityDisplayThreshold = 5;
       }
     },
     /**
@@ -804,7 +811,6 @@ export default {
           .then(() => {
             this.uploadModalOpen = true; // Only set true if no error occurred
           })
-          // IMPLEMENT CATCHING ERROR
           .catch((error) => {
             console.error("Catching error:", error);
           });
@@ -1117,7 +1123,7 @@ export default {
     formatGermanDate(dateString) {
       const date = new Date(dateString);
       const day = date.getDate().toString().padStart(2, "0");
-      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const year = date.getFullYear();
       const hours = date.getHours().toString().padStart(2, "0");
       const minutes = date.getMinutes().toString().padStart(2, "0");

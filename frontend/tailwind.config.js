@@ -4,6 +4,25 @@ module.exports = {
   purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   darkMode: false,
   theme: {
+    colors: {
+      primary: "#303e7a", //blue
+      primaryAccent: "#3E519F",
+      secondary: "#EB5757", //red
+      secondaryAccent: "#E62929",
+      action: "#2ecc71", //green
+      green: colors.green,
+      slate: colors.slate,
+      purple: colors.purple,
+      indigo: colors.indigo,
+      black: colors.black,
+      white: colors.white,
+      gray: colors.gray,
+      blue: colors.blue,
+      pink: colors.pink,
+      red: colors.red,
+      purple: colors.purple,
+      yellow: colors.yellow,
+    },
     extend: {
       keyframes: {
         shimmer: {
@@ -48,15 +67,7 @@ module.exports = {
       minHeight: {
         "1/2": "50%",
       },
-      colors: {
-        primary: "#303e7a", //blue
-        primaryAccent: "#3E519F",
-        secondary: "#EB5757", //red
-        secondaryAccent: "#E62929",
-        action: "#2ecc71", //green
-        green: colors.green,
-        slate: colors.slate,
-      },
+
       fontWeight: {
         button: 550,
       },

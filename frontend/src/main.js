@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { backendURL } from '@/config.js'; // Make sure the path is correct based on your file structure
-//import { useCompetenceTestStore } from "@/stores/CompetenceTestStore";
+import { backendURL } from '@/config.js';
 import App from "./App.vue";
 import "./styles/app.css";
 import router from "./router";
@@ -36,7 +35,6 @@ import {
   Bars3BottomRightIcon,
 } from "@heroicons/vue/20/solid";
 
-//const useStore = useCompetenceTestStore();
 const pinia = createPinia();
 
 const app = createApp(App);
@@ -77,4 +75,3 @@ app.component("ExclamationTriangleIcon", ExclamationTriangleIcon);
 app.component("InformationCircleIcon", InformationCircleIcon);
 
 app.mount("#app");
-//createApp(App).use(router).mount("#app");

@@ -4,7 +4,6 @@
   >
     <div class="flex justify-between items-start">
       <slot name="questionTag"></slot>
-      <!-- <h2 class="font-bold">Sortier-Frage</h2> -->
     </div>
     <p
       class="flex justify-start mt-3 mb-5 text-primary text-left sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"

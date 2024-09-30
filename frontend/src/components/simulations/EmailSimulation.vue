@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class="overflow-x-auto">
     <div class="flex min-w-max h-256 flex-col mb-10">
@@ -7,11 +6,7 @@
           class="p-6 w-24 bg-white rounded-l-lg overflow-y-auto overflow-x-auto"
         >
           <nav>
-            <!-- <h2
-            class="text-gray-600 text-xs font-semibold uppercase tracking-wider"
-          >
-            Postfach
-          </h2> -->
+          
             <div class="mt-4">
               <a
                 class="-mx-4 px-3 py-1 flex items-center justify-between text-sm font-medium bg-gray-100 rounded-lg"
@@ -20,12 +15,8 @@
                   <InboxIcon
                     class="fill-current text-gray-700 w-6 h-6"
                   ></InboxIcon>
-                  <!-- <span class="ml-2 text-gray-900">Posteingang</span> -->
                 </span>
-                <!-- <span
-                class="px-4 py-1 inline-block leading-tight text-xs font-semibold text-gray-900 bg-green-200 rounded-full"
-                >{{ emails.length }}</span
-              > -->
+      
               </a>
             </div>
             <div class="mt-4">
@@ -36,7 +27,6 @@
                   <ChevronDoubleRightIcon
                     class="fill-current text-gray-700 w-6 h-6"
                   ></ChevronDoubleRightIcon>
-                  <!-- <span class="ml-2 text-gray-900">Gesendet</span> -->
                 </span>
               </a>
             </div>
@@ -48,7 +38,6 @@
                   <TrashIcon
                     class="fill-current text-gray-700 w-6 h-6"
                   ></TrashIcon>
-                  <!-- <span class="ml-2 text-gray-900">Papierkorb</span> -->
                 </span>
               </a>
             </div>
@@ -177,11 +166,7 @@
             <div
               class="flex items-center justify-start px-5 py-4 bg-gray-100 border-r"
             >
-              <!-- <img
-              class="h-12 w-12 rounded-full object-cover"
-              src="@/assets/email_picture.jpg"
-              alt=""
-            /> -->
+             
               <div class="flex flex-col px-8">
                 <h3 class="text-lg flex justfy-start text-gray-900">
                   {{ activeEmail.email_sender }}
@@ -262,25 +247,36 @@ export default {
     };
   },
   computed: {
+    /**
+     * A computed property that sanitizes the HTMl test email content for security reasons.
+     */
     safeHtml() {
       return DOMPurify.sanitize(this.activeEmail.email_content);
     },
   },
+  watch: {
+    filterIndex: "updateEmailImpulseItems",
+  },
   /**
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
-   * If filterIndex is not -1 (Threat Awareness) shoe the email which is the most threatining.
+   * If filterIndex is not -1 (Threat Awareness) show the email which is the most threatining.
    */
   mounted() {
-    this.emailImpulseItems = this.emails;
-    if (this.filterIndex != -1) {
-      this.emailImpulseItems = [];
-      this.emailImpulseItems[0] = this.emails[this.filterIndex];
-      this.currentIndex = this.filterIndex + 1;
-    }
-    this.activeEmail = this.emailImpulseItems[0];
+    this.updateEmailImpulseItems();
   },
-
   methods: {
+    /**
+     * Displays either all e-mails or only one e-mail when Threat Awareness is the active competence dimension.
+     */
+    updateEmailImpulseItems() {
+      this.emailImpulseItems = this.emails;
+      if (this.filterIndex !== -1) {
+        this.emailImpulseItems = [];
+        this.emailImpulseItems[0] = this.emails[this.filterIndex];
+        this.currentIndex = this.filterIndex + 1;
+      }
+      this.activeEmail = this.emailImpulseItems[0];
+    },
     /**
      * Gets and changes the active e-mail.
      */
@@ -291,4 +287,3 @@ export default {
 };
 </script>
 
-<style scoped></style>

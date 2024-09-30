@@ -33,8 +33,7 @@ class ThreatAreaAdmin(admin.ModelAdmin):
     Attributes:
         list_display: The table columns displayed in the list view.
     """
-    list_display = ("area_name", "area_description") # display these table columns in the list view
-
+    list_display = ("area_name", "area_description")
 
 
 class ThreatVectorAdmin(admin.ModelAdmin):
@@ -58,7 +57,6 @@ class ThreatSituationAdmin(admin.ModelAdmin):
     search_fields = ("job_profile__job_name",)
 
 
-# Register your models here.
 
 admin.site.register(ThreatArea, ThreatAreaAdmin)
 admin.site.register(ThreatVector, ThreatVectorAdmin)

@@ -4,6 +4,8 @@ from .models import Language
 from .models import TargetAudience
 from .models import DeliveryMethod
 from .models import TrainingGroup
+from .models import TrainingGroup, TrainingCategory
+
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
@@ -76,7 +78,16 @@ class DeliveryMethodAdmin(admin.ModelAdmin):
     list_display = ("delivery_method",)
     search_fields = ("delivery_method",)
 
+class TrainingCategoryAdmin(admin.ModelAdmin):
+    """
+    Admin class for TrainingCategory model.
 
+    Attributes:
+        list_display: The table columns displayed in the list view.
+    """
+    list_display = ("training_category_name", "training_category_description")
+
+admin.site.register(TrainingCategory, TrainingCategoryAdmin)
 admin.site.register(Training, TrainingAdmin)
 admin.site.register(TrainingGroup, TrainingGroupAdmin)
 admin.site.register(TargetAudience, TargetAudienceAdmin)

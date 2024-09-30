@@ -15,11 +15,12 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', verbose_name="Benutzername")
     is_campagne_manager = models.BooleanField(default=False, verbose_name="Kampagnen Manager Status")
-   
+    must_change_password = models.BooleanField(default=True, verbose_name="Passwort ändern erforderlich")
+
 
     class Meta:
-        verbose_name = _('Kampagnen-Berechtigung')  # Singular form
-        verbose_name_plural = _('Kampagnen-Berechtigungen')  # Plural form
+        verbose_name = _('Kampagnen-Berechtigung') 
+        verbose_name_plural = _('Kampagnen-Berechtigungen') 
 
     def __str__(self):
         return self.user.username

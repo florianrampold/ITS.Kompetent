@@ -139,7 +139,6 @@ export default {
       default: null,
     },
 
-    // Define other props as needed
   },
   emits: ["closeModal"],
 

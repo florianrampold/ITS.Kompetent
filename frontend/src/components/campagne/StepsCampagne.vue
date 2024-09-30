@@ -1,9 +1,7 @@
 <template>
   <section>
-    <!-- component -->
     <div class="">
       <div id="ProgressStepper" class="flex">
-        <!-- progress item -->
         <div class="w-1/3">
           <div class="relative mb-2">
             <div
@@ -22,9 +20,7 @@
             Mitarbeiter*innen einladen
           </h3>
         </div>
-        <!-- /progress item -->
 
-        <!-- progress item middle -->
         <div class="w-1/3">
           <div class="relative mb-2">
             <div
@@ -43,7 +39,6 @@
                   class="w-0 bg-green-300 py-1 rounded"
                   style="width: ${procentBar}%;"
                 ></div>
-                <!-- middle part 100 full & 50 half progressstatus-->
               </div>
             </div>
 
@@ -80,7 +75,6 @@
                   class="w-0 bg-green-300 py-1 rounded"
                   style="width: ${procentBar}%;"
                 ></div>
-                <!-- middle part 100 full & 50 half progressstatus-->
               </div>
             </div>
 

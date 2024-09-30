@@ -17,7 +17,6 @@ router.register(r'email_items', EmailItemViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('contact_request/', contact_request, name='contact_request'),
     path('generate_individual_report/', generate_individual_report, name='generate_individual_report'),
 
 

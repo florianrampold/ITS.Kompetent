@@ -33,21 +33,19 @@
     </div>
     <div
       v-if="isModalOpen"
-      class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50"
-      @click.self="closeModal()"
+      class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+      @click="closeModal()"
     >
-      <div
-        class="bg-white rounded-lg shadow-xl overflow-auto max-w-4xl max-h-full"
-      >
+      <div class="relative w-full h-full flex items-center justify-center">
         <span
-          class="absolute top-4 right-4 text-white text-3xl cursor-pointer"
+          class="absolute top-4 right-4 text-white text-3xl cursor-pointer z-50"
           @click="closeModal"
           >&times;</span
         >
         <img
           :src="image.image_field"
           alt="Full size image"
-          class="max-w-full max-h-full"
+          class="object-contain m-4 max-w-full max-h-full w-full h-full"
         />
       </div>
     </div>
@@ -73,23 +71,40 @@ export default {
   },
   data() {
     return {
-      isLoading: true, // Initial state is loading
+      isLoading: true, 
       isModalOpen: false,
     };
   },
+  /**
+   * A Vue component lifecycle method that runs once the component is mounted to the DOM.
+   * Handles resizing of images.
+   */
   mounted() {
     window.addEventListener("resize", this.handleResize);
   },
+  /**
+   * A Vue component lifecycle method that runs before the component is unmounted to the DOM.
+   * Removes the event listener to handle resizing.
+   */
   beforeUnmount() {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
+  /**
+   * Opens the modal
+   */
     openModal() {
       this.isModalOpen = true;
     },
+    /**
+    * Closes the modal
+     */
     closeModal() {
       this.isModalOpen = false;
     },
+    /**
+    * Adjust the image size to the optimal width and heght of the container.
+    */
     adjustImageSize() {
       const img = this.$refs.image;
       const container = this.$refs.imageContainer;
@@ -111,15 +126,24 @@ export default {
         }
       });
     },
+    /**
+    * Calls adjusting of image size when imae is loaded.
+    */
     imageLoaded() {
       this.$nextTick().then(this.adjustImageSize); // Ensures the DOM is updated before adjustment
       this.isLoading = false; // Set loading to false when the image has loaded
     },
+    /**
+     * Throws an error when image cannot be loaded
+     */
     imageError() {
       this.isLoading = false; // Also set loading to false if the image fails to load
     },
+     /**
+     * Handles resizing of the image
+     */
     handleResize() {
-      this.adjustImageSize(); // Re-apply image adjustment on window resize
+      this.adjustImageSize(); 
     },
   },
 };

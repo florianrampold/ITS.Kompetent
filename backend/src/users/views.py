@@ -18,9 +18,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView
+
 class CustomTokenRefreshView(TokenRefreshView):
     """
-    Chekcs the validity of jwt access and refresh tokens stores as HTTP only cookies.
+    Checks the validity of jwt access and refresh tokens stores as HTTP only cookies.
 
     Args:
         request: The HTTP request object.
@@ -29,9 +33,11 @@ class CustomTokenRefreshView(TokenRefreshView):
         Response object with JSON data indicating if an access token or a refresh token was renewed or if the session expired.
     """
     def post(self, request, *args, **kwargs):
+
+       
     
         refresh_token = request.COOKIES.get('refreshToken')
-        last_interaction = request.data.get('last_interaction')  # Receive the activity status from the request
+        last_interaction = request.data.get('last_interaction')  
         if not refresh_token:
             return Response({'error': 'Session expired. Please log in again.'}, status=401)
 
@@ -39,8 +45,10 @@ class CustomTokenRefreshView(TokenRefreshView):
             old_refresh = RefreshToken(refresh_token)
 
             # Extract user ID and retrieve user
-            user_id = old_refresh['user_id']  # Ensure 'user_id' is part of the token payload when issued
+            user_id = old_refresh['user_id'] 
             user = get_user_model().objects.get(id=user_id)
+           
+
             last_interaction_datetime = datetime.datetime.fromisoformat(last_interaction.replace('Z', '+00:00'))
             current_time = datetime.datetime.now(datetime.timezone.utc)
             time_difference = (current_time - last_interaction_datetime).total_seconds()
@@ -50,15 +58,11 @@ class CustomTokenRefreshView(TokenRefreshView):
             refresh_expires_in = (refresh_expiration_datetime - current_time).total_seconds()
 
 
-            
-
-
 
             # If user was  active for the last 2 minutes and the refresh token expires in the next 5 minutes generate a new refresh token
             if time_difference < 120 and refresh_expires_in < 300:  
                 old_refresh.blacklist()
                 # Create a new refresh token for the user
-               # new_refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
 
                 new_refresh = RefreshToken.for_user(user)
                 new_refresh_token = str(new_refresh)
@@ -124,6 +128,16 @@ def get_user_profile(request):
         return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_password_change_required(request):
+    user = request.user
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        return JsonResponse({'must_change_password': user_profile.must_change_password})
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
 @authentication_classes([CookieJWTAuthentication])
 @permission_classes([IsAuthenticated])
 def status(request):
@@ -141,6 +155,13 @@ def status(request):
     response.accepted_media_type = "application/json"
     response.renderer_context = {}
     return response
+
+@permission_classes([AllowAny])
+def ping_view(request):
+    """
+    Simple view to trigger middleware and set CSRF token.
+    """
+    return JsonResponse({'message': 'pong'})
 
 @permission_classes([AllowAny])
 @api_view(['POST'])
@@ -161,17 +182,12 @@ def obtain_jwt_token_with_cookie(request):
     if user is not None and user.is_active:
         if not user.profile.is_campagne_manager:
             return JsonResponse({'error': 'Only Campagne Managers can log in.'}, status=403)
-        # Proceed with login logic for non-admin users
-        # ...
     elif user is None:
         return JsonResponse({'error': 'Invalid credentials.'}, status=401)
 
     refresh = RefreshToken.for_user(user)
     access_token = str(refresh.access_token)
     refresh_token = str(refresh)
-   # refresh_lifetime = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
-
-
 
     response_data = {
         "message": "Authenticated successfully",
@@ -194,9 +210,9 @@ def obtain_jwt_token_with_cookie(request):
             csrf_token,
             domain=settings.DOMAIN_URL,
             path="/",
-            httponly=False,  # Allow access via JavaScript
-            samesite=None,  # Adjust as needed for your application
-            secure=True,     # Use `False` in development if not on HTTPS
+            httponly=False,  
+            samesite=None,  
+            secure=True,     
         )
         response.set_cookie('accessToken', access_token, domain=settings.DOMAIN_URL,
             path="/", httponly=True, samesite=None, secure=True)
@@ -208,6 +224,15 @@ def obtain_jwt_token_with_cookie(request):
 
 @api_view(['GET'])
 def logout_view(request):
+    """
+    Logs the user out and removes the cookies.
+
+    Args:
+        request: The HTTP request object containing username and password in the request data.
+
+    Returns:
+        Response object with JSON data containing the response with the removed cookies.
+    """
     response = Response({"message": "Logged out successfully"})
 
     refresh_token = request.COOKIES.get('refreshToken')
@@ -269,4 +294,51 @@ def logout_view(request):
             path="/")
 
     return response
+
+
+
+@permission_classes([IsAuthenticated])
+class CustomPasswordChangeView(PasswordChangeView):
+    """
+    A custom class to change passwords. 
+
+    Args:
+        PasswordChangeView: The default django PasswordChangeView.
+    """
+    template_name = 'passwords/password_change_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Called initially to check if the user is logged in. Otherwise password change cannot be processed.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            A redirect to the frontend when password change was succesful to the dahboard otherwise to the login page.
+        """
+        jwt_auth = CookieJWTAuthentication()
+        try:
+            user, token = jwt_auth.authenticate(request)
+            if user is not None:
+                request.user = user
+            else:
+                return redirect((f'{settings.DOMAIN_URL}/login'))
+        except InvalidToken:
+            return redirect((f'{settings.DOMAIN_URL}/login'))
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return (f'{settings.DOMAIN_URL}/dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['domain_url'] = settings.DOMAIN_URL
+        return context
+
+    def form_valid(self, form):
+        self.request.user.profile.must_change_password = False
+        self.request.user.profile.save()
+        return super().form_valid(form)
 

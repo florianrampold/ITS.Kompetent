@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
-from threats.serializers import ThreatVectorSerializer, ThreatSituationSerializer
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 class CompetenceTestSerializer(ModelSerializer):
@@ -10,12 +9,9 @@ class CompetenceTestSerializer(ModelSerializer):
     Serializes CompetenceTest objects with their associated threat vectors.
 
     Attributes:
+        id: The unique identifier of the competence test.
         threat_situations: A list of ThreatSituationSerializer instances associated with the competence test.
     """
-
-    #threat_vector = ThreatVectorSerializer(many=True, read_only=True)
-    #threat_situations = ThreatSituationSerializer(many=True, read_only=True)
-
 
     class Meta:
         model = CompetenceTest
@@ -54,7 +50,7 @@ class QuestionItemSerializer(ModelSerializer):
 
     class Meta:
         model = QuestionItem
-        fields = ['id', 'question_name', 'question', 'type']
+        fields = ['id', 'question', 'type']
 
 class ImpulseItemSerializer(ModelSerializer):
     """
@@ -66,7 +62,6 @@ class ImpulseItemSerializer(ModelSerializer):
         id: The unique identifier of the impulse item.
         impulse_name: The name of the impulse item.
     """
-
     class Meta:
         model = Impulse
         fields =['id', 'impulse_name']
@@ -182,7 +177,7 @@ class ImageItemSerializer(ModelSerializer):
 
     class Meta:
         model = ImageItem
-        fields = ['id', 'image_name', 'image_field']
+        fields = ['id', 'image_field']
 
 
 class EmailItemSerializer(ModelSerializer):
@@ -203,7 +198,7 @@ class EmailItemSerializer(ModelSerializer):
 
     class Meta:
         model = EmailItem
-        fields = ['id', 'email_name', 'email_sender', 'email_recipient', 'email_regarding', 'email_content', 'email_image_sender']
+        fields = ['id', 'email_sender', 'email_recipient', 'email_regarding', 'email_content', 'email_image_sender']
 
 class ChoiceItemSerializer(ModelSerializer):
     """

@@ -73,7 +73,7 @@ export default {
      */
     closeModal() {
       this.showModal = false;
-      this.$emit("close-modal"); // Emit an event for the parent component
+      this.$emit("close-modal"); // Emit an closing event for the parent component
     },
     /**
      * Confirs the decision to remove the security key and emits the event to the parent component.

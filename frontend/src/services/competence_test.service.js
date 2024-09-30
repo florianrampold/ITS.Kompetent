@@ -116,15 +116,6 @@ const CompetenceTestService = {
       throw error;
     }
   },
-  async sendContactRequest(data) {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const response = await APIService.post("/contact_request/", data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  },
 };
 
 export default CompetenceTestService;

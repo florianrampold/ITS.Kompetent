@@ -1,6 +1,4 @@
-from django.shortcuts import render
 
-# Create your views here.
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import pagination
 from rest_framework.response import Response
@@ -15,7 +13,7 @@ class TrainingPagination(pagination.PageNumberPagination):
     page_size=10
     def get_paginated_response(self, data):
         """
-        Paginates the trainin programs
+        Paginates the training programs
 
         Args:
             data (Model): The training programs
@@ -70,3 +68,17 @@ class TrainingViewSet(ModelViewSet):
     """
     queryset = Training.objects.get_queryset().order_by('training_name')
     serializer_class = TrainingSerializer
+
+class TrainingCategoryViewSet(ModelViewSet):
+    """
+    A ViewSet for handling CRUD operations on threat vectors.
+
+    This ViewSet provides endpoints for creating, retrieving, updating, and deleting threat vectors.
+    
+    Attributes:
+        queryset (QuerySet): The queryset containing all threat vectors.
+        filter_fields (Filter): Allows to filter threat vectors by assigned job profile
+        serializer_class (Serializer): The serializer class used for threat vectors serialization and deserialization.
+    """
+    queryset = TrainingCategory.objects.all()
+    serializer_class = TrainingCategorySerializer

@@ -85,7 +85,6 @@ class ThreatSituation(models.Model):
     threat_situation_identificator = models.CharField(max_length=140, verbose_name='Kennung', null=True, blank=True)
     threat_description = models.TextField(null=True, verbose_name='Beschreibung')
     threat_vector = models.ForeignKey(ThreatVector, null=True, on_delete=models.CASCADE, verbose_name='Zugeordneter Bedrohungsvektor')
-    # remove null = True
     job_profile = models.ForeignKey(JobProfile, blank=True, null=True, on_delete=models.CASCADE, verbose_name='Zugeordnetes Anforderungsprofil')
 
 

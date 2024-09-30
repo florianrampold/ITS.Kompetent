@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .models import JobProfile
-# Register your models here.
 
 
 class JobProfileAdmin(admin.ModelAdmin):
@@ -11,7 +10,7 @@ class JobProfileAdmin(admin.ModelAdmin):
     Attributes:
         list_display: The table columns displayed in the list view.
     """
-    list_display = ("id", "job_name", "job_description") # display these table columns in the list view
+    list_display = ("id", "job_name", "job_description")
 
 
 admin.site.register(JobProfile, JobProfileAdmin)

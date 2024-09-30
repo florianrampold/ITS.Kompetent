@@ -33,11 +33,8 @@
         <div class="flex px-4 pb-8 justify-between">
           <h3 class="text-lg font-semibold">Aktiv</h3>
 
-          <!-- Toggle B -->
           <label for="toggleB" class="flex items-center cursor-pointer">
-            <!-- toggle -->
             <div class="relative">
-              <!-- input -->
               <input
                 id="toggleB"
                 type="checkbox"
@@ -45,9 +42,7 @@
                 disabled
                 checked
               />
-              <!-- line -->
               <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
-              <!-- dot -->
               <div
                 class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"
               ></div>
@@ -137,7 +132,6 @@ export default {
 </script>
 
 <style scoped>
-/* Toggle B */
 input:checked ~ .dot {
   transform: translateX(100%);
   background-color: white;

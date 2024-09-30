@@ -75,4 +75,25 @@ export default {
       }
     }
   },
+  async checkPasswordChange() {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const response = await API.get("/check_password_change/");
+      return response.data;
+    } catch (error) {
+      console.log("error");
+      throw error;
+    }
+  },
+  /**
+    * Ensures CSRF token is set by making a simple request before the user tries to login.
+    */
+   async ensureCsrfToken() {
+    try {
+      // This request will trigger the middleware and set the CSRF token in the cookies
+      await API.get("/ping/");
+    } catch (error) {
+      console.error("Error ensuring CSRF token:", error);
+    }
+  },
 };

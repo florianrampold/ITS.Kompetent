@@ -41,7 +41,7 @@
           Achtung: Aus Datenschutzgründen haben Sie keine Möglichkeit den
           ITS-Kompetenztest abzubrechen und wiederaufzunehmen! Wir speichern
           Ihre Eingaben nur temporär, sobald Sie die Seite schließen gehen Ihre
-          Ergebnisse verloren.
+          Ergebnisse verloren. Erst wenn der ITS-Kompetenztest beendet ist, werden ihre Ergebnisse der erstellten ITS-Kampagne zugerodnet und anonymisiert gespeichert.
         </p>
       </template>
       <template #buttons> </template>
@@ -190,6 +190,8 @@ export default {
   mounted() {
     this.profile = this.getProfile();
     this.profileID = this.getProfileID();
+    this.catchError(this.profileID);
+
   },
   methods: {
     /**
@@ -210,6 +212,19 @@ export default {
         name: "Test",
         params: { invitationToken: this.$route.params.invitationToken },
       });
+    },
+    /**
+     * Handles undefined profile ID errors by stopping the loading state, redirecting to the "Profile" route,
+     * and showing a popup notification.
+     *
+     * @param {string|undefined} profileID - The profile ID to check. If undefined, triggers error handling.
+     */
+    catchError(profileID) {
+      if (profileID === undefined) {
+        this.loading = false;
+        this.$router.push({ name: "Profile" });
+        this.showPopUp = true;
+      }
     },
     /**
      * Starts playing the video

@@ -1,4 +1,3 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
   <div class="bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from job_profiles.serializers import *
 from .models import *
 from rest_framework import serializers
+from threats.serializers import ThreatEventSerializer
 
 class TrainingGroupSerializer(ModelSerializer):
     """
@@ -85,6 +86,25 @@ class TrainingSerializer(ModelSerializer):
 
 
 
+class TrainingCategorySerializer(ModelSerializer):
+    """
+    Serializer for ThreatVector model.
+
+    Serializes ThreatVector objects with their associated threat area and threat event.
+
+    Attributes:
+        training_category_name: The name of the training category.
+        training_category_description: The description of the training categeory.
+        threat_area: The ThreatAreaSerializer instance associated with the threat vector.
+        threat_event: The ThreatEventSerializer instance associated with the threat vector.
+        threat_vector_description: The description of the threat vector.
+    """
+
+    threat_event = ThreatEventSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TrainingCategory
+        fields = ["id", "training_category_name", "training_category_description", 'threat_event']
 
 
 

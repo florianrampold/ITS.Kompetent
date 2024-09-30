@@ -65,7 +65,7 @@ export default {
       if (error.response && error.response.data) {
         return [];
       }
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -82,8 +82,7 @@ export default {
       if (error.response && error.response.data) {
         return [];
       }
-      // If not, handle it in another way (e.g. return a default value or throw an error)
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -100,8 +99,7 @@ export default {
       if (error.response && error.response.data) {
         return [];
       }
-      // If not, handle it in another way (e.g. return a default value or throw an error)
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -200,7 +198,7 @@ export default {
       if (error.response && error.response.data) {
         return null;
       }
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -217,7 +215,7 @@ export default {
       if (error.response && error.response.data) {
         return null;
       }
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -234,7 +232,7 @@ export default {
       if (error.response && error.response.data) {
         return null;
       }
-      return []; // or throw error;
+      return []; 
     }
   },
   /**
@@ -251,7 +249,7 @@ export default {
       if (error.response && error.response.data) {
         return null;
       }
-      return []; // or throw error;
+      return []; 
     }
   },
 };

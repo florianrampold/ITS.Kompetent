@@ -5,6 +5,9 @@ from polymorphic.admin import (
 )
 from .models import *
 
+class ImpulseAdmin(PolymorphicParentModelAdmin):
+    base_model = Impulse
+    child_models = (ImageImpulse, EmailImpulse, ChatImpulse)
 
 class EmailImpulseAdmin(PolymorphicChildModelAdmin):
     """
@@ -16,7 +19,7 @@ class EmailImpulseAdmin(PolymorphicChildModelAdmin):
     """
 
     base_model = EmailImpulse
-    list_display = ("impulse_name", "impulse_text",)
+    list_display = ("__str__", "impulse_text",)
 
 class ImageImpulseAdmin(PolymorphicChildModelAdmin):
     """
@@ -28,7 +31,7 @@ class ImageImpulseAdmin(PolymorphicChildModelAdmin):
     """
 
     base_model = ImageImpulse
-    list_display = ("impulse_name", "impulse_text",)
+    list_display = ("__str__", "impulse_text",)
 
 class ChatImpulseAdmin(PolymorphicChildModelAdmin):
     """
@@ -40,7 +43,7 @@ class ChatImpulseAdmin(PolymorphicChildModelAdmin):
     """
 
     base_model = ChatImpulse
-    list_display = ("impulse_name", "impulse_text",)
+    list_display = ("__str__", "impulse_text",)
 
 class ImpulseItemAdmin(PolymorphicParentModelAdmin):
     """
@@ -62,9 +65,30 @@ class ImageItemAdmin(admin.ModelAdmin):
         list_display: The table columns displayed in the list view.
     """
 
-    list_display = ("image_name", "image_description")
-    search_fields = ("image_name",)
+    list_display = ("threat_situation", "impulse_number", "image_description")
+    search_fields = ("threat_situation__threat_situation_identificator",)
 
+class EmailItemAdmin(admin.ModelAdmin):
+    """
+    Admin class for EmailItem model.
+
+    Attributes:
+        list_display: The table columns displayed in the list view.
+    """
+
+    list_display = ("threat_situation", "impulse_number")
+    search_fields = ("threat_situation__threat_situation_identificator",)
+
+class ChatInterfaceAdmin(admin.ModelAdmin):
+    """
+    Admin class for ChatInterface model.
+
+    Attributes:
+        list_display: The table columns displayed in the list view.
+    """
+
+    list_display = ("threat_situation", "impulse_number")
+    search_fields = ("threat_situation__threat_situation_identificator",)
 
 class ChoiceItemAdmin(admin.ModelAdmin):
     """
@@ -76,7 +100,7 @@ class ChoiceItemAdmin(admin.ModelAdmin):
     """
 
     list_display = ("question", "option", "answer_rating")
-    search_fields = ("question__question_name",)
+    search_fields = ("question__threat_situation__threat_situation_identificator", "option",)
 
 class QuestionItemAdmin(admin.ModelAdmin):
     """
@@ -87,8 +111,8 @@ class QuestionItemAdmin(admin.ModelAdmin):
         search_fields: The fields included in the search functionality.
     """
 
-    list_display = ("question_name", "question", "type")
-    search_fields = ("question_name",)
+    list_display = ("__str__", "competence_dimension", "question", "type")
+    search_fields = ("threat_situation__threat_situation_identificator", "question",)
 
 class CompetenceDimensionAdmin(admin.ModelAdmin):
     """
@@ -109,6 +133,8 @@ class CompetenceTestItemAdmin(admin.ModelAdmin):
     """
 
     list_display = ('__str__', "threat_situation", "impulse_item", "competence_dimension")
+    search_fields = ("threat_situation__threat_situation_identificator",)
+
 
 admin.site.register(QuestionItem, QuestionItemAdmin)
 admin.site.register(ChoiceItem, ChoiceItemAdmin)
@@ -118,11 +144,9 @@ admin.site.register(ImageImpulse, ImageImpulseAdmin)
 admin.site.register(CompetenceTest)
 admin.site.register(EmailImpulse, EmailImpulseAdmin)
 admin.site.register(ChatImpulse, ChatImpulseAdmin)
-
-admin.site.register(Impulse, ImpulseItemAdmin)
-admin.site.register(EmailItem)
+admin.site.register(EmailItem, EmailItemAdmin)
 admin.site.register(ImageItem, ImageItemAdmin)
-admin.site.register(ChatInterface)
+admin.site.register(ChatInterface, ChatInterfaceAdmin)
 
 
 

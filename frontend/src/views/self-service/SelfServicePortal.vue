@@ -1,7 +1,6 @@
 <template>
   <template v-if="loading">
     <spinner></spinner>
-    <!-- here use a loaded you prefer -->
   </template>
   <template v-else>
     <div class="flex">
@@ -22,8 +21,11 @@
           <a
             href="#"
             class="block py-2 px-4 text-sm hover:bg-gray-900"
-            :class="{ 'bg-gray-900': activeTab === 'Einladungs-Management' }"
-            @click="activeTab = 'Einladungs-Management'"
+            :class="{
+              'bg-gray-900': activeTab === 'Einladungs-Management',
+              'cursor-not-allowed opacity-50': campagneEnded,
+            }"
+            @click="navigateToInvitationView"
           >
             Einladungs-Management
           </a>
@@ -62,7 +64,7 @@
             </button>
             <button
               v-if="campagneStarted"
-              :class="{ hidden: activeTab != 'Einladungs-Management' }"
+              :class="{ hidden: activeTab != 'Dashboard' }"
               class="text-white bg-primary rounded-md font-semibold px-2 py-2 flex justify-between items-center"
               @click="openDeleteCampagneModal"
             >
@@ -164,6 +166,9 @@ export default {
     campagneStarted() {
       return this.campagneStore.campagneStarted;
     },
+    campagneEnded() {
+      return this.campagneStore.campagneEnded;
+    },
   },
   /**
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
@@ -171,8 +176,16 @@ export default {
    */
   async mounted() {
     await this.setCampagne();
-    if (this.campagneStore.campagneStarted) {
+    if (
+      this.campagneStore.campagneStarted &&
+      !this.campagneStore.campagneEnded
+    ) {
       this.activeTab = "Einladungs-Management";
+    } else if (
+      this.campagneStore.campagneStarted &&
+      this.campagneStore.campagneEnded
+    ) {
+      this.activeTab = "Dashboard";
     } else {
       this.activeTab = "FAQ";
     }
@@ -180,6 +193,7 @@ export default {
   },
   methods: {
     async setCampagne() {
+      this.campagneStore.setCampagneStarted(true);
       try {
         const campagne = await this.campagneStore.getCampagne();
         this.campagneStore.setCampagneStarted(true);
@@ -188,6 +202,7 @@ export default {
         }
       } catch (error) {
         this.campagneStore.setCampagneStarted(false);
+        this.campagneStore.setCampagneEnded(false);
       }
     },
     /**
@@ -201,10 +216,19 @@ export default {
       }
       this.activeTab = "Dashboard";
     },
+    /**
+     * Navigates to the invitation view component inside the self-service portal. Prevents navigating if a campagne has ended.
+     *
+     */
+    navigateToInvitationView(event) {
+      if (this.campagneStore.campagneEnded) {
+        event.preventDefault(); // Prevent default link behavior
+        return; // Do nothing if the link is disabled
+      }
+      this.activeTab = "Einladungs-Management";
+    },
     // TO BE IMPLEMENTED
     refreshData() {
-      //this.loading = true;
-      //
       this.refresh = true;
       setTimeout(() => (this.refresh = false), 500);
     },
@@ -228,9 +252,10 @@ export default {
       this.loading = true;
       await this.campagneStore.deleteCampagne();
       setTimeout(() => (this.loading = false), 500);
+      this.activeTab = "Einladungs-Management";
     },
     async endCampaign() {
-      this.campagneStore.setCampagneEndedBack();
+      // this.campagneStore.setCampagneEndedBack();
       this.loading = true;
       await this.campagneStore.endCampaign({
         aggregateOverSingleProfiles: true,

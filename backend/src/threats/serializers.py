@@ -46,6 +46,7 @@ class ThreatVectorSerializer(ModelSerializer):
     Serializes ThreatVector objects with their associated threat area and threat event.
 
     Attributes:
+        id: The unique identifier of the threat vector.
         threat_area: The ThreatAreaSerializer instance associated with the threat vector.
         threat_event: The ThreatEventSerializer instance associated with the threat vector.
         threat_vector_description: The description of the threat vector.

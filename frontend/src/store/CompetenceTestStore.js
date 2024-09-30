@@ -1,14 +1,11 @@
 import { defineStore } from "pinia";
-import { useStorage } from "@vueuse/core";
 import competenceTestService from "../services/competence_test.service";
 
 export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
   state: () => {
     return {
       competenceTestResult: {},
-      testStarted: useStorage("testStarted", false),
-      testButtonActive: useStorage("testButtonActive", false),
-      getStartedButtonActive: useStorage("getStartedButtonActive", false),
+    
     };
   },
 
@@ -20,27 +17,8 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
     getCompetenceTestResult() {
       return this.competenceTestResult;
     },
-    /**
-     * Getter to retrieve if the competence test started
-     * @return {Boolean} True if test started, false else.
-     */
-    getTestStarted() {
-      return this.testStarted;
-    },
-    /**
-     * Getter to retrieve if the test button is active.
-     * @return {Boolean} True if yes, false else.
-     */
-    getTestButtonActive() {
-      return this.testButtonActive;
-    },
-    /**
-     * Getter to retrieve if the test button is active.
-     * @return {Boolean} True if yes, false else.
-     */
-    getGetStartedButtonActive() {
-      return this.getStartedButtonActive;
-    },
+   
+
   },
 
   actions: {
@@ -52,47 +30,6 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
       this.competenceTestResult = testResult;
     },
 
-    /**
-     * Marks the test as started.
-     */
-    startTest() {
-      this.testStarted = true;
-    },
-
-    /**
-     * Activates the test button, making it responsive to user interactions.
-     */
-    setTestButtonActive() {
-      this.testButtonActive = true;
-    },
-
-    /**
-     * Activates the "Get Started" button, making it responsive to user interactions.
-     */
-    setGetStartedButtonActive() {
-      this.getStartedButtonActive = true;
-    },
-
-    /**
-     * Deactivates the test button, making it unresponsive to user interactions.
-     */
-    setTestButtonInactive() {
-      this.testButtonActive = false;
-    },
-
-    /**
-     * Deactivates the "Get Started" button, making it unresponsive to user interactions.
-     */
-    setGetStartedButtonInactive() {
-      this.getStartedButtonActive = false;
-    },
-
-    /**
-     * Marks the test as ended.
-     */
-    endTest() {
-      this.testStarted = false;
-    },
 
     /**
      * Asynchronously fetches the competence test details for a specified profile ID.
@@ -191,12 +128,6 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
         throw error;
       }
     },
-    async sendContactRequest(data) {
-      try {
-        return await competenceTestService.sendContactRequest(data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
+   
   },
 });

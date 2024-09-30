@@ -10,17 +10,6 @@ SIMULATION_CHOICES = (
     (4, "Text"),
 )
 
-COMPETENCE_DIMENSIONS_FIELD = (
-    (1, "Threat Identification"),
-    (2, "Impact Assesment"),
-    (3, "Tactic Choice"),
-    (4, "Tactic Justification"),
-    (5, "Tactic Mastery"),
-    (6, "Commitment"),
-    (7, "Awareness of Obstacles"),
-    (8, "Tactic Control"),
-)
-
 ANSWER_RATING = (
     (0, "Falsch"),
     (1, "Mittel"),

@@ -57,6 +57,17 @@ export const useAuthStore = defineStore({
           });
       });
     },
+    /**
+    * Ensures CSRF token is set by making a simple request.
+    */
+    async ensureCsrfToken() {
+      try {
+        // This request will trigger the middleware and set the CSRF token in the cookies
+        await authService.ensureCsrfToken();  // A simple API endpoint that just triggers the middleware
+      } catch (error) {
+        console.error("Error ensuring CSRF token:", error);
+      }
+    },
 
     /**
      * Logs the user in. Uses a username and a password to authenticate
@@ -149,5 +160,17 @@ export const useAuthStore = defineStore({
         }
       }
     },
+    /**
+     * Chekcs whether the user has to change the password.
+     */
+    async checkPasswordChange() {
+      try {
+        const response = await authService.checkPasswordChange();
+        return response;
+
+      } catch (error) {
+        console.error("Error during password change:", error);
+      }
+    }
   },
 });

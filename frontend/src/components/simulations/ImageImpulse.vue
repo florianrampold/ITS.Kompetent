@@ -50,17 +50,30 @@ export default {
       currentIndex: 1,
     };
   },
+  watch: {
+    filterIndex: "updateImageImpulseItems",
+  },
   /**
    * A Vue component lifecycle method that runs once the component is mounted to the DOM.
-   * If filterIndex is not -1 (Threat Awareness) shoe the image which is the most threatining.
+   * Calls updateImageImpulseItems when view mounts. 
    */
   mounted() {
-    this.imageImpulseItems = this.images;
-    if (this.filterIndex != -1) {
-      this.imageImpulseItems = [];
-      this.imageImpulseItems[0] = this.images[this.filterIndex];
-      this.currentIndex = this.filterIndex + 1;
-    }
+    this.updateImageImpulseItems();
+  },
+
+  methods: {
+    /**
+     * Displays either all imaes or only one image when Threat Awareness is the active competence dimension.
+     */
+    updateImageImpulseItems() {
+      this.imageImpulseItems = this.images;
+      console.log(this.filterIndex, "filter index");
+      if (this.filterIndex !== -1) {
+        this.imageImpulseItems = [];
+        this.imageImpulseItems[0] = this.images[this.filterIndex];
+        this.currentIndex = this.filterIndex + 1;
+      }
+    },
   },
 };
 </script>

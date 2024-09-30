@@ -1,7 +1,6 @@
 <template>
   <template v-if="isLoading">
     <spinner></spinner>
-    <!-- here use a loaded you prefer -->
   </template>
   <template v-else>
     <Hero
@@ -10,13 +9,9 @@
           class="flex justify-center items-center lg:items-start lg:justify-start"
         >
           <h1 class="main-heading">
-            <span class="text-primary font-semibold"
-              >Ergebnisse zu<br />
-            </span>
+            <span class="text-primary font-semibold">Ergebnisse zu<br /> </span>
             {{ " " }}
-            <span class="text-secondary xl:inline"
-              >den ITS-Kompetenztests</span
-            >
+            <span class="text-secondary xl:inline">den ITS-Kompetenztests</span>
           </h1>
         </div>
       </template>
@@ -41,13 +36,16 @@
 
             <br />
             <br />
-            <strong>Achtung:</strong> In der Einstellung, die Sie vorgenommen haben, werden Ihnen erst
-            aggregierte Daten zu einem ITS-Anforderungsprofil angezeigt, wenn
-            mindestens {{ securityDisplayThreshold }} Mitarbeiter*innen aus
-            diesem ITS-Anforderungsprofil an der Kampagne teilgenommen haben.
-            <br/>   <br/>
-            Sobald die Mindestanzahl erreicht ist, können Sie sich dazu
-            entscheiden die Kampagne zu beenden.
+            <span v-if="!campagneStore.campagneEnded">
+              <strong>Achtung:</strong> In der Einstellung, die Sie vorgenommen
+              haben, werden Ihnen erst aggregierte Daten zu einem
+              ITS-Anforderungsprofil angezeigt, wenn mindestens
+              {{ securityDisplayThreshold }} Mitarbeiter*innen aus diesem
+              ITS-Anforderungsprofil an der Kampagne teilgenommen haben. <br />
+              <br />
+              Sobald die Mindestanzahl erreicht ist, können Sie sich dazu
+              entscheiden die Kampagne zu beenden.
+            </span>
           </p>
         </div>
       </template>
@@ -215,7 +213,8 @@
               class="mt-3 text-base text-white sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl lg:mx-0"
             >
               Hier können Sie die Ergebnisse der ITS-Kompetenztests nach
-              ITS-Anforderungsprofilen filtern. Dies ist nur möglich, wenn mindestens
+              ITS-Anforderungsprofilen filtern. Dies ist nur möglich, wenn
+              mindestens
               {{ securityDisplayThreshold }} Personen innerhalb eines
               ITS-Anforderungsprofils teilgenommen haben.
             </p>
@@ -449,7 +448,7 @@
                   class="mt-3 mb-5 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
                 >
                   Die Graphik verdeutlicht, wie Ihre Mitarbeiter*innen aus dem
-                  ITS- Anforderungsprofil
+                  ITS-Anforderungsprofil
                   {{ selectedProfile.job_profile_name }} im Allgemeinen
                   abgeschlosssen haben. Das Ergebnis stellt den Durchschnitt
                   über alle vertesteten ITS-Bedrohungen dar. Ein Wert unter 50%
@@ -468,7 +467,7 @@
                   class="mt-3 mb-5 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
                 >
                   Jede ITS-Bedrohung wurde über 7 verschiedene
-                  ITS-Kompetenzdimensionen getestet. Im folgenden erhalten Sie
+                  ITS-Kompetenzdimensionen getestet. Im Folgenden erhalten Sie
                   einen Überblick, wie gut sich Ihre Mitarbeiter*innen in den
                   einzelnen ITS-Kompetenzdimensionen geschlagen haben.
                 </p>
@@ -547,7 +546,7 @@
       </div>
       <div v-if="competenceTestResults" class="page-background">
         <div class="standard-container mb-10">
-          <h1 class="main-heading mb-10">Trainings-Empfehlungen</h1>
+          <h1 class="main-heading mb-10">Frei verfügbare Trainings-Angebote</h1>
           <div class="flex flex-row justify-center items-center">
             <div
               class="border-b-4 w-14 rounded-lg border-secondary mb-10"
@@ -557,7 +556,7 @@
             <p
               class="mt-3 text-base text-center text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
             >
-              Im folgenden werden Ihnen kostenlose Trainings-Angebote in
+              Im Folgenden werden Ihnen kostenlose Trainings-Angebote in
               absteigender Reihenfolge nach Relevanz für Ihre Mitarbeiter*innen
               angezeigt. Die Reihenfolge der angezeigten Trainings-Angebote
               basiert auf den aggregierten Ergebnissen der ITS-Kompetenztests.
@@ -572,6 +571,274 @@
             :total-trainings="trainings.length"
             @re-filter-training="reFilterTrainings"
           ></trainings-table>
+        </div>
+      </div>
+      <div v-if="competenceTestResults" class="pt-10">
+        <div class="standard-container mb-10">
+          <h1 class="main-heading mb-10">Weitere Trainings-Empfehlungen</h1>
+          <div class="flex flex-row justify-center items-center">
+            <div
+              class="border-b-4 w-14 rounded-lg border-secondary mb-10"
+            ></div>
+          </div>
+          <div class="flex flex-col items-center justify-center mb-10">
+            <p
+              class="mt-3 text-base text-center text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+            >
+              Sie sind nicht fündig geworden bei den frei verfügbaren
+              Trainings-Angeboten und möchten eigene ITS-Trainingsschulungen
+              entwickeln lassen oder auf kostenpflichtige
+              ITS-Trainingsschulungen zurückgreifen?
+              <br />
+              Im Folgenden stellen wir Ihnen vor, worauf Sie dabei gemäß des
+              Ansatzes von ITS.kompetent achten sollten.
+              <br />
+            </p>
+          </div>
+          <h1
+            class="text-2xl tracking-tight font-extrabold text-primary text-center sm:text-3xl md:text-4xl mb-10"
+          >
+            ITS-Trainigsmodule
+          </h1>
+          <div class="flex flex-row justify-center items-center">
+            <div
+              class="border-b-4 w-14 rounded-lg border-secondary mb-10"
+            ></div>
+          </div>
+          <div class="flex flex-col items-center justify-center mb-10">
+            <p
+              class="mt-3 text-base text-center text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+            >
+              Unsere Klassifikation von ITS-Bedrohungen lässt sich insgesamt zu
+              6 ITS-Trainingsmodulen zuordnen.
+              <br />
+            </p>
+          </div>
+          <div
+            v-if="activeTrainingCategory"
+            class="flex justify-center items-center mb-10"
+          >
+            <Listbox v-model="activeTrainingCategory">
+              <div class="relative mt-1 w-1/2">
+                <ListboxButton
+                  class="relative w-full cursor-default rounded-lg text-primary bg-gray-100 pl-2 text-center py-2 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 text-sm lg:text-xl"
+                >
+                  <span class="block truncate">{{
+                    activeTrainingCategory.training_category_name
+                  }}</span>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
+                  >
+                    <ChevronUpDownIcon
+                      class="h-6 w-6 text-gray-500"
+                    ></ChevronUpDownIcon>
+                  </span>
+                </ListboxButton>
+
+                <transition
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-from-class="opacity-100"
+                  leave-to-class="opacity-0"
+                >
+                  <ListboxOptions
+                    class="absolute mt-1 max-h-60 w-full text-primary overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm lg:text-xl"
+                  >
+                    <ListboxOption
+                      v-for="category in trainingCategories"
+                      v-slot="{ selected }"
+                      :key="category.training_category_name"
+                      :value="category"
+                      as="template"
+                    >
+                      <li
+                        :class="[
+                          selected
+                            ? 'bg-gray-200 text-primary'
+                            : 'text-gray-900',
+                          'relative cursor-pointer select-none py-2 pl-10 pr-4',
+                        ]"
+                      >
+                        <span
+                          :class="[
+                            selected ? 'font-medium' : 'font-normal',
+                            'block truncate',
+                          ]"
+                          >{{ category.training_category_name }}</span
+                        >
+                        <span
+                          v-if="selected"
+                          class="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"
+                        >
+                        </span>
+                      </li>
+                    </ListboxOption>
+                  </ListboxOptions>
+                </transition>
+              </div>
+            </Listbox>
+          </div>
+          <div
+            v-if="activeTrainingCategory"
+            class="rounded-lg bg-gray-100 p-8 whitespace-pre-line text-md xl:text-lg text-left"
+            v-html="sanitizedTrainingCategoryContent"
+          ></div>
+        </div>
+
+        <div class="gradient-background">
+          <div class="standard-container p-10">
+            <explanation-card>
+              <template #heading>Aufbau eines ITS-Trainingsmoduls</template>
+              <template #title
+                >Jedes ITS-Trainingsmodul sollte anhand verschiedener
+                Handlungssituationen trainiert werden. Eine Handlungssituation
+                wird über eine kurze Szenariobeschreibung eingeleitet, die
+                möglichst nah an realistischen Arbeitssituationen der
+                Mitarbeitenden eines jeweiligen ITS-Anforderungsprofils ist.
+                Jede Handlungssituation beinhaltet zudem eine Kombination aus
+                einem ITS-Bedrohungsereignis und einem ITS-Bedrohungsbereich.
+                Pro Handlungssituation werden die 7 verschiedenen
+                ITS-Kompetenzdimensionen trainiert. Die Abbildung
+                veranschaulicht den Zusammenhang.</template
+              >
+
+              <template #image>
+                <img
+                  src="@/assets/Structure_of_Trainings.png"
+                  class="w-full exportImages"
+                  alt="Sample image"
+                />
+              </template>
+              <template #title2>ITS-Kompetenzdimensionen</template>
+              <template #threatAwareness>Threat Awareness</template>
+              <template #threatAwarenessText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                können drei verschiedene Szenarien aus dem Alltag einer
+                Tätigkeit dargestellt werden, die unterschiedlich bedeutsame
+                oder keine ITS-Bedrohung darstellen. Mitarbeitende bekommen nun
+                erklärt, welche ITS-Bedrohung am gefährlichsten ist, welches
+                eine moderate ITS-Bedrohung darstellt und welche Situation mit
+                der geringsten Wahrscheinlichkeit eine ITS-Bedrohung darstellt.
+                Auf diese Weise lernen Mitarbeitende bedrohliche von eher
+                unbedrohlichen Situationen in ihrem Arbeitsalltag abzugrenzen.
+              </template>
+              <template #threatIdentification>Threat Identification</template>
+              <template #threatIdentificationText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                sollten für die jeweiligen ITS-Bedrohungen mit großem und
+                moderatem Gefahrenpotential, die in der Threat Awareness
+                behandelt werden, Merkmale der Gefahrenquelle aufgelistet
+                werden.
+              </template>
+              <template #threatImpactAssessment
+                >Threat Impact Assessment</template
+              >
+              <template #threatImpactAssessmentText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                sollten Mitarbeitende mit einer Auswahl an Konsequenzen ihres
+                potenziellen Handelns im Umgang mit ITS-Bedrohungen konfrontiert
+                werden. Anhand verschiedener Beispiele sollte deutlich werden,
+                welche Konsequenz den größten Einfluss auf die
+                Unternehmenstätigkeit hat.
+              </template>
+              <template #tacticChoice>Tactic Choice</template>
+              <template #tacticChoiceText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                sollten Mitarbeitende geschult werden erste Schritte zur
+                Gefahrenabwehr im eigenen Handlungs-/Verantwortungsbereich
+                vornehmen zu können, wenn sie mit einer ITS-Bedrohung
+                konfrontiert sind.
+              </template>
+              <template #tacticJustification>Tactic Justification</template>
+              <template #tacticJustificationText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                sollten Mitarbeitende geschult werden, die ausgewählten ersten
+                Gegenmaßnahmen zur Begegnung der ITS-Bedrohung im Hinblick auf
+                die Handlungssituation begründen zu können. Das Wissen über
+                Begründungen könnte wesentlich dazu beitragen, dass
+                Mitarbeitende das geforderte Verhalten adäquat umsetzen.
+              </template>
+              <template #tacticMastery>Tactic Mastery</template>
+              <template #tacticMasteryText
+                >Pro Handlungssituation innerhalb eines ITS-Trainingsmoduls
+                sollten Mitarbeitende trainiert werden, die richtige
+                Gegenmaßnahme durchzuführen, um eine ITS-Bedrohung einzudämmen.
+              </template>
+              <template #tacticCheck>Tactic Check & Follow-Up</template>
+              <template #tacticCheckText
+                >Mitarbeitende sollen darauf vorbereitet werden, wie sich
+                angemessene Folgemaßnahmen in verschiedenen Situationen, die
+                eine ITS-Bedrohung in Ihrem Arbeitsalltag darstellen können,
+                unterscheiden können. Diese Folgemaßnahmen beziehen sich auf die
+                Wirkungskontrolle und die Prävention.
+              </template>
+            </explanation-card>
+          </div>
+        </div>
+        <div class="page-background">
+          <div class="standard-container">
+            <h1
+              class="text-2xl tracking-tight font-extrabold text-primary text-center sm:text-3xl md:text-4xl mb-10"
+            >
+              ITS-Trainigsmodule pro ITS-Anforderungsprofil
+            </h1>
+            <div class="flex flex-row justify-center items-center">
+              <div
+                class="border-b-4 w-14 rounded-lg border-secondary mb-10"
+              ></div>
+            </div>
+            <div class="flex flex-col items-center justify-center mb-10">
+              <p
+                class="mt-3 text-base text-center text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+              >
+                <br />
+                Die zuvor vorgestellten ITS-Trainingsmodule lassen sich zu den
+                ITS-Bedrohungsereignissen pro ITS-Anforderungsprofil zuordnen.
+                Je mehr ITS-Bedrohungsbereiche in Kombination mit einem
+                ITS-Bedrohungsereignis zu diesem ITS-Anforderungsprofil in einem
+                ITS-Kompetenztest Berücksichtigung finden, desto höher ist die
+                Priorität das ITS-Trainingsmodul für das ITS-Anforderungsprofil
+                zu trainieren.
+              </p>
+              <p
+                class="mt-3 font-semibold text-center text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0"
+              >
+                <br />
+                Achtung: Die hier dargestellten ITS-Trainigsmodule sowie die
+                darunter fallenden ITS-Bedrohungsereignisse und zugeordneten
+                ITS-Bedrohungsbereiche basieren ausschließlich auf den Inhalten
+                der ITS-Kompetenztests. Wir erheben keinen Anspruch auf
+                Vollständigkeit. Mitunter können zum Beispiel auch weitere
+                ITS-Trainingsmodule und ITS-Bedrohungsbereiche zu einem
+                jeweiligen ITS-Bedrohunsgereignis relevant als Gegegenstand in
+                einem ITS-Trainingsprogramm sein!
+              </p>
+            </div>
+
+            <div
+              class="flex flex-col xl:flex-row xl:justify-between xl:text-lg items-center text-center bg-white mb-10 pt-4 xl:pt-2 rounded-lg xl:rounded-full p-2"
+            >
+              <button
+                v-for="(profile, index) in jobProfilesWithTrainingCategories"
+                :key="profile"
+                :class="[
+                  'flex justify-center text-center py-4 mx-4 px-2 mb-2 sm:mb-0',
+                  profile.job_profile_id === activeTabId
+                    ? 'rounded-full shadow bg-primary px-2 text-white w-1/2 xl:w-auto font-semibold'
+                    : 'text-gray-600',
+                ]"
+                @click="changeJobProfileForThreatCategories(index)"
+              >
+                {{ profile.job_profile_name }}
+              </button>
+            </div>
+            <div v-if="activeJobProfilesWithTrainingCategories">
+              <training-category
+                v-if="!threatCategoryLoading"
+                :job-profile="activeJobProfilesWithTrainingCategories"
+                :threat-category-counts="sortedThreatCategoriesByRelevanceScore"
+              ></training-category>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -604,7 +871,9 @@ import TrainingsTable from "@/components/training/TrainingsTable.vue";
 import { useCampagneStore } from "@/store/CampagneStore";
 import { useTrainingsStore } from "@/store/TrainingsStore";
 import EndCampagneModal from "@/components/self-service/EndCampagneModal.vue";
-
+import TrainingCategory from "@/components/training/TrainingCategory.vue";
+import ExplanationCard from "@/components/dashboard/ExplanationCard.vue";
+import DOMPurify from "dompurify";
 import { useAuthStore } from "@/store/AuthStore";
 
 import * as XLSX from "xlsx";
@@ -621,6 +890,8 @@ export default {
     Hero,
     BarChart,
     RecommendationCard,
+    ExplanationCard,
+    TrainingCategory,
     DoughnutChart,
     TrainingsTable,
     ThreatsTable,
@@ -640,13 +911,13 @@ export default {
   /**
    * Initializes and returns the state for the Vue component using composition API.
    *
-   * This setup function utilizes the Vuex stores specific to campagne and trainings.
+   * This setup function utilizes the pinia stores specific to campagne and trainings.
    * It invokes `useCampagneStore` to access and manage the state related to the campagne,
    * and `useCampagneStore` for managing state related to the campagne. The function
    * then returns these stores for use within the Vue component, enabling reactive state management
    * and encapsulation of business logic associated with the campagne and trainings.
    *
-   * @returns {Object} An object containing references to `campagneStore` and `trainingsStore`.
+   * @returns {Object} An object containing references to `campagneStore` and `trainingsStore` and `authStore`.
    */
   setup() {
     const campagneStore = useCampagneStore();
@@ -660,6 +931,7 @@ export default {
     return {
       titleThreats: "",
       isLoading: false,
+      threatCategoryLoading: false,
       titleProfileDistribution: "",
       invitationTokens: [],
       totalNumberOfParticipants: 0,
@@ -675,6 +947,15 @@ export default {
       competenceTestResults: {},
       oneInvitationCode: null,
 
+      // threat category variables
+      trainingCategories: [],
+      jobProfilesWithTrainingCategories: [],
+      activeTabId: null,
+      activeCategoryId: null,
+      activeJobProfilesWithTrainingCategories: null,
+      activeTrainingCategory: null,
+      selectedProfileForThreatCategories: null,
+
       selectedProfile: {
         job_profile_id: 0,
         job_profile_name: "Alle",
@@ -685,8 +966,6 @@ export default {
       aggregateOverSingleProfiles: false,
       showAll: false,
 
-      mockedThreatData: [],
-      mockedCompetenceData: [],
       chartDataAllThreats: {},
       chartOptionsAllThreats: {},
 
@@ -716,6 +995,67 @@ export default {
       popupType: "",
       popupContent: "",
     };
+  },
+  computed: {
+    /**
+     * A Vue computed property.
+     * Saniizes the description of training categories.
+     */
+    sanitizedTrainingCategoryContent() {
+      return DOMPurify.sanitize(
+        this.activeTrainingCategory.training_category_description
+      );
+    },
+    /**
+     * A Vue computed property.
+     * Gets called whenever the selected job Profile for training categories changes
+     * If so it calculates a relevance score for each training category associated to the job profile
+     */
+    threatCategoryCounts() {
+      const categoryMap = {};
+
+      this.activeJobProfilesWithTrainingCategories.threat_events.forEach(
+        (event) => {
+          const countMultiplier = event.threat_areas.length;
+
+          event.threat_categories.forEach((category) => {
+            if (categoryMap[category.category_name]) {
+              categoryMap[category.category_name].relevanceScore +=
+                countMultiplier;
+            } else {
+              categoryMap[category.category_name] = {
+                category_name: category.category_name,
+                category_description: category.category_description,
+                relevanceScore: countMultiplier,
+              };
+            }
+          });
+        }
+      );
+
+      return Object.values(categoryMap);
+    },
+    /**
+     * A Vue computed property.
+     * Sorts the training categories by relevance score to be able to prioritize specifc training categories for a job profile.
+     */
+    sortedThreatCategoriesByRelevanceScore() {
+      let threatCategoryCounts = this.threatCategoryCounts;
+      threatCategoryCounts.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+      let position = 1; // Start ranking from 1
+      let lastScore = threatCategoryCounts[0].relevanceScore; // Score of the first item for comparison
+      threatCategoryCounts[0].position = position; // Assign first rank manually
+
+      for (let i = 1; i < threatCategoryCounts.length; i++) {
+        if (threatCategoryCounts[i].relevanceScore !== lastScore) {
+          position += 1;
+        }
+        threatCategoryCounts[i].position = position;
+        lastScore = threatCategoryCounts[i].relevanceScore; // Update lastScore for comparison
+      }
+      return threatCategoryCounts;
+    },
   },
   /**
    * A Vue watch property.
@@ -761,20 +1101,36 @@ export default {
    * It basically fecthes the data on scored points and prepares all chart data that is displayed including the results of the aggregated test results.
    */
   async mounted() {
-    // const response = await this.authStore.getUserProfile();
-    const campagneData = await this.campagneStore.getCampagne();
-    if (campagneData.campaign_ended) {
-      this.campagneStore.setCampagneEnded();
-    }
     this.refreshData();
-
-    // this.securityDisplayThreshold = response.security_display_threshold;
   },
   methods: {
+    /**
+     * Is used to change the job profile to view training program recommendations
+     * @param {Array} index The index of the job profile that gets displayed
+     */
+    async changeJobProfileForThreatCategories(index) {
+      this.activeJobProfilesWithTrainingCategories =
+        this.jobProfilesWithTrainingCategories[index];
+      this.activeTabId =
+        this.activeJobProfilesWithTrainingCategories.job_profile_id;
+    },
+    /**
+     * Is used to change the training category
+     * @param {Array} index The index of the training catgeory that gets displayed
+     */
+    async changeTrainingCategory(index) {
+      this.activeTrainingCategory = this.trainingCategories[index];
+      this.activeCategoryId = this.activeTrainingCategory.id;
+    },
+    /**
+     * Is triggered when the user confirms the coice to end the campaign.
+     * Performs A POST request to end the campaign and invalidates all created invitation tokens. Finally invokes a refreshing of the site contents.
+     * @param {Array} aggregateOverAllProfiles A Boolean value indicating whether the results will be displayed by job profile or aggregated ovr all job profiles.
+     */
     async endCampaign(aggregateOverAllProfiles) {
       this.aggregateOverSingleProfiles = !aggregateOverAllProfiles;
 
-      this.campagneStore.setCampagneEnded();
+      this.campagneStore.setCampagneEnded(true);
       this.isLoading = true;
       await this.campagneStore.endCampaign({
         aggregateOverSingleProfiles: this.aggregateOverSingleProfiles,
@@ -784,7 +1140,10 @@ export default {
         await this.refreshData();
       });
     },
-     openEndCampagneModal() {
+    /**
+     * Opens a modal to ent the campaign. After the campaign has been ended it cannot be restarted.
+     */
+    openEndCampagneModal() {
       if (this.totalNumberOfParticipants >= this.securityDisplayThreshold) {
         this.endCampagneModal = true;
       } else {
@@ -795,10 +1154,24 @@ export default {
         this.showFailurePopUp = true;
       }
     },
+    /**
+     * A central method of the view. Gets called when the view mount and is refreshed. Asynchronally sets up the data for the self-service dahsboard.
+     */
     async refreshData() {
       this.isLoading = true;
       this.trainings = await this.trainingsStore.getTrainings();
+      this.trainingCategories =
+        await this.trainingsStore.getTrainingCategories();
+      this.activeCategoryId = this.trainingCategories[0].id;
+      this.activeTrainingCategory = this.trainingCategories[0];
 
+      this.jobProfilesWithTrainingCategories =
+        await this.trainingsStore.getJobProfilesByTrainingCategories();
+
+      this.activeJobProfilesWithTrainingCategories =
+        this.jobProfilesWithTrainingCategories[0];
+      this.activeTabId =
+        this.activeJobProfilesWithTrainingCategories.job_profile_id;
       const campagneData = await this.campagneStore.getCampagne();
       this.oneInvitationCode = campagneData.one_token_mode;
       this.securityDisplayThreshold = campagneData.security_display_threshold;
@@ -823,6 +1196,8 @@ export default {
       this.jobProfileDistribution = Object.values(this.jobProfiles).filter(
         (obj) => obj.number_of_participants > 0
       );
+      this.selectedProfileForThreatCategories = this.jobProfileDistribution[0];
+
       this.jobProfiles = Object.values(this.jobProfileDistribution).filter(
         (obj) => obj.number_of_participants >= this.securityDisplayThreshold
       );
@@ -859,6 +1234,7 @@ export default {
       }
       setTimeout(() => (this.isLoading = false), 500);
     },
+
     /**
      * A method to export a management report including the aggregated results from the competence tests.
      * @throws {Error} Throws an error when no management report could be created and shows a failure popup.
@@ -873,17 +1249,12 @@ export default {
         // Create a URL for the blob
         const fileURL = URL.createObjectURL(file);
 
-        // window.open(fileURL, "_blank");
-        // setTimeout(() => URL.revokeObjectURL(fileURL), 100);
-
-        // Create an anchor (<a>) element to trigger the download
         const link = document.createElement("a");
         link.href = fileURL;
-        link.setAttribute("download", "management_report.pdf"); // Specify a filename for the download
+        link.setAttribute("download", "management_report.pdf");
         document.body.appendChild(link);
         link.click();
 
-        // Clean up by removing the link and revoking the URL
         document.body.removeChild(link);
         URL.revokeObjectURL(fileURL);
         this.popupType = "success";
@@ -1177,7 +1548,6 @@ export default {
     },
     async fetchCompetenceTestResults(newProfile) {
       try {
-        // ... fetch data logic ...
         this.competenceTestResults =
           await CampagneService.getCompetenceTestResults(newProfile);
 
@@ -1251,7 +1621,6 @@ export default {
       if (this.selectedProfile.job_profile_id == 0) {
         for (const element of array) {
           if (element.job_profile_id != 0) {
-          
             maxPoints +=
               element.number_of_participants *
               this.maxPointsPerCompetenceDimension *
@@ -1317,8 +1686,8 @@ export default {
         },
         scales: {
           y: {
-            max: 100, // Set the maximum value of the y-axis to 100
-            beginAtZero: true, // Ensures the y-axis starts at 0
+            max: 100,
+            beginAtZero: true,
             grid: {
               display: false,
             },
@@ -1515,5 +1884,23 @@ export default {
 }
 .fade-enter-active {
   transition: all 2s ease;
+}
+.gradient-background {
+  background: linear-gradient(
+    to right,
+    #303e7a 0%,
+    #303e7a 50%,
+    #f1f5f9 50%,
+    #f1f5f9 100%
+  );
+}
+.gradient-background-secondary {
+  background: linear-gradient(
+    to right,
+    #eb5757 0%,
+    #eb5757 50%,
+    #1e293b 50%,
+    #1e293b 100%
+  );
 }
 </style>
