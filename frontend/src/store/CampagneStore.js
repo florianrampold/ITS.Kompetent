@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import campagneService from "../services/campagne.service";
 //import { useStorage } from "@vueuse/core";
 import { useAuthStore } from "./AuthStore";
-import { passwordChangeURL } from '@/config.js';
+import { passwordChangeURL } from "@/config.js";
 
 export const useCampagneStore = defineStore("campagne", {
   state: () => {
@@ -277,11 +277,14 @@ export const useCampagneStore = defineStore("campagne", {
         if (error.response && error.response.status === 401) {
           auth.logout();
         } else if (error.response && error.response.status === 403) {
-            const errorMessage = error.response.data.error;
-            if (errorMessage === 'password_change_required') {
-                // Redirect user to the password change form
-                window.open(`${passwordChangeURL}/accounts/password_change/`, "_self");
-              }
+          const errorMessage = error.response.data.error;
+          if (errorMessage === "password_change_required") {
+            // Redirect user to the password change form
+            window.open(
+              `${passwordChangeURL}/accounts/password_change/`,
+              "_self"
+            );
+          }
         }
       }
     },

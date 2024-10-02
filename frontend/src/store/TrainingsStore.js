@@ -23,22 +23,21 @@ export const useTrainingsStore = defineStore("trainings", {
       return response;
     },
     /**
-    * Getter to retrieve the threat categories
-    * @returns {Promise<Object>} A promise that resolves to the threat categories.
-    */
+     * Getter to retrieve the threat categories
+     * @returns {Promise<Object>} A promise that resolves to the threat categories.
+     */
     async getTrainingCategories() {
       const response = await trainingsService.getTrainingCategories();
       return response;
     },
     /**
-    * Getter to job profiles with associated training categories
-    * @returns {Promise<Object>} A promise that resolves to the threat categories.
-    */
+     * Getter to job profiles with associated training categories
+     * @returns {Promise<Object>} A promise that resolves to the threat categories.
+     */
     async getJobProfilesByTrainingCategories() {
       const response =
         await trainingsService.getJobProfilesByTrainingCategories();
       return response;
     },
-  
   },
 });

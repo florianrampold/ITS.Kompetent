@@ -8,13 +8,14 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getCompetenceTest: async function (profileID) {
+    // eslint-disable-next-line no-useless-catch
     try {
       const test = await APIService.get(
         `competence_tests/?job_profile=${profileID}`
       );
       return test.data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**
@@ -25,13 +26,14 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getThreatSituations: async function (threatVectorID, profileID) {
+    // eslint-disable-next-line no-useless-catch
     try {
       const threatSituations = await APIService.get(
         `threat_situations/?threat_vector=${threatVectorID}&job_profile=${profileID}`
       );
       return threatSituations.data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**
@@ -41,13 +43,14 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getTestItems: async function (threatSituation) {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await APIService.get(
         `test_items/?threat_situation=${threatSituation}`
       );
       return response.data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**
@@ -56,11 +59,12 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getCompetenceDimensions: async function () {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await APIService.get(`competence_dimensions`);
       return response.data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**
@@ -70,13 +74,14 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getImpulseItems: async function (testItemID) {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await APIService.get(
         `impulse_items?id__in=${testItemID}`
       );
       return response.data[0];
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**
@@ -86,13 +91,14 @@ const CompetenceTestService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getAnswerOptions: async function (questionID) {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await APIService.get(
         `choice_items?question=${questionID}`
       );
       return response.data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   },
   /**

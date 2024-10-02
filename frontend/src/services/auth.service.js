@@ -13,7 +13,6 @@ export default {
       const response = await API.get("/status/");
       return response.data;
     } catch (error) {
-      console.log("error");
       throw error;
     }
   },
@@ -71,7 +70,6 @@ export default {
         error.response.data.error === "Session expired. Please log in again."
       ) {
         throw error;
-        // Handle the session expiration
       }
     }
   },
@@ -81,19 +79,18 @@ export default {
       const response = await API.get("/check_password_change/");
       return response.data;
     } catch (error) {
-      console.log("error");
       throw error;
     }
   },
   /**
-    * Ensures CSRF token is set by making a simple request before the user tries to login.
-    */
-   async ensureCsrfToken() {
+   * Ensures CSRF token is set by making a simple request before the user tries to login.
+   */
+  async ensureCsrfToken() {
+    // eslint-disable-next-line no-useless-catch
     try {
-      // This request will trigger the middleware and set the CSRF token in the cookies
       await API.get("/ping/");
     } catch (error) {
-      console.error("Error ensuring CSRF token:", error);
+      throw error;
     }
   },
 };

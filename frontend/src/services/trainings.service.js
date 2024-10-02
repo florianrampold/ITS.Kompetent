@@ -7,12 +7,8 @@ const TrainingsService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getTrainings: async function () {
-    try {
-      const response = await APIService.get("trainings");
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
+    const response = await APIService.get("trainings");
+    return response.data;
   },
   /**
    * Asynchronously gets the training programs paginated stored in the database
@@ -21,45 +17,34 @@ const TrainingsService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getPaginatedTrainings: async function (page) {
-    try {
-      const response = await APIService.get(`trainings/?page=${page}`);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
+    const response = await APIService.get(`trainings/?page=${page}`);
+    return response.data;
   },
   /**
    * Asynchronously gets the plain jo profiles
    * @returns {Promise<Object>} A promise that resolves to the data of the get response
    * @throws {Error} Rethrows any error encountered during the API request.
    */
-   getTrainingCategories: async function () {
-    try {
-      const response = await APIService.get(`training_categories`);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
+  getTrainingCategories: async function () {
+    const response = await APIService.get(`training_categories`);
+    return response.data;
   },
   /**
    * Asynchronously gets the job profiles with related training categories
    * @returns {Promise<Object>} A promise that resolves to the data of the get response
    * @throws {Error} Rethrows any error encountered during the API request.
    */
- getJobProfilesByTrainingCategories: async function () {
-  try {
-    const response = await APIService.get(
-      `job_profiles_by_training_categories`
-    );
-    return response.data;
-  } catch (error) {
-    console.log(error);
-  }
-},
-
-
-
-
+  getJobProfilesByTrainingCategories: async function () {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const response = await APIService.get(
+        `job_profiles_by_training_categories`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default TrainingsService;

@@ -7,12 +7,8 @@ const JobProfileService = {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   getJobProfiles: async function () {
-    try {
-      const response = await APIService.get(`job_profiles`);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-    }
+    const response = await APIService.get(`job_profiles`);
+    return response.data;
   },
 };
 

@@ -61,11 +61,10 @@ export default {
       const response = await API.get(endpoint);
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return [];
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -78,11 +77,10 @@ export default {
       const response = await API.get("/get_invitations/");
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return [];
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -95,11 +93,10 @@ export default {
       const response = await API.get("/participants_per_profile/");
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return [];
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -113,7 +110,6 @@ export default {
       const response = await API.get(`/invitation_token/${invitationToken}/`);
       return response.data.valid;
     } catch (error) {
-      console.log(error);
       if (
         error.response &&
         error.response.data &&
@@ -145,7 +141,6 @@ export default {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   async postCampagne(data) {
-
     // eslint-disable-next-line no-useless-catch
     try {
       const response = await API.post("/create_campagne/", data);
@@ -160,13 +155,8 @@ export default {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   async getCampagne() {
-    try {
-      const response = await API.get("/get_campagne/");
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    const response = await API.get("/get_campagne/");
+    return response.data;
   },
   /**
    * Asynchronously gets the management reported generated in the backend
@@ -174,13 +164,13 @@ export default {
    * @throws {Error} Rethrows any error encountered during the API request.
    */
   async getManagementReport() {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await API.get("/generate_management_report/", {
         responseType: "blob", // Important for handling PDF data
       });
       return response;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   },
@@ -194,11 +184,10 @@ export default {
       const response = await API.put("/remove_security_key/");
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return null;
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -211,11 +200,10 @@ export default {
       const response = await API.put("/end_campaign/", data);
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return null;
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -228,11 +216,10 @@ export default {
       const response = await API.put("/invalidate_invitation_tokens/");
       return response.data;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return null;
       }
-      return []; 
+      return [];
     }
   },
   /**
@@ -245,11 +232,10 @@ export default {
       const response = await API.get("/generate_key/");
       return response.data.key;
     } catch (error) {
-      console.log(error);
       if (error.response && error.response.data) {
         return null;
       }
-      return []; 
+      return [];
     }
   },
 };

@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
-
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class JWTWithCSRFMiddleware(MiddlewareMixin):
@@ -66,10 +66,9 @@ class EnforcePasswordChangeMiddleware:
             refresh_token = request.COOKIES.get('refreshToken')
             
             if refresh_token:
-                old_refresh = RefreshToken(refresh_token)
-
                 try:
-                    user_id = old_refresh['user_id'] 
+                    old_refresh = RefreshToken(refresh_token)
+                    user_id = old_refresh['user_id']
                     user = get_user_model().objects.get(id=user_id)
 
                     if user.profile.must_change_password:
@@ -78,17 +77,24 @@ class EnforcePasswordChangeMiddleware:
                                 'error': 'password_change_required',
                                 'message': 'You must change your password before accessing this resource.'
                             }, status=403)
+
+                except TokenError as e:
+                    # Token has expired or is invalid
+                    response =  JsonResponse({
+                        'error': 'token_invalid',
+                        'message': 'Refresh token is invalid or has expired. Logging out.'
+                    }, status=401)
+                    response.delete_cookie('accessToken', domain=settings.DOMAIN_URL, path="/")
+                    response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL, path="/")
+                    response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL, path="/")
                 
                 except get_user_model().DoesNotExist:
                     response = JsonResponse({
-                    'error': 'user_not_found',
-                    'message': 'User does not exist or session is invalid. Logging out.'
-                     }, status=403)
-                    response.delete_cookie('accessToken', domain=settings.DOMAIN_URL,
-                    path="/")
-                    response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL,
-                    path="/")
-                    response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL,
-                    path="/")
+                        'error': 'user_not_found',
+                        'message': 'User does not exist or session is invalid. Logging out.'
+                    }, status=403)
+                    response.delete_cookie('accessToken', domain=settings.DOMAIN_URL, path="/")
+                    response.delete_cookie('refreshToken', domain=settings.DOMAIN_URL, path="/")
+                    response.delete_cookie('csrfauthtoken', domain=settings.DOMAIN_URL, path="/")
 
         return self.get_response(request)

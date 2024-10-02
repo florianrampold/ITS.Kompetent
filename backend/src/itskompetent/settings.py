@@ -20,7 +20,7 @@ def get_env_variable(var_name):
 SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 HTTP_MODE = True

@@ -44,12 +44,8 @@ export const useJobProfileStore = defineStore("JobProfileStore", {
      * @returns {Promise<Object>} A promise that resolves to the job profiles.
      */
     async getJobProfiles() {
-      try {
-        const response = await jobProfileService.getJobProfiles();
-        return response;
-      } catch (error) {
-        console.log(error);
-      }
+      const response = await jobProfileService.getJobProfiles();
+      return response;
     },
   },
 });

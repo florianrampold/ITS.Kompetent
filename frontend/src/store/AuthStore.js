@@ -47,9 +47,7 @@ export const useAuthStore = defineStore({
             this.isInitializing = false; // set it to false once done
             resolve();
           })
-          .catch((error) => {
-            console.log("Error:", error);
-
+          .catch(() => {
             this.logout(expired);
 
             this.isInitializing = false;
@@ -58,15 +56,10 @@ export const useAuthStore = defineStore({
       });
     },
     /**
-    * Ensures CSRF token is set by making a simple request.
-    */
+     * Ensures CSRF token is set by making a simple request.
+     */
     async ensureCsrfToken() {
-      try {
-        // This request will trigger the middleware and set the CSRF token in the cookies
-        await authService.ensureCsrfToken();  // A simple API endpoint that just triggers the middleware
-      } catch (error) {
-        console.error("Error ensuring CSRF token:", error);
-      }
+      await authService.ensureCsrfToken(); // A simple API endpoint that just triggers the middleware
     },
 
     /**
@@ -76,6 +69,7 @@ export const useAuthStore = defineStore({
      * @throws {Error} Throws an error if crendetials are wrong
      */
     async login({ username, password }) {
+      // eslint-disable-next-line no-useless-catch
       try {
         const response = await authService.login({ username, password });
         //this.user = response.user; // adjust as necessary based on your API's response structure
@@ -84,7 +78,7 @@ export const useAuthStore = defineStore({
 
         this.startTokenExpiryTimer();
       } catch (error) {
-        console.error("Error during login:", error);
+        //
         throw error;
       }
     },
@@ -114,8 +108,6 @@ export const useAuthStore = defineStore({
         }
       } catch (error) {
         router.push("/login");
-
-        console.error("Error during logout:", error);
       }
     },
 
@@ -148,7 +140,6 @@ export const useAuthStore = defineStore({
     async refreshToken() {
       try {
         await authService.refreshToken(this.lastInteraction);
-        //console.log("Token refreshed:", response);
       } catch (error) {
         console.error("Error during token refresh:", error);
         if (
@@ -167,10 +158,9 @@ export const useAuthStore = defineStore({
       try {
         const response = await authService.checkPasswordChange();
         return response;
-
       } catch (error) {
         console.error("Error during password change:", error);
       }
-    }
+    },
   },
 });

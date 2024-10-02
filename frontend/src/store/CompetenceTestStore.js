@@ -5,7 +5,6 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
   state: () => {
     return {
       competenceTestResult: {},
-    
     };
   },
 
@@ -17,8 +16,6 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
     getCompetenceTestResult() {
       return this.competenceTestResult;
     },
-   
-
   },
 
   actions: {
@@ -30,18 +27,13 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
       this.competenceTestResult = testResult;
     },
 
-
     /**
      * Asynchronously fetches the competence test details for a specified profile ID.
      * @param {string} profileID - The ID of the profile to fetch the test for.
      * @returns {Promise<Object>} A promise that resolves to the test details.
      */
     async getCompetenceTest(profileID) {
-      try {
-        return await competenceTestService.getCompetenceTest(profileID);
-      } catch (error) {
-        console.log(error);
-      }
+      return await competenceTestService.getCompetenceTest(profileID);
     },
 
     /**
@@ -51,14 +43,10 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @returns {Promise<Object[]>} A promise that resolves to an array of threat situations.
      */
     async getThreatSituations(threatVector, jobProfile) {
-      try {
-        return await competenceTestService.getThreatSituations(
-          threatVector,
-          jobProfile
-        );
-      } catch (error) {
-        console.log(error);
-      }
+      return await competenceTestService.getThreatSituations(
+        threatVector,
+        jobProfile
+      );
     },
 
     /**
@@ -67,11 +55,7 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @returns {Promise<Object[]>} A promise that resolves to an array of test items.
      */
     async getTestItems(threatSituation) {
-      try {
-        return await competenceTestService.getTestItems(threatSituation);
-      } catch (error) {
-        console.log(error);
-      }
+      return await competenceTestService.getTestItems(threatSituation);
     },
 
     /**
@@ -80,11 +64,7 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @returns {Promise<Object[]>} A promise that resolves to an array of impulse items.
      */
     async getImpulseItems(testItem) {
-      try {
-        return await competenceTestService.getImpulseItems(testItem);
-      } catch (error) {
-        console.log(error);
-      }
+      return await competenceTestService.getImpulseItems(testItem);
     },
 
     /**
@@ -93,11 +73,7 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @returns {Promise<Object[]>} A promise that resolves to an array of answer options.
      */
     async getAnswerOptions(question) {
-      try {
-        return await competenceTestService.getAnswerOptions(question);
-      } catch (error) {
-        console.log(error);
-      }
+      return await competenceTestService.getAnswerOptions(question);
     },
 
     /**
@@ -107,12 +83,7 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @throws {Error} If generating the report fails.
      */
     async generateIndividualReport(results) {
-      try {
-        return await competenceTestService.generateIndividualReport(results);
-      } catch (error) {
-        console.error("Error during report generation:", error);
-        throw error;
-      }
+      return await competenceTestService.generateIndividualReport(results);
     },
 
     /**
@@ -121,13 +92,12 @@ export const useCompetenceTestStore = defineStore("CompetenceTestStore", {
      * @throws {Error} If fetching the dimensions fails.
      */
     async getCompetenceDimensions() {
+      // eslint-disable-next-line no-useless-catch
       try {
         return await competenceTestService.getCompetenceDimensions();
       } catch (error) {
-        console.error("Error fetching competence dimensions:", error);
         throw error;
       }
     },
-   
   },
 });
