@@ -59,12 +59,12 @@ INSTALLED_APPS = [
     'campagne'
 ]
 CORS_ALLOWED_ORIGINS = [
-"http://XXX.XXX.XX",
+"http://XXX.XXX.X",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://XXX.XXX.XX"]
+CSRF_TRUSTED_ORIGINS = ["http://XXX.XXX.X"]
 
 from datetime import timedelta
 

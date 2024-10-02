@@ -8,10 +8,10 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from rest_framework_simplejwt.exceptions import TokenError
-
+import re
 
 class JWTWithCSRFMiddleware(MiddlewareMixin):
-    
+    backend_ip = re.sub(r'^https?://', '', settings.DOMAIN_URL) + ":8000"    
      # Define the paths or views that should be CSRF-protected
     protected_routes = {
         '/api/create_campagne/',
@@ -24,18 +24,34 @@ class JWTWithCSRFMiddleware(MiddlewareMixin):
 
     }
     def process_response(self, request, response):
-       
-        if not request.path.startswith('/admin/'):
-            # Set a cookie on the response object
-            if not request.COOKIES.get('csrfauthtoken'):
+        # Get the Host header
+        host = request.META.get('HTTP_HOST', '')
+
+        
+        if (host == self.backend_ip and request.path == '/') or request.path.startswith('/admin/'):
+            return response  # Skip setting the CSRF token
+
+        # Set CSRF token for frontend or other requests
+        if not request.COOKIES.get('csrfauthtoken'):
+            if settings.HTTP_MODE:
                 response.set_cookie(
-                'csrfauthtoken',
-                get_token(request),  # Generate a new CSRF token,
-                httponly=False,  # Allow access via JavaScript
-                samesite=None,  
-                secure=False,     # Use `False` in development if not on HTTPS
+                    'csrfauthtoken',
+                    get_token(request),  
+                    httponly=False,      
+                    samesite=None,   
+                    secure=False,        
+                )
+            else:
+                response.set_cookie(
+                    'csrfauthtoken',
+                    get_token(request),  
+                    httponly=False,      
+                    samesite=None,   
+                    secure=True,        
             )
+
         return response
+
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 

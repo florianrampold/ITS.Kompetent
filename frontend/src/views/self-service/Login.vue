@@ -166,7 +166,6 @@ export default {
           }
 
           this.failedPopUp = true;
-          console.error(error);
         });
     },
 
